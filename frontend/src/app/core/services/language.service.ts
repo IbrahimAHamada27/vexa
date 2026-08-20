@@ -21,6 +21,9 @@ export class LanguageService {
       navHome: 'الرئيسية',
       navOrganizations: 'المستشفيات والعيادات',
       navBooking: 'الحجز الذكي',
+      navFaq: 'الأسئلة الشائعة',
+      navContact: 'اتصل بنا',
+      navAbout: 'عن المنظومة ورؤيتنا',
       navAdminPortal: '🏥 إدارة المستشفى',
       navDoctorPortal: '👨‍⚕️ بوابة الطبيب',
       navSignIn: 'تسجيل الدخول',
@@ -104,6 +107,14 @@ export class LanguageService {
       backToHome: 'العودة للرئيسية',
       bookAnother: 'حجز موعد جديد',
 
+      // FAQ & Contact
+      faqTitle: 'الأسئلة الشائعة والدعم الفني',
+      faqSub: 'إجابات شاملة لجميع استفسارات المرضى والأطباء وإدارة المستشفيات',
+      contactTitle: 'تواصل مع منصة VEXA',
+      contactSub: 'نحن هنا لمساعدتك على مدار الساعة والانضمام لشبكة المستشفيات المعتمدة',
+      aboutTitle: 'عن منصة VEXA والنموذج الاستثماري (BMC)',
+      aboutSub: 'النموذج التشغيلي والقيم الجوهرية للتحول الرقمي في القطاع الطبي الخاص',
+
       // Admin & Doctor Portals
       adminPortalTitle: 'مركز قيادة وإدارة المستشفى',
       adminPortalSub: 'منظومة VEXA السحابية لإدارة المنشآت والعيادات والأطقم الطبية',
@@ -122,6 +133,9 @@ export class LanguageService {
       navHome: 'Home',
       navOrganizations: 'Organizations',
       navBooking: 'Smart Booking',
+      navFaq: 'FAQ',
+      navContact: 'Contact Us',
+      navAbout: 'About & Business Model',
       navAdminPortal: '🏥 Hospital Admin',
       navDoctorPortal: '👨‍⚕️ Doctor Portal',
       navSignIn: 'Sign In',
@@ -205,6 +219,14 @@ export class LanguageService {
       backToHome: 'Return to Home',
       bookAnother: 'Book Another M.D.',
 
+      // FAQ & Contact
+      faqTitle: 'Frequently Asked Questions (FAQ)',
+      faqSub: 'Comprehensive answers for patients, doctors, and hospital administrators',
+      contactTitle: 'Get in Touch with VEXA',
+      contactSub: 'Support 24/7 and direct onboarding for accredited healthcare providers',
+      aboutTitle: 'About VEXA & Business Model Canvas',
+      aboutSub: 'Operational Architecture and Value Propositions for Private Healthcare Transformation',
+
       // Admin & Doctor Portals
       adminPortalTitle: 'Hospital Command & Operations OS',
       adminPortalSub: 'VEXA Cloud OS for facility, department, and medical staff administration',
@@ -248,7 +270,7 @@ export class LanguageService {
         return saved;
       }
     }
-    return 'ar'; // Default to Arabic as requested by user
+    return 'ar';
   }
 
   private applyLanguageToDocument(lang: LanguageCode): void {

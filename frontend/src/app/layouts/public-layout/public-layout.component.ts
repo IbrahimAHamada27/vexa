@@ -47,6 +47,9 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">{{ langService.t('navHome') }}</a>
             <a routerLink="/organizations" routerLinkActive="active" (click)="closeMobileMenu()">{{ langService.t('navOrganizations') }}</a>
             <a routerLink="/booking" routerLinkActive="active" (click)="closeMobileMenu()">{{ langService.t('navBooking') }}</a>
+            <a routerLink="/faq" routerLinkActive="active" (click)="closeMobileMenu()">{{ langService.t('navFaq') }}</a>
+            <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">{{ langService.t('navContact') }}</a>
+            <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">{{ langService.t('navAbout') }}</a>
 
             @if (authService.isDoctor()) {
               <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="closeMobileMenu()">{{ langService.t('navDoctorPortal') }}</a>
@@ -81,15 +84,19 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
           </div>
           <div class="footer-links">
             <div class="footer-col">
-              <h4>{{ langService.currentLang() === 'ar' ? 'المنصة' : 'Platform' }}</h4>
+              <h4>{{ langService.currentLang() === 'ar' ? 'المنصة والخدمات' : 'Platform & Services' }}</h4>
               <a routerLink="/">{{ langService.t('navHome') }}</a>
               <a routerLink="/organizations">{{ langService.t('navOrganizations') }}</a>
               <a routerLink="/booking">{{ langService.t('navBooking') }}</a>
+              <a routerLink="/faq">{{ langService.t('navFaq') }}</a>
+              <a routerLink="/contact">{{ langService.t('navContact') }}</a>
+              <a routerLink="/about">{{ langService.t('navAbout') }}</a>
             </div>
             <div class="footer-col">
-              <h4>{{ langService.currentLang() === 'ar' ? 'بوابات الإدارة' : 'Portals' }}</h4>
+              <h4>{{ langService.currentLang() === 'ar' ? 'بوابات الإدارة والتحكيم' : 'Portals & Architecture' }}</h4>
               <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }">{{ langService.t('navAdminPortal') }}</a>
               <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }">{{ langService.t('navDoctorPortal') }}</a>
+              <a routerLink="/about">Business Model Canvas (BMC)</a>
             </div>
           </div>
         </div>
@@ -190,7 +197,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
 
     .main-nav {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.25rem;
       align-items: center;
     }
 
@@ -198,7 +205,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
       color: var(--color-text-muted);
       font-weight: 600;
       transition: all 0.2s ease;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .main-nav a:hover,
@@ -208,9 +215,9 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
     }
 
     .nav-portal-badge {
-      padding: 0.45rem 0.9rem;
+      padding: 0.4rem 0.85rem;
       border-radius: var(--radius-pill);
-      font-size: 0.85rem !important;
+      font-size: 0.8rem !important;
       border: 1px solid var(--color-border);
     }
 
@@ -229,7 +236,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
     .btn-signin-sm {
       background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
       color: #ffffff !important;
-      padding: 0.5rem 1.25rem;
+      padding: 0.45rem 1.1rem;
       border-radius: var(--radius-md);
       font-weight: 700 !important;
       box-shadow: var(--shadow-glow);
@@ -255,7 +262,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
       color: #ffffff;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 992px) {
       .mobile-toggle {
         display: block;
       }
