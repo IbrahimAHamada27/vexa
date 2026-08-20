@@ -16,83 +16,88 @@
     </div>
   </div>
 
-  <!-- MAIN GLASS NAVIGATION HEADER -->
+  <!-- MAIN GLASS EXECUTIVE HEADER (2-TIER STACKED LAYOUT) -->
   <header class="app-header">
-    <div class="container header-inner">
-      <a routerLink="/" class="brand-logo" (click)="onNavClick()">
-        <div class="brand-icon-wrap">
-          <span class="brand-icon">❖</span>
-          <span class="live-dot"></span>
-        </div>
-        <div class="brand-text">
-          <span class="brand-name">{{ langService.t('brandName') }}</span>
-          <span class="brand-tagline">{{ langService.t('brandTagline') }}</span>
-        </div>
-      </a>
-
-      <!-- MAIN NAVIGATION LINKS -->
-      <nav class="main-nav" [class.open]="isMobileMenuOpen()">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onNavClick()">
-          <span class="nav-icon">🏠</span>
-          <span>{{ langService.t('navHome') }}</span>
-        </a>
-        <a routerLink="/organizations" routerLinkActive="active" (click)="onNavClick()">
-          <span class="nav-icon">🏥</span>
-          <span>{{ langService.t('navOrganizations') }}</span>
-        </a>
-        <a routerLink="/booking" routerLinkActive="active" (click)="onNavClick()">
-          <span class="nav-icon">📅</span>
-          <span>{{ langService.t('navBooking') }}</span>
-        </a>
-        <a routerLink="/faq" routerLinkActive="active" (click)="onNavClick()">
-          <span class="nav-icon">💡</span>
-          <span>{{ langService.t('navFaq') }}</span>
-        </a>
-        <a routerLink="/contact" routerLinkActive="active" (click)="onNavClick()">
-          <span class="nav-icon">📞</span>
-          <span>{{ langService.t('navContact') }}</span>
-        </a>
-        <a routerLink="/about" routerLinkActive="active" (click)="onNavClick()">
-          <span class="nav-icon">📌</span>
-          <span>{{ langService.t('navAbout') }}</span>
+    <!-- ROW 1: BRAND LOGO + CONTROLS -->
+    <div class="header-top-row">
+      <div class="container top-row-inner">
+        <a routerLink="/" class="brand-logo" (click)="onNavClick()">
+          <div class="brand-icon-wrap">
+            <span class="brand-icon">❖</span>
+            <span class="live-dot"></span>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">{{ langService.t('brandName') }}</span>
+            <span class="brand-tagline">{{ langService.t('brandTagline') }}</span>
+          </div>
         </a>
 
-        <div class="nav-divider-mobile"></div>
-
-        @if (authService.isDoctor()) {
-          <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="onNavClick()">{{ langService.t('navDoctorPortal') }}</a>
-        } @else {
-          <a routerLink="/admin" class="nav-portal-badge admin" (click)="onNavClick()">{{ langService.t('navAdminPortal') }}</a>
-        }
-
-        @if (authService.isLoggedIn()) {
-          <button type="button" class="btn-logout-sm" (click)="logout()">{{ langService.t('navSignOut') }}</button>
-        } @else {
-          <a routerLink="/login" class="btn-signin-sm" (click)="onNavClick()">{{ langService.t('navSignIn') }}</a>
-        }
-      </nav>
-
-      <!-- CONTROLS & MOBILE TOGGLE -->
-      <div class="header-right-group">
-        <button type="button" class="control-pill-btn" (click)="langService.toggleLanguage()" [title]="langService.currentLang() === 'ar' ? 'Switch to English' : 'التحويل للغة العربية'">
-          @if (langService.currentLang() === 'ar') {
-            <span>🇬🇧 English</span>
+        <!-- CONTROLS & USER ACTIONS -->
+        <div class="header-right-group">
+          @if (authService.isDoctor()) {
+            <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="onNavClick()">{{ langService.t('navDoctorPortal') }}</a>
           } @else {
-            <span>🌐 العربية</span>
+            <a routerLink="/admin" class="nav-portal-badge admin" (click)="onNavClick()">{{ langService.t('navAdminPortal') }}</a>
           }
-        </button>
 
-        <button type="button" class="control-pill-btn theme-toggle" (click)="themeService.toggleTheme()" [title]="'Switch Mode'">
-          @if (themeService.currentTheme() === 'light') {
-            <span>🌙</span>
+          @if (authService.isLoggedIn()) {
+            <button type="button" class="btn-logout-sm" (click)="logout()">{{ langService.t('navSignOut') }}</button>
           } @else {
-            <span>☀️</span>
+            <a routerLink="/login" class="btn-signin-sm" (click)="onNavClick()">{{ langService.t('navSignIn') }}</a>
           }
-        </button>
 
-        <button class="mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
-          {{ isMobileMenuOpen() ? '✕' : '☰' }}
-        </button>
+          <button type="button" class="control-pill-btn" (click)="langService.toggleLanguage()" [title]="langService.currentLang() === 'ar' ? 'Switch to English' : 'التحويل للغة العربية'">
+            @if (langService.currentLang() === 'ar') {
+              <span>🇬🇧 English</span>
+            } @else {
+              <span>🌐 العربية</span>
+            }
+          </button>
+
+          <button type="button" class="control-pill-btn theme-toggle" (click)="themeService.toggleTheme()" [title]="'Switch Mode'">
+            @if (themeService.currentTheme() === 'light') {
+              <span>🌙</span>
+            } @else {
+              <span>☀️</span>
+            }
+          </button>
+
+          <button class="mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
+            {{ isMobileMenuOpen() ? '✕' : '☰' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: DEDICATED SPACIOUS NAVIGATION BAR UNDERNEATH BRAND NAME -->
+    <div class="header-nav-bar" [class.open]="isMobileMenuOpen()">
+      <div class="container">
+        <nav class="main-nav">
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onNavClick()">
+            <span class="nav-icon">🏠</span>
+            <span>{{ langService.t('navHome') }}</span>
+          </a>
+          <a routerLink="/organizations" routerLinkActive="active" (click)="onNavClick()">
+            <span class="nav-icon">🏥</span>
+            <span>{{ langService.t('navOrganizations') }}</span>
+          </a>
+          <a routerLink="/booking" routerLinkActive="active" (click)="onNavClick()">
+            <span class="nav-icon">📅</span>
+            <span>{{ langService.t('navBooking') }}</span>
+          </a>
+          <a routerLink="/faq" routerLinkActive="active" (click)="onNavClick()">
+            <span class="nav-icon">💡</span>
+            <span>{{ langService.t('navFaq') }}</span>
+          </a>
+          <a routerLink="/contact" routerLinkActive="active" (click)="onNavClick()">
+            <span class="nav-icon">📞</span>
+            <span>{{ langService.t('navContact') }}</span>
+          </a>
+          <a routerLink="/about" routerLinkActive="active" (click)="onNavClick()">
+            <span class="nav-icon">📌</span>
+            <span>{{ langService.t('navAbout') }}</span>
+          </a>
+        </nav>
       </div>
     </div>
   </header>
