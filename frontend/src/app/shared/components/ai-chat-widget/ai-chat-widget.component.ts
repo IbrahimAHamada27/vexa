@@ -5,620 +5,16 @@ import { AiService } from '../../../core/services/ai.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { AiRecommendationResponse } from '../../../core/models/ai-recommendation.model';
 import { ApiResponse } from '../../../core/models/api-response.model';
+import { EmergencyInfo, ChatMessage } from './ai-chat-widget.model';
 
-export interface EmergencyInfo {
-  title: string;
-  phone: string;
-  description: string;
-  type: 'ambulance' | 'pharmacy' | 'lab' | 'fire' | 'poison';
-}
-
-export interface ChatMessage {
-  id: string;
-  sender: 'user' | 'ai';
-  text: string;
-  timestamp: string;
-  recommendation?: AiRecommendationResponse;
-  emergencyInfo?: EmergencyInfo[];
-}
+export type { EmergencyInfo, ChatMessage };
 
 @Component({
   selector: 'app-ai-chat-widget',
   standalone: true,
   imports: [FormsModule, RouterLink],
-  template: `
-    <!-- FLOATING ACTION BUTTON (FAB) -->
-    <button
-      type="button"
-      class="ai-fab-btn"
-      [class.active]="isOpen()"
-      (click)="toggleChat()"
-      [title]="langService.currentLang() === 'ar' ? 'المساعد الطبي الذكي والطوارئ VEXA AI' : 'VEXA AI Emergency & Clinical Assistant'"
-    >
-      <div class="fab-icon-wrap">
-        @if (isOpen()) {
-          <span class="close-icon">&times;</span>
-        } @else {
-          <span class="sparkle-icon">✨</span>
-        }
-      </div>
-      <div class="fab-badge">
-        <span>VEXA AI</span>
-        <span class="pulse-dot"></span>
-      </div>
-    </button>
-
-    <!-- CHAT MODAL WINDOW -->
-    @if (isOpen()) {
-      <div class="ai-chat-window" [class.rtl]="langService.isRtl()">
-        <!-- CHAT HEADER -->
-        <div class="chat-header">
-          <div class="bot-info">
-            <div class="bot-avatar">✨</div>
-            <div>
-              <h3 class="bot-name">{{ langService.currentLang() === 'ar' ? 'مساعد فيكسا الطبي والطوارئ' : 'VEXA AI Emergency & Clinical OS' }}</h3>
-              <div class="bot-status">
-                <span class="status-dot"></span>
-                <span>{{ langService.currentLang() === 'ar' ? 'مستشفيات • إطفاء • إقسام إسعاف • صيدليات • معامل' : 'Hospitals • Ambulance • Pharmacies • Labs' }}</span>
-              </div>
-            </div>
-          </div>
-          <button type="button" class="btn-close-header" (click)="toggleChat()">&times;</button>
-        </div>
-
-        <!-- CHAT MESSAGES CONTAINER -->
-        <div #scrollContainer class="chat-body">
-          @for (msg of messages(); track msg.id) {
-            <div class="chat-bubble-wrap" [class.user]="msg.sender === 'user'" [class.ai]="msg.sender === 'ai'">
-              @if (msg.sender === 'ai') {
-                <div class="bubble-avatar">✨</div>
-              }
-              <div class="bubble-content">
-                <p class="bubble-text">{{ msg.text }}</p>
-
-                <!-- EMBEDDED EMERGENCY & DIRECTORY CARDS -->
-                @if (msg.emergencyInfo) {
-                  <div class="directory-cards-wrap">
-                    @for (info of msg.emergencyInfo; track info.title) {
-                      <div class="directory-card" [class]="info.type">
-                        <div class="dir-header">
-                          <span class="dir-icon">
-                            @if (info.type === 'ambulance') { 🚑 }
-                            @else if (info.type === 'pharmacy') { 💊 }
-                            @else if (info.type === 'lab') { 🔬 }
-                            @else if (info.type === 'fire') { 🚒 }
-                            @else { 🩺 }
-                          </span>
-                          <div>
-                            <h4 class="dir-title">{{ info.title }}</h4>
-                            <p class="dir-desc">{{ info.description }}</p>
-                          </div>
-                        </div>
-                        <a [href]="'tel:' + info.phone" class="btn-call-emergency">
-                          📞 {{ langService.currentLang() === 'ar' ? 'اتصال مباشر:' : 'Call Direct:' }} <strong>{{ info.phone }}</strong>
-                        </a>
-                      </div>
-                    }
-                  </div>
-                }
-
-                <!-- EMBEDDED RECOMMENDATION CARDS -->
-                @if (msg.recommendation) {
-                  <div class="recommendation-box">
-                    <div class="rec-header">
-                      <span class="specialty-pill">
-                        🎯 {{ langService.currentLang() === 'ar' ? 'التخصص المرشح:' : 'Specialty:' }} <strong>{{ msg.recommendation.suggestedSpecialty }}</strong>
-                      </span>
-                    </div>
-
-                    <div class="doctors-rec-list">
-                      @for (doc of msg.recommendation.recommendedDoctors; track doc.doctorId) {
-                        <div class="doc-rec-item">
-                          <div class="doc-rec-info">
-                            <span class="doc-icon">👨‍⚕️</span>
-                            <div>
-                              <h4 class="doc-name">{{ doc.doctorName }}</h4>
-                              <span class="doc-spec">{{ doc.specialty }}</span>
-                              <span class="match-score">★ {{ doc.matchScore }}% {{ langService.currentLang() === 'ar' ? 'تطابق' : 'Match' }}</span>
-                            </div>
-                          </div>
-                          <p class="doc-reason">💡 {{ doc.reason }}</p>
-                          <div class="doc-rec-ctas">
-                            <a [routerLink]="['/booking']" [queryParams]="{ doctorId: doc.doctorId }" (click)="isOpen.set(false)" class="btn-book-sm">
-                              {{ langService.currentLang() === 'ar' ? 'حجز موعد فوراً ←' : 'Book Now ←' }}
-                            </a>
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                }
-                <span class="bubble-time">{{ msg.timestamp }}</span>
-              </div>
-            </div>
-          }
-
-          @if (isThinking()) {
-            <div class="chat-bubble-wrap ai">
-              <div class="bubble-avatar">✨</div>
-              <div class="bubble-content thinking">
-                <span class="dot-pulse"></span>
-                <span>{{ langService.currentLang() === 'ar' ? 'جاري البحث في قاعدة البيانات والذكاء الاصطناعي...' : 'Searching clinical & emergency database...' }}</span>
-              </div>
-            </div>
-          }
-        </div>
-
-        <!-- QUICK CHIPS -->
-        <div class="chat-quick-chips">
-          <button type="button" class="chip-item red" (click)="sendQuickPrompt('طوارئ الإسعاف والحماية المدنية 123')">
-            🚑 {{ langService.currentLang() === 'ar' ? 'الإسعاف 123' : 'Ambulance 123' }}
-          </button>
-          <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد صيدلية 24 ساعة بالقرب مني')">
-            💊 {{ langService.currentLang() === 'ar' ? 'صيدليات 24 ساعة' : '24/7 Pharmacy' }}
-          </button>
-          <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد معمل تحاليل أو مركز أشعة')">
-            🔬 {{ langService.currentLang() === 'ar' ? 'معامل وأشعة' : 'Labs & Scan' }}
-          </button>
-          <button type="button" class="chip-item" (click)="sendQuickPrompt('أحتاج استشاري أمراض قلب بالقاهرة')">
-            🫀 {{ langService.currentLang() === 'ar' ? 'طبيب قلب بالقاهرة' : 'Cardiologist' }}
-          </button>
-          <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد عيادة جلدية وتجميل بالشروق')">
-            🧴 {{ langService.currentLang() === 'ar' ? 'جلدية بالشروق' : 'Dermatologist' }}
-          </button>
-        </div>
-
-        <!-- CHAT INPUT FOOTER -->
-        <form (ngSubmit)="sendMessage()" class="chat-footer">
-          <input
-            type="text"
-            [(ngModel)]="userInput"
-            name="userInput"
-            [placeholder]="langService.currentLang() === 'ar' ? 'اكتب طوارئ، مستشفى، صيدلية، معمل، أو طبيب...' : 'Ask for emergency, pharmacy, lab, or doctor...'"
-            class="chat-input"
-            [disabled]="isThinking()"
-          />
-          <button type="submit" class="btn-send" [disabled]="!userInput.trim() || isThinking()">
-            <span>{{ langService.isRtl() ? '◄' : '►' }}</span>
-          </button>
-        </form>
-      </div>
-    }
-  `,
-  styles: [`
-    /* FAB Button */
-    .ai-fab-btn {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      z-index: 2000;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.75rem 1.25rem;
-      background: linear-gradient(135deg, var(--color-primary), #0284c7);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: var(--radius-pill);
-      box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4), 0 0 20px rgba(13, 137, 236, 0.3);
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    html[dir="rtl"] .ai-fab-btn {
-      right: auto;
-      left: 28px;
-    }
-
-    .ai-fab-btn:hover {
-      transform: translateY(-4px) scale(1.04);
-      box-shadow: 0 15px 40px rgba(6, 182, 212, 0.6);
-    }
-
-    .ai-fab-btn.active {
-      background: #0f172a;
-      border-color: var(--color-border);
-    }
-
-    .fab-icon-wrap {
-      font-size: 1.3rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .fab-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-weight: 800;
-      font-size: 0.95rem;
-      letter-spacing: 0.05em;
-    }
-
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #34d399;
-      box-shadow: 0 0 10px #34d399;
-      animation: pulse 1.8s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
-      70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
-    }
-
-    /* Modal Window */
-    .ai-chat-window {
-      position: fixed;
-      bottom: 90px;
-      right: 28px;
-      width: 440px;
-      max-width: calc(100vw - 32px);
-      height: 620px;
-      max-height: calc(100vh - 120px);
-      background: var(--bg-card);
-      border: 1px solid var(--color-border-glow);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), var(--shadow-glow);
-      z-index: 2000;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    html[dir="rtl"] .ai-chat-window {
-      right: auto;
-      left: 28px;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* Header */
-    .chat-header {
-      background: var(--bg-glass);
-      backdrop-filter: blur(16px);
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .bot-info {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .bot-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      box-shadow: var(--shadow-glow);
-    }
-
-    .bot-name {
-      margin: 0;
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--color-text-main);
-    }
-
-    .bot-status {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.72rem;
-      color: #34d399;
-      font-weight: 600;
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #34d399;
-    }
-
-    .btn-close-header {
-      background: none;
-      border: none;
-      color: var(--color-text-muted);
-      font-size: 1.5rem;
-      cursor: pointer;
-      padding: 0.2rem;
-    }
-
-    .btn-close-header:hover {
-      color: var(--color-primary);
-    }
-
-    /* Chat Body */
-    .chat-body {
-      flex: 1;
-      padding: 1.25rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      background: var(--bg-space);
-    }
-
-    .chat-bubble-wrap {
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-      max-width: 90%;
-    }
-
-    .chat-bubble-wrap.user {
-      align-self: flex-end;
-      flex-direction: row-reverse;
-    }
-
-    .chat-bubble-wrap.ai {
-      align-self: flex-start;
-    }
-
-    .bubble-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-
-    .bubble-content {
-      background: var(--bg-card);
-      border: 1px solid var(--color-border);
-      padding: 0.85rem 1.1rem;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .user .bubble-content {
-      background: linear-gradient(135deg, var(--color-primary), #0284c7);
-      color: #ffffff;
-      border-color: transparent;
-    }
-
-    .bubble-text {
-      margin: 0;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-
-    .user .bubble-text {
-      color: #ffffff;
-    }
-
-    .bubble-time {
-      display: block;
-      font-size: 0.7rem;
-      color: var(--color-text-subtle);
-      margin-top: 0.35rem;
-      text-align: right;
-    }
-
-    .user .bubble-time {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    /* DIRECTORY / EMERGENCY CARDS */
-    .directory-cards-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      margin-top: 0.75rem;
-    }
-
-    .directory-card {
-      background: var(--bg-space);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      padding: 0.75rem;
-    }
-
-    .directory-card.ambulance { border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.05); }
-    .directory-card.pharmacy { border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.05); }
-    .directory-card.lab { border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.05); }
-
-    .dir-header {
-      display: flex;
-      gap: 0.6rem;
-      align-items: flex-start;
-      margin-bottom: 0.6rem;
-    }
-
-    .dir-icon { font-size: 1.3rem; }
-    .dir-title { margin: 0; font-size: 0.85rem; font-weight: 800; color: var(--color-text-main); }
-    .dir-desc { margin: 0.15rem 0 0 0; font-size: 0.75rem; color: var(--color-text-muted); line-height: 1.3; }
-
-    .btn-call-emergency {
-      display: block;
-      text-align: center;
-      background: #10b981;
-      color: #ffffff !important;
-      padding: 0.35rem 0.75rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-decoration: none;
-    }
-    .ambulance .btn-call-emergency { background: #ef4444; }
-
-    /* Embedded Recommendation Box */
-    .recommendation-box {
-      margin-top: 0.85rem;
-      border-top: 1px solid var(--color-border);
-      padding-top: 0.85rem;
-    }
-
-    .specialty-pill {
-      display: inline-block;
-      font-size: 0.75rem;
-      color: #38bdf8;
-      background: rgba(6, 182, 212, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      padding: 0.2rem 0.6rem;
-      border-radius: var(--radius-pill);
-      margin-bottom: 0.75rem;
-    }
-
-    .doctors-rec-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .doc-rec-item {
-      background: var(--bg-space);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      padding: 0.75rem;
-    }
-
-    .doc-rec-info {
-      display: flex;
-      gap: 0.6rem;
-      align-items: center;
-      margin-bottom: 0.4rem;
-    }
-
-    .doc-icon { font-size: 1.2rem; }
-    .doc-name { margin: 0; font-size: 0.85rem; font-weight: 800; color: var(--color-text-main); }
-    .doc-spec { display: block; font-size: 0.75rem; color: var(--color-text-muted); }
-    .match-score { font-size: 0.7rem; font-weight: 800; color: #34d399; }
-    .doc-reason { font-size: 0.75rem; color: var(--color-text-subtle); margin: 0 0 0.6rem 0; line-height: 1.4; }
-
-    .btn-book-sm {
-      display: inline-block;
-      width: 100%;
-      text-align: center;
-      background: linear-gradient(135deg, var(--color-primary), #0284c7);
-      color: #ffffff !important;
-      padding: 0.35rem 0.75rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    /* Thinking State */
-    .thinking {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-    }
-
-    .dot-pulse {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--color-primary);
-      animation: pulse 1.2s infinite;
-    }
-
-    /* Quick Chips */
-    .chat-quick-chips {
-      padding: 0.6rem 1rem;
-      background: var(--bg-card);
-      border-top: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      overflow-x: auto;
-    }
-
-    .chip-item {
-      background: var(--bg-space);
-      border: 1px solid var(--color-border);
-      color: var(--color-text-main);
-      padding: 0.3rem 0.65rem;
-      border-radius: var(--radius-pill);
-      font-size: 0.75rem;
-      font-weight: 600;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .chip-item.red {
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #ef4444;
-      background: rgba(239, 68, 68, 0.08);
-    }
-
-    .chip-item:hover {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-    }
-
-    /* Chat Footer */
-    .chat-footer {
-      padding: 0.75rem 1rem;
-      background: var(--bg-card);
-      border-top: 1px solid var(--color-border);
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .chat-input {
-      flex: 1;
-      padding: 0.65rem 0.9rem;
-      font-size: 0.85rem;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      background: var(--bg-space);
-      color: var(--color-text-main);
-    }
-
-    .chat-input:focus {
-      outline: none;
-      border-color: var(--color-primary);
-    }
-
-    .btn-send {
-      width: 38px;
-      height: 38px;
-      border-radius: var(--radius-md);
-      background: linear-gradient(135deg, var(--color-primary), #0284c7);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn-send:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  `]
+  templateUrl: './ai-chat-widget.component.html',
+  styleUrl: './ai-chat-widget.component.css'
 })
 export class AiChatWidgetComponent implements AfterViewChecked {
   @ViewChild('scrollContainer') private readonly scrollContainer!: ElementRef;
@@ -800,15 +196,15 @@ export class AiChatWidgetComponent implements AfterViewChecked {
         type: 'lab'
       },
       {
-        title: isAr ? 'معامل البرج (Al Borg Laboratories)' : 'Al Borg Diagnostics',
+        title: isAr ? 'معامل البرج (Al Borg Laboratories)' : 'Al Borg Laboratories',
         phone: '19241',
-        description: isAr ? 'تحاليل الفحص الشامل وتأكيد التشخيص الإكلينيكي' : 'Full health checkup packages and clinical diagnostic tests.',
+        description: isAr ? 'أكبر شبكة معامل تحاليل معتمدة بالمملكة ومصر' : 'Certified medical diagnostic lab network.',
         type: 'lab'
       },
       {
-        title: isAr ? 'مراكز كايرو سكان للأشعة (Cairo Scan Radiology)' : 'Cairo Scan Radiology Centers',
+        title: isAr ? 'مركز كايرو سكان للأشعة والتحاليل' : 'Cairo Scan Radiology & Imaging',
         phone: '19144',
-        description: isAr ? 'أشعة رنين مغناطيسي MRI، مقطعية CT، وموجات صوتية متطورة' : 'Advanced MRI, CT Scan, and Ultrasound imaging.',
+        description: isAr ? 'أشعة رنين مغناطيسي ومقطعية وموجات صوتية ممتدة 24 ساعة' : '24/7 MRI, CT scan, and ultrasound radiology.',
         type: 'lab'
       }
     ];
@@ -816,7 +212,7 @@ export class AiChatWidgetComponent implements AfterViewChecked {
     const aiMsg: ChatMessage = {
       id: `ai-${Date.now()}`,
       sender: 'ai',
-      text: isAr ? `🔬 أبرز معامل التحاليل ومراكز الأشعة التشخيصية المعتمدة لـ (${query}):` : `🔬 Verified Medical Labs & Diagnostic Radiology Centers for (${query}):`,
+      text: isAr ? `🔬 معامل التحاليل ومراكز الأشعة المعتمدة لـ (${query}):` : `🔬 Certified Labs & Radiology Centers for (${query}):`,
       timestamp: this.getCurrentTime(),
       emergencyInfo
     };
@@ -836,39 +232,41 @@ export class AiChatWidgetComponent implements AfterViewChecked {
 
   private addFallbackResponse(query: string): void {
     const isAr = this.langService.currentLang() === 'ar';
-    const fallbackRec: AiRecommendationResponse = {
-      suggestedSpecialty: query.includes('جلدية') || query.includes('derm') ? (isAr ? 'الأمراض الجلدية والتجميل' : 'Dermatology') : (isAr ? 'أمراض القلب والأوعية الدموية' : 'Cardiology'),
-      summary: isAr ? 'ترشيح ذكي دقيق بناءً على الأعراض المدخلة' : 'AI Clinical Recommendation based on search criteria',
+    const fallbackRecommendation: AiRecommendationResponse = {
+      suggestedSpecialty: isAr ? 'طب وجراحة القلب والقسطرة / الجلدية' : 'Cardiology & Dermatology',
+      summary: isAr ? `تم العثور على أفضل الأطباء والعيادات لـ "${query}"` : `Top recommended doctors for "${query}"`,
       recommendedDoctors: [
         {
-          doctorId: 'doc1',
-          doctorName: isAr ? 'أ.د. أحمد عبد الرحمن الحسين' : 'Prof. Ahmed Abdelrahman',
-          specialty: isAr ? 'استشاري أمراض القلب والقسطرة التداخلية' : 'Consultant Cardiologist',
+          doctorId: 'doc-1',
+          doctorName: isAr ? 'أ.د. أحمد عبد الرحمن الحسين' : 'Prof. Dr. Ahmed El-Husseini',
+          specialty: isAr ? 'استشاري أمراض القلب والأوعية الدموية' : 'Senior Consultant Cardiologist',
           matchScore: 98,
-          reason: isAr ? 'أستاذ خبير بقسطرة الشرايين التاجية في مستشفى الشروق الدولي.' : 'Senior consultant with 22+ years experience in Shorouk Hospital.'
+          reason: isAr ? 'خبرة 22 عاماً بالقسطرة وطوارئ القلب بالمستشفى الدولي' : '22+ Years in Cardiology & Cardiac Care'
         },
         {
-          doctorId: 'doc2',
-          doctorName: isAr ? 'د. مريم الشناوي' : 'Dr. Maryam El Shennawy',
+          doctorId: 'doc-2',
+          doctorName: isAr ? 'د. مريم الشناوي' : 'Dr. Maryam El-Shennawy',
           specialty: isAr ? 'استشاري أمراض الجلدية والتجميل والليزر' : 'Consultant Dermatologist',
           matchScore: 94,
-          reason: isAr ? 'خبرة عريضة في أحدث تقنيات الليزر والعلاج الجلدية الفاخر.' : 'Specialist in aesthetic laser and dermatology treatments.'
+          reason: isAr ? 'متخصصة بجراحات الجلدية والعلاج بالليزر' : 'Consultant Dermatologist & Laser Specialist'
         }
       ]
     };
 
-    this.addAiResponse(
-      isAr
-        ? `بناءً على طلبك (${query})، إليك أفضل الاستشاريين المرشحين والمتاحين للحجز الفوري:`
-        : `Based on your request (${query}), here are the top recommended specialists available for instant booking:`,
-      fallbackRec
-    );
+    const aiMsg: ChatMessage = {
+      id: `ai-${Date.now()}`,
+      sender: 'ai',
+      text: isAr ? `نتائج البحث عن (${query}):` : `Search results for (${query}):`,
+      timestamp: this.getCurrentTime(),
+      recommendation: fallbackRecommendation
+    };
+    this.messages.update(msgs => [...msgs, aiMsg]);
   }
 
   private getInitialGreeting(): string {
     return this.langService.currentLang() === 'ar'
-      ? 'أهلاً بك في منصة VEXA! أنا مساعدك الطبي والشرط الخادمي للطوارئ. يمكنك السؤال عن: أطباء ومستشفيات، إسعاف 123، مطافئ 180، صيدليات 24 ساعة، أو معامل أشعة وتحاليل.'
-      : 'Welcome to VEXA AI! I am your clinical & emergency assistant. Ask me for doctors, hospitals, Ambulance 123, 24/7 Pharmacies, or Diagnostic Labs.';
+      ? 'مرحباً بك في VEXA AI ❖! أنا مساعدك الطبي الذكي. كيف يمكنني مساعدتك اليوم؟ يمكنك الاستفسار عن الأطباء، المستشفيات، الصيدليات، المعامل، أو طوارئ الإسعاف 123.'
+      : 'Welcome to VEXA AI ❖! I am your clinical assistant. Ask me about doctors, hospitals, pharmacies, labs, or 123 Ambulance hotline.';
   }
 
   private getCurrentTime(): string {
@@ -881,6 +279,8 @@ export class AiChatWidgetComponent implements AfterViewChecked {
       if (this.scrollContainer) {
         this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
       }
-    } catch {}
+    } catch (_err) {
+      // Ignore scroll errors
+    }
   }
 }

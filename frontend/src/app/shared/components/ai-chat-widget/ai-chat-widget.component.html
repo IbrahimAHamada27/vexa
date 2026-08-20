@@ -1,0 +1,157 @@
+<!-- FLOATING ACTION BUTTON (FAB) -->
+<button
+  type="button"
+  class="ai-fab-btn"
+  [class.active]="isOpen()"
+  (click)="toggleChat()"
+  [title]="langService.currentLang() === 'ar' ? 'المساعد الطبي الذكي والطوارئ VEXA AI' : 'VEXA AI Emergency & Clinical Assistant'"
+>
+  <div class="fab-icon-wrap">
+    @if (isOpen()) {
+      <span class="close-icon">&times;</span>
+    } @else {
+      <span class="sparkle-icon">✨</span>
+    }
+  </div>
+  <div class="fab-badge">
+    <span>VEXA AI</span>
+    <span class="pulse-dot"></span>
+  </div>
+</button>
+
+<!-- CHAT MODAL WINDOW -->
+@if (isOpen()) {
+  <div class="ai-chat-window" [class.rtl]="langService.isRtl()">
+    <!-- CHAT HEADER -->
+    <div class="chat-header">
+      <div class="bot-info">
+        <div class="bot-avatar">✨</div>
+        <div>
+          <h3 class="bot-name">{{ langService.currentLang() === 'ar' ? 'مساعد فيكسا الطبي والطوارئ' : 'VEXA AI Emergency & Clinical OS' }}</h3>
+          <div class="bot-status">
+            <span class="status-dot"></span>
+            <span>{{ langService.currentLang() === 'ar' ? 'مستشفيات • إطفاء • إقسام إسعاف • صيدليات • معامل' : 'Hospitals • Ambulance • Pharmacies • Labs' }}</span>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-close-header" (click)="toggleChat()">&times;</button>
+    </div>
+
+    <!-- CHAT MESSAGES CONTAINER -->
+    <div #scrollContainer class="chat-body">
+      @for (msg of messages(); track msg.id) {
+        <div class="chat-bubble-wrap" [class.user]="msg.sender === 'user'" [class.ai]="msg.sender === 'ai'">
+          @if (msg.sender === 'ai') {
+            <div class="bubble-avatar">✨</div>
+          }
+          <div class="bubble-content">
+            <p class="bubble-text">{{ msg.text }}</p>
+
+            <!-- EMBEDDED EMERGENCY & DIRECTORY CARDS -->
+            @if (msg.emergencyInfo) {
+              <div class="directory-cards-wrap">
+                @for (info of msg.emergencyInfo; track info.title) {
+                  <div class="directory-card" [class]="info.type">
+                    <div class="dir-header">
+                      <span class="dir-icon">
+                        @if (info.type === 'ambulance') { 🚑 }
+                        @else if (info.type === 'pharmacy') { 💊 }
+                        @else if (info.type === 'lab') { 🔬 }
+                        @else if (info.type === 'fire') { 🚒 }
+                        @else { 🩺 }
+                      </span>
+                      <div>
+                        <h4 class="dir-title">{{ info.title }}</h4>
+                        <p class="dir-desc">{{ info.description }}</p>
+                      </div>
+                    </div>
+                    <a [href]="'tel:' + info.phone" class="btn-call-emergency">
+                      📞 {{ langService.currentLang() === 'ar' ? 'اتصال مباشر:' : 'Call Direct:' }} <strong>{{ info.phone }}</strong>
+                    </a>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- EMBEDDED RECOMMENDATION CARDS -->
+            @if (msg.recommendation) {
+              <div class="recommendation-box">
+                <div class="rec-header">
+                  <span class="specialty-pill">
+                    🎯 {{ langService.currentLang() === 'ar' ? 'التخصص المرشح:' : 'Specialty:' }} <strong>{{ msg.recommendation.suggestedSpecialty }}</strong>
+                  </span>
+                </div>
+
+                <div class="doctors-rec-list">
+                  @for (doc of msg.recommendation.recommendedDoctors; track doc.doctorId) {
+                    <div class="doc-rec-item">
+                      <div class="doc-rec-info">
+                        <span class="doc-icon">👨‍⚕️</span>
+                        <div>
+                          <h4 class="doc-name">{{ doc.doctorName }}</h4>
+                          <span class="doc-spec">{{ doc.specialty }}</span>
+                          <span class="match-score">★ {{ doc.matchScore }}% {{ langService.currentLang() === 'ar' ? 'تطابق' : 'Match' }}</span>
+                        </div>
+                      </div>
+                      <p class="doc-reason">💡 {{ doc.reason }}</p>
+                      <div class="doc-rec-ctas">
+                        <a [routerLink]="['/booking']" [queryParams]="{ doctorId: doc.doctorId }" (click)="isOpen.set(false)" class="btn-book-sm">
+                          {{ langService.currentLang() === 'ar' ? 'حجز موعد فوراً ←' : 'Book Now ←' }}
+                        </a>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            <span class="bubble-time">{{ msg.timestamp }}</span>
+          </div>
+        </div>
+      }
+
+      @if (isThinking()) {
+        <div class="chat-bubble-wrap ai">
+          <div class="bubble-avatar">✨</div>
+          <div class="bubble-content thinking">
+            <span class="dot-pulse"></span>
+            <span>{{ langService.currentLang() === 'ar' ? 'جاري البحث في قاعدة البيانات والذكاء الاصطناعي...' : 'Searching clinical & emergency database...' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- QUICK CHIPS -->
+    <div class="chat-quick-chips">
+      <button type="button" class="chip-item red" (click)="sendQuickPrompt('طوارئ الإسعاف والحماية المدنية 123')">
+        🚑 {{ langService.currentLang() === 'ar' ? 'الإسعاف 123' : 'Ambulance 123' }}
+      </button>
+      <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد صيدلية 24 ساعة بالقرب مني')">
+        💊 {{ langService.currentLang() === 'ar' ? 'صيدليات 24 ساعة' : '24/7 Pharmacy' }}
+      </button>
+      <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد معمل تحاليل أو مركز أشعة')">
+        🔬 {{ langService.currentLang() === 'ar' ? 'معامل وأشعة' : 'Labs & Scan' }}
+      </button>
+      <button type="button" class="chip-item" (click)="sendQuickPrompt('أحتاج استشاري أمراض قلب بالقاهرة')">
+        🫀 {{ langService.currentLang() === 'ar' ? 'طبيب قلب بالقاهرة' : 'Cardiologist' }}
+      </button>
+      <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد عيادة جلدية وتجميل بالشروق')">
+        🧴 {{ langService.currentLang() === 'ar' ? 'جلدية بالشروق' : 'Dermatologist' }}
+      </button>
+    </div>
+
+    <!-- CHAT INPUT FOOTER -->
+    <form (ngSubmit)="sendMessage()" class="chat-footer">
+      <input
+        type="text"
+        [(ngModel)]="userInput"
+        name="userInput"
+        [placeholder]="langService.currentLang() === 'ar' ? 'اكتب طوارئ، مستشفى، صيدلية، معمل، أو طبيب...' : 'Ask for emergency, pharmacy, lab, or doctor...'"
+        class="chat-input"
+        [disabled]="isThinking()"
+      />
+      <button type="submit" class="btn-send" [disabled]="!userInput.trim() || isThinking()">
+        <span>{{ langService.isRtl() ? '◄' : '►' }}</span>
+      </button>
+    </form>
+  </div>
+}

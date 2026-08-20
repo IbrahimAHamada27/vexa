@@ -1,0 +1,148 @@
+<div class="layout-container">
+  <!-- TOP EXECUTIVE ANNOUNCEMENT & EMERGENCY BAR -->
+  <div class="top-emergency-bar">
+    <div class="container emergency-bar-inner">
+      <div class="emergency-contacts">
+        <span class="pulse-red"></span>
+        <span class="bar-label">{{ langService.currentLang() === 'ar' ? 'طوارئ واستغاثة VEXA:' : 'VEXA Emergency Network:' }}</span>
+        <a href="tel:123" class="emergency-badge red">🚑 {{ langService.currentLang() === 'ar' ? 'الإسعاف 123' : 'Ambulance 123' }}</a>
+        <a href="tel:137" class="emergency-badge orange">🩺 {{ langService.currentLang() === 'ar' ? 'الطوارئ الطبية 137' : 'Medical Hotline 137' }}</a>
+        <a href="tel:180" class="emergency-badge dark-red">🚒 {{ langService.currentLang() === 'ar' ? 'المطافئ 180' : 'Fire Dept 180' }}</a>
+      </div>
+      <div class="system-status-indicator">
+        <span class="status-dot-green"></span>
+        <span>{{ langService.currentLang() === 'ar' ? 'شبكة المستشفيات والـ AI يعمل بكفاءة 100%' : 'All Systems & AI Services Operational' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN GLASS NAVIGATION HEADER -->
+  <header class="app-header">
+    <div class="container header-inner">
+      <a routerLink="/" class="brand-logo" (click)="onNavClick()">
+        <div class="brand-icon-wrap">
+          <span class="brand-icon">❖</span>
+          <span class="live-dot"></span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">{{ langService.t('brandName') }}</span>
+          <span class="brand-tagline">{{ langService.t('brandTagline') }}</span>
+        </div>
+      </a>
+
+      <!-- MAIN NAVIGATION LINKS -->
+      <nav class="main-nav" [class.open]="isMobileMenuOpen()">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onNavClick()">
+          <span class="nav-icon">🏠</span>
+          <span>{{ langService.t('navHome') }}</span>
+        </a>
+        <a routerLink="/organizations" routerLinkActive="active" (click)="onNavClick()">
+          <span class="nav-icon">🏥</span>
+          <span>{{ langService.t('navOrganizations') }}</span>
+        </a>
+        <a routerLink="/booking" routerLinkActive="active" (click)="onNavClick()">
+          <span class="nav-icon">📅</span>
+          <span>{{ langService.t('navBooking') }}</span>
+        </a>
+        <a routerLink="/faq" routerLinkActive="active" (click)="onNavClick()">
+          <span class="nav-icon">💡</span>
+          <span>{{ langService.t('navFaq') }}</span>
+        </a>
+        <a routerLink="/contact" routerLinkActive="active" (click)="onNavClick()">
+          <span class="nav-icon">📞</span>
+          <span>{{ langService.t('navContact') }}</span>
+        </a>
+        <a routerLink="/about" routerLinkActive="active" (click)="onNavClick()">
+          <span class="nav-icon">📌</span>
+          <span>{{ langService.t('navAbout') }}</span>
+        </a>
+
+        <div class="nav-divider-mobile"></div>
+
+        @if (authService.isDoctor()) {
+          <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="onNavClick()">{{ langService.t('navDoctorPortal') }}</a>
+        } @else {
+          <a routerLink="/admin" class="nav-portal-badge admin" (click)="onNavClick()">{{ langService.t('navAdminPortal') }}</a>
+        }
+
+        @if (authService.isLoggedIn()) {
+          <button type="button" class="btn-logout-sm" (click)="logout()">{{ langService.t('navSignOut') }}</button>
+        } @else {
+          <a routerLink="/login" class="btn-signin-sm" (click)="onNavClick()">{{ langService.t('navSignIn') }}</a>
+        }
+      </nav>
+
+      <!-- CONTROLS & MOBILE TOGGLE -->
+      <div class="header-right-group">
+        <button type="button" class="control-pill-btn" (click)="langService.toggleLanguage()" [title]="langService.currentLang() === 'ar' ? 'Switch to English' : 'التحويل للغة العربية'">
+          @if (langService.currentLang() === 'ar') {
+            <span>🇬🇧 English</span>
+          } @else {
+            <span>🌐 العربية</span>
+          }
+        </button>
+
+        <button type="button" class="control-pill-btn theme-toggle" (click)="themeService.toggleTheme()" [title]="'Switch Mode'">
+          @if (themeService.currentTheme() === 'light') {
+            <span>🌙</span>
+          } @else {
+            <span>☀️</span>
+          }
+        </button>
+
+        <button class="mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
+          {{ isMobileMenuOpen() ? '✕' : '☰' }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <router-outlet />
+  </main>
+
+  <!-- FLOATING AI CLINICAL ASSISTANT CHAT WIDGET -->
+  <app-ai-chat-widget />
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="brand-logo" (click)="onNavClick()">
+          <div class="brand-icon-wrap">
+            <span class="brand-icon">❖</span>
+          </div>
+          <span class="footer-logo">{{ langService.t('brandName') }} Health OS</span>
+        </div>
+        <p>{{ langService.t('footerTagline') }}</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>{{ langService.currentLang() === 'ar' ? 'المنصة والخدمات' : 'Platform & Services' }}</h4>
+          <a routerLink="/" (click)="onNavClick()">{{ langService.t('navHome') }}</a>
+          <a routerLink="/organizations" (click)="onNavClick()">{{ langService.t('navOrganizations') }}</a>
+          <a routerLink="/booking" (click)="onNavClick()">{{ langService.t('navBooking') }}</a>
+          <a routerLink="/faq" (click)="onNavClick()">{{ langService.t('navFaq') }}</a>
+          <a routerLink="/contact" (click)="onNavClick()">{{ langService.t('navContact') }}</a>
+          <a routerLink="/about" (click)="onNavClick()">{{ langService.t('navAbout') }}</a>
+        </div>
+        <div class="footer-col">
+          <h4>{{ langService.currentLang() === 'ar' ? 'بوابات الإدارة والتحكيم' : 'Portals & Architecture' }}</h4>
+          <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }" (click)="onNavClick()">{{ langService.t('navAdminPortal') }}</a>
+          <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }" (click)="onNavClick()">{{ langService.t('navDoctorPortal') }}</a>
+          <a routerLink="/about" (click)="onNavClick()">Business Model Canvas (BMC)</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-disclaimer">
+      <p>{{ langService.t('footerDisclaimer') }}</p>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <p>{{ langService.t('footerRights') }}</p>
+      </div>
+    </div>
+  </footer>
+</div>
