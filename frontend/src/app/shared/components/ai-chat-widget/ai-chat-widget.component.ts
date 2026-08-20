@@ -3,8 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AiService } from '../../../core/services/ai.service';
 import { LanguageService } from '../../../core/services/language.service';
-import { AiRecommendationResponse, DoctorMatch } from '../../../core/models/ai-recommendation.model';
+import { AiRecommendationResponse } from '../../../core/models/ai-recommendation.model';
 import { ApiResponse } from '../../../core/models/api-response.model';
+
+export interface EmergencyInfo {
+  title: string;
+  phone: string;
+  description: string;
+  type: 'ambulance' | 'pharmacy' | 'lab' | 'fire' | 'poison';
+}
 
 export interface ChatMessage {
   id: string;
@@ -12,6 +19,7 @@ export interface ChatMessage {
   text: string;
   timestamp: string;
   recommendation?: AiRecommendationResponse;
+  emergencyInfo?: EmergencyInfo[];
 }
 
 @Component({
@@ -25,7 +33,7 @@ export interface ChatMessage {
       class="ai-fab-btn"
       [class.active]="isOpen()"
       (click)="toggleChat()"
-      [title]="langService.currentLang() === 'ar' ? 'المساعد الطبي الذكي VEXA AI' : 'VEXA AI Clinical Assistant'"
+      [title]="langService.currentLang() === 'ar' ? 'المساعد الطبي الذكي والطوارئ VEXA AI' : 'VEXA AI Emergency & Clinical Assistant'"
     >
       <div class="fab-icon-wrap">
         @if (isOpen()) {
@@ -48,10 +56,10 @@ export interface ChatMessage {
           <div class="bot-info">
             <div class="bot-avatar">✨</div>
             <div>
-              <h3 class="bot-name">{{ langService.currentLang() === 'ar' ? 'مساعد فيكسا الطبي الذكي' : 'VEXA AI Clinical Assistant' }}</h3>
+              <h3 class="bot-name">{{ langService.currentLang() === 'ar' ? 'مساعد فيكسا الطبي والطوارئ' : 'VEXA AI Emergency & Clinical OS' }}</h3>
               <div class="bot-status">
                 <span class="status-dot"></span>
-                <span>{{ langService.currentLang() === 'ar' ? 'متصل - محرك الترشيح الطبي' : 'Online - Clinical AI Engine' }}</span>
+                <span>{{ langService.currentLang() === 'ar' ? 'مستشفيات • إطفاء • إقسام إسعاف • صيدليات • معامل' : 'Hospitals • Ambulance • Pharmacies • Labs' }}</span>
               </div>
             </div>
           </div>
@@ -68,7 +76,33 @@ export interface ChatMessage {
               <div class="bubble-content">
                 <p class="bubble-text">{{ msg.text }}</p>
 
-                <!-- EMBEDDED RECOMMENDATION CARDS IF AVAILABLE -->
+                <!-- EMBEDDED EMERGENCY & DIRECTORY CARDS -->
+                @if (msg.emergencyInfo) {
+                  <div class="directory-cards-wrap">
+                    @for (info of msg.emergencyInfo; track info.title) {
+                      <div class="directory-card" [class]="info.type">
+                        <div class="dir-header">
+                          <span class="dir-icon">
+                            @if (info.type === 'ambulance') { 🚑 }
+                            @else if (info.type === 'pharmacy') { 💊 }
+                            @else if (info.type === 'lab') { 🔬 }
+                            @else if (info.type === 'fire') { 🚒 }
+                            @else { 🩺 }
+                          </span>
+                          <div>
+                            <h4 class="dir-title">{{ info.title }}</h4>
+                            <p class="dir-desc">{{ info.description }}</p>
+                          </div>
+                        </div>
+                        <a [href]="'tel:' + info.phone" class="btn-call-emergency">
+                          📞 {{ langService.currentLang() === 'ar' ? 'اتصال مباشر:' : 'Call Direct:' }} <strong>{{ info.phone }}</strong>
+                        </a>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- EMBEDDED RECOMMENDATION CARDS -->
                 @if (msg.recommendation) {
                   <div class="recommendation-box">
                     <div class="rec-header">
@@ -109,7 +143,7 @@ export interface ChatMessage {
               <div class="bubble-avatar">✨</div>
               <div class="bubble-content thinking">
                 <span class="dot-pulse"></span>
-                <span>{{ langService.currentLang() === 'ar' ? 'جاري تحليل الأعراض والترشيح الطبي...' : 'Analyzing clinical requirements...' }}</span>
+                <span>{{ langService.currentLang() === 'ar' ? 'جاري البحث في قاعدة البيانات والذكاء الاصطناعي...' : 'Searching clinical & emergency database...' }}</span>
               </div>
             </div>
           }
@@ -117,15 +151,20 @@ export interface ChatMessage {
 
         <!-- QUICK CHIPS -->
         <div class="chat-quick-chips">
-          <span class="chips-label">{{ langService.currentLang() === 'ar' ? 'أسئلة سريعة:' : 'Quick Prompts:' }}</span>
+          <button type="button" class="chip-item red" (click)="sendQuickPrompt('طوارئ الإسعاف والحماية المدنية 123')">
+            🚑 {{ langService.currentLang() === 'ar' ? 'الإسعاف 123' : 'Ambulance 123' }}
+          </button>
+          <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد صيدلية 24 ساعة بالقرب مني')">
+            💊 {{ langService.currentLang() === 'ar' ? 'صيدليات 24 ساعة' : '24/7 Pharmacy' }}
+          </button>
+          <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد معمل تحاليل أو مركز أشعة')">
+            🔬 {{ langService.currentLang() === 'ar' ? 'معامل وأشعة' : 'Labs & Scan' }}
+          </button>
           <button type="button" class="chip-item" (click)="sendQuickPrompt('أحتاج استشاري أمراض قلب بالقاهرة')">
-            🫀 {{ langService.currentLang() === 'ar' ? 'استشاري قلب بالقاهرة' : 'Cardiologist in Cairo' }}
+            🫀 {{ langService.currentLang() === 'ar' ? 'طبيب قلب بالقاهرة' : 'Cardiologist' }}
           </button>
           <button type="button" class="chip-item" (click)="sendQuickPrompt('أريد عيادة جلدية وتجميل بالشروق')">
-            🧴 {{ langService.currentLang() === 'ar' ? 'عيادة جلدية بالشروق' : 'Dermatologist in Shorouk' }}
-          </button>
-          <button type="button" class="chip-item" (click)="sendQuickPrompt('طبيب أطفال وتغذية بالتجمع الخامس')">
-            👶 {{ langService.currentLang() === 'ar' ? 'طبيب أطفال بالتجمع' : 'Pediatrician in New Cairo' }}
+            🧴 {{ langService.currentLang() === 'ar' ? 'جلدية بالشروق' : 'Dermatologist' }}
           </button>
         </div>
 
@@ -135,7 +174,7 @@ export interface ChatMessage {
             type="text"
             [(ngModel)]="userInput"
             name="userInput"
-            [placeholder]="langService.currentLang() === 'ar' ? 'اكتب عرضك الطبي أو التخصص المفضل...' : 'Type your symptoms or specialty...'"
+            [placeholder]="langService.currentLang() === 'ar' ? 'اكتب طوارئ، مستشفى، صيدلية، معمل، أو طبيب...' : 'Ask for emergency, pharmacy, lab, or doctor...'"
             class="chat-input"
             [disabled]="isThinking()"
           />
@@ -217,9 +256,9 @@ export interface ChatMessage {
       position: fixed;
       bottom: 90px;
       right: 28px;
-      width: 420px;
+      width: 440px;
       max-width: calc(100vw - 32px);
-      height: 600px;
+      height: 620px;
       max-height: calc(100vh - 120px);
       background: var(--bg-card);
       border: 1px solid var(--color-border-glow);
@@ -283,7 +322,7 @@ export interface ChatMessage {
       display: flex;
       align-items: center;
       gap: 0.35rem;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #34d399;
       font-weight: 600;
     }
@@ -323,7 +362,7 @@ export interface ChatMessage {
       display: flex;
       gap: 0.75rem;
       align-items: flex-start;
-      max-width: 88%;
+      max-width: 90%;
     }
 
     .chat-bubble-wrap.user {
@@ -384,6 +423,49 @@ export interface ChatMessage {
     .user .bubble-time {
       color: rgba(255, 255, 255, 0.7);
     }
+
+    /* DIRECTORY / EMERGENCY CARDS */
+    .directory-cards-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: 0.75rem;
+    }
+
+    .directory-card {
+      background: var(--bg-space);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+    }
+
+    .directory-card.ambulance { border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.05); }
+    .directory-card.pharmacy { border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.05); }
+    .directory-card.lab { border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.05); }
+
+    .dir-header {
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+      margin-bottom: 0.6rem;
+    }
+
+    .dir-icon { font-size: 1.3rem; }
+    .dir-title { margin: 0; font-size: 0.85rem; font-weight: 800; color: var(--color-text-main); }
+    .dir-desc { margin: 0.15rem 0 0 0; font-size: 0.75rem; color: var(--color-text-muted); line-height: 1.3; }
+
+    .btn-call-emergency {
+      display: block;
+      text-align: center;
+      background: #10b981;
+      color: #ffffff !important;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .ambulance .btn-call-emergency { background: #ef4444; }
 
     /* Embedded Recommendation Box */
     .recommendation-box {
@@ -470,13 +552,6 @@ export interface ChatMessage {
       overflow-x: auto;
     }
 
-    .chips-label {
-      font-size: 0.7rem;
-      color: var(--color-text-subtle);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
     .chip-item {
       background: var(--bg-space);
       border: 1px solid var(--color-border);
@@ -488,6 +563,12 @@ export interface ChatMessage {
       white-space: nowrap;
       cursor: pointer;
       transition: all 0.2s ease;
+    }
+
+    .chip-item.red {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.08);
     }
 
     .chip-item:hover {
@@ -588,15 +669,42 @@ export class AiChatWidgetComponent implements AfterViewChecked {
     this.messages.update(msgs => [...msgs, userMsg]);
     this.isThinking.set(true);
 
-    // Call AI Service
+    // Check emergency / pharmacy / lab intent locally first
+    const lower = query.toLowerCase();
+
+    if (lower.includes('إسعاف') || lower.includes('طوارئ') || lower.includes('123') || lower.includes('مطافئ') || lower.includes('سموم') || lower.includes('ambulance') || lower.includes('fire')) {
+      setTimeout(() => {
+        this.isThinking.set(false);
+        this.addEmergencyResponse(query);
+      }, 500);
+      return;
+    }
+
+    if (lower.includes('صيدل') || lower.includes('دواء') || lower.includes('pharmacy') || lower.includes('علاج')) {
+      setTimeout(() => {
+        this.isThinking.set(false);
+        this.addPharmacyResponse(query);
+      }, 500);
+      return;
+    }
+
+    if (lower.includes('معمل') || lower.includes('أشعة') || lower.includes('تحليل') || lower.includes('lab') || lower.includes('scan')) {
+      setTimeout(() => {
+        this.isThinking.set(false);
+        this.addLabResponse(query);
+      }, 500);
+      return;
+    }
+
+    // Call Backend AI Service for Clinical Doctor/Hospital search
     this.aiService.recommend(query).subscribe({
       next: (res: ApiResponse<AiRecommendationResponse>) => {
         this.isThinking.set(false);
         if (res.success && res.data) {
           this.addAiResponse(
             this.langService.currentLang() === 'ar'
-              ? `بناءً على طلبك (${query})، قمت بتحليل التخصص الطبي الأكثر ملاءمة وترشيح كبار الاستشاريين والمراكز المعتمدة:`
-              : `Based on your prompt (${query}), I analyzed the matching specialty and selected top senior doctors:`,
+              ? `بناءً على طلبك (${query})، قمت بتحليل التخصص والبحث في كبرى المستشفيات والعيادات المعتمدة:`
+              : `Based on your query (${query}), here are top matching clinical options:`,
             res.data
           );
         } else {
@@ -608,6 +716,111 @@ export class AiChatWidgetComponent implements AfterViewChecked {
         this.addFallbackResponse(query);
       }
     });
+  }
+
+  private addEmergencyResponse(query: string): void {
+    const isAr = this.langService.currentLang() === 'ar';
+    const emergencyInfo: EmergencyInfo[] = [
+      {
+        title: isAr ? 'هيئة الإسعاف المصرية (Ambulance)' : 'Egyptian Ambulance Service',
+        phone: '123',
+        description: isAr ? 'طوارئ واستغاثة حوادث وسيارات إسعاف مجهزة بالرعاية المركزة 24/7' : '24/7 Emergency Ambulance Dispatch Across Egypt.',
+        type: 'ambulance'
+      },
+      {
+        title: isAr ? 'طوارئ وزارة الصحة والرعاية العاجلة' : 'Ministry of Health ICU Finder Hotline',
+        phone: '137',
+        description: isAr ? 'الخط الساخن لتوفير أسرة الرعاية المركزة وحضانات الأطفال فوراً' : 'Emergency ICU bed & incubator location service.',
+        type: 'ambulance'
+      },
+      {
+        title: isAr ? 'الحماية المدنية والمطافئ' : 'Fire Department & Civil Defense',
+        phone: '180',
+        description: isAr ? 'طوارئ الحوادث والإطفاء والانقاذ السريع' : 'Emergency Civil Defense and Fire Rescue.',
+        type: 'fire'
+      },
+      {
+        title: isAr ? 'مركز طوارئ السموم - جامعة القاهرة' : 'Poison Control Hotline',
+        phone: '0223643140',
+        description: isAr ? 'استغاثة واستشارات حالات التسمم والجرعات الزائدة 24 ساعة' : 'Cairo University Poison Control Emergency Hotline.',
+        type: 'poison'
+      }
+    ];
+
+    const aiMsg: ChatMessage = {
+      id: `ai-${Date.now()}`,
+      sender: 'ai',
+      text: isAr ? `🚨 خطوط الاستغاثة والطوارئ العاجلة المتاحة فوراً لـ (${query}):` : `🚨 Emergency lines available for (${query}):`,
+      timestamp: this.getCurrentTime(),
+      emergencyInfo
+    };
+    this.messages.update(msgs => [...msgs, aiMsg]);
+  }
+
+  private addPharmacyResponse(query: string): void {
+    const isAr = this.langService.currentLang() === 'ar';
+    const emergencyInfo: EmergencyInfo[] = [
+      {
+        title: isAr ? 'صيدليات العزبي (El Ezaby Pharmacy)' : 'El Ezaby 24/7 Pharmacy',
+        phone: '19600',
+        description: isAr ? 'توصيل أدوية ومستلزمات على مدار 24 ساعة بكافة الفروع (الشروق، التجمع، القاهرة، الإسكندرية)' : '24/7 medicine delivery in Shorouk, Cairo, New Cairo, and Alex.',
+        type: 'pharmacy'
+      },
+      {
+        title: isAr ? 'صيدليات سيف (Seif Pharmacies)' : 'Seif Pharmacies',
+        phone: '19199',
+        description: isAr ? 'خدمة الخط الساخن وتوصيل الأدوية المستوردة والمحلية' : '24/7 Hotline for domestic and imported medications.',
+        type: 'pharmacy'
+      },
+      {
+        title: isAr ? 'صيدلية الشروق الطبية التخصصية' : 'Shorouk Specialist Pharmacy',
+        phone: '01002405000',
+        description: isAr ? 'فرع مدينة الشروق - الحي السابع - توصيل فوري للعيادات والمنازل' : 'Shorouk City District 7 Branch — Instant delivery.',
+        type: 'pharmacy'
+      }
+    ];
+
+    const aiMsg: ChatMessage = {
+      id: `ai-${Date.now()}`,
+      sender: 'ai',
+      text: isAr ? `💊 كبرى شبكات الصيدليات 24/7 والخط الساخن للأدوية لـ (${query}):` : `💊 Top 24/7 Pharmacies and drug delivery hotlines for (${query}):`,
+      timestamp: this.getCurrentTime(),
+      emergencyInfo
+    };
+    this.messages.update(msgs => [...msgs, aiMsg]);
+  }
+
+  private addLabResponse(query: string): void {
+    const isAr = this.langService.currentLang() === 'ar';
+    const emergencyInfo: EmergencyInfo[] = [
+      {
+        title: isAr ? 'معامل المختبر (Al Mokhtabar Labs)' : 'Al Mokhtabar Medical Labs',
+        phone: '19014',
+        description: isAr ? 'جميع التحاليل الطبية وسحب العينات المنزلي وتطبيقات النتائج' : 'Comprehensive lab tests & home sample collection.',
+        type: 'lab'
+      },
+      {
+        title: isAr ? 'معامل البرج (Al Borg Laboratories)' : 'Al Borg Diagnostics',
+        phone: '19241',
+        description: isAr ? 'تحاليل الفحص الشامل وتأكيد التشخيص الإكلينيكي' : 'Full health checkup packages and clinical diagnostic tests.',
+        type: 'lab'
+      },
+      {
+        title: isAr ? 'مراكز كايرو سكان للأشعة (Cairo Scan Radiology)' : 'Cairo Scan Radiology Centers',
+        phone: '19144',
+        description: isAr ? 'أشعة رنين مغناطيسي MRI، مقطعية CT، وموجات صوتية متطورة' : 'Advanced MRI, CT Scan, and Ultrasound imaging.',
+        type: 'lab'
+      }
+    ];
+
+    const aiMsg: ChatMessage = {
+      id: `ai-${Date.now()}`,
+      sender: 'ai',
+      text: isAr ? `🔬 أبرز معامل التحاليل ومراكز الأشعة التشخيصية المعتمدة لـ (${query}):` : `🔬 Verified Medical Labs & Diagnostic Radiology Centers for (${query}):`,
+      timestamp: this.getCurrentTime(),
+      emergencyInfo
+    };
+    this.messages.update(msgs => [...msgs, aiMsg]);
   }
 
   private addAiResponse(text: string, recommendation: AiRecommendationResponse): void {
@@ -654,8 +867,8 @@ export class AiChatWidgetComponent implements AfterViewChecked {
 
   private getInitialGreeting(): string {
     return this.langService.currentLang() === 'ar'
-      ? 'أهلاً بك في منصة VEXA! أنا مساعدك الطبي الذكي. اكتب ما تشعر به أو التخصص والمنطقة المطلوبة وسأقوم بترشيح أفضل المستشفيات والأطباء فوراً.'
-      : 'Welcome to VEXA! I am your AI clinical assistant. Tell me your symptoms, preferred city, or specialty and I will recommend top doctors instantly.';
+      ? 'أهلاً بك في منصة VEXA! أنا مساعدك الطبي والشرط الخادمي للطوارئ. يمكنك السؤال عن: أطباء ومستشفيات، إسعاف 123، مطافئ 180، صيدليات 24 ساعة، أو معامل أشعة وتحاليل.'
+      : 'Welcome to VEXA AI! I am your clinical & emergency assistant. Ask me for doctors, hospitals, Ambulance 123, 24/7 Pharmacies, or Diagnostic Labs.';
   }
 
   private getCurrentTime(): string {
