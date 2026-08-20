@@ -1,0 +1,138 @@
+// VEXA Healthcare Platform - Prisma Schema
+// Provider: SQLite | Database: VEXA.db
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Organization ────────────────────────────────────────────────────────────
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  type        String   // Clinic | MedicalCenter | Hospital
+  description String?
+  logoUrl     String?
+  imageUrl    String?
+  phone       String?
+  email       String?
+  website     String?
+  address     String?
+  city        String?
+  createdAt   DateTime @default(now())
+
+  departments     Department[]
+  medicalServices MedicalService[]
+  doctors         Doctor[]
+  appointments    Appointment[]
+  researches      Research[]
+  conferences     Conference[]
+}
+
+// ─── Department ──────────────────────────────────────────────────────────────
+
+model Department {
+  id             String       @id @default(uuid())
+  name           String
+  description    String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  medicalServices MedicalService[]
+}
+
+// ─── Medical Service ─────────────────────────────────────────────────────────
+
+model MedicalService {
+  id             String       @id @default(uuid())
+  name           String
+  description    String?
+  departmentId   String
+  organizationId String
+  department     Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// ─── Doctor ──────────────────────────────────────────────────────────────────
+
+model Doctor {
+  id              String   @id @default(uuid())
+  fullName        String
+  specialty       String
+  bio             String?
+  experienceYears Int      @default(0)
+  qualifications  String?
+  imageUrl        String?
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  availabilitySlots AvailabilitySlot[]
+  appointments      Appointment[]
+  researches        Research[]
+  conferences       Conference[]
+}
+
+// ─── Availability Slot ───────────────────────────────────────────────────────
+
+model AvailabilitySlot {
+  id          String  @id @default(uuid())
+  doctorId    String
+  date        String  // Format: YYYY-MM-DD
+  time        String  // Format: HH:mm (e.g. '09:00')
+  isAvailable Boolean @default(true)
+  doctor      Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, date, time])
+}
+
+// ─── Appointment ─────────────────────────────────────────────────────────────
+
+model Appointment {
+  id             String   @id @default(uuid())
+  organizationId String
+  doctorId       String
+  patientName    String
+  patientPhone   String
+  patientEmail   String?
+  date           String   // Format: YYYY-MM-DD
+  time           String   // Format: HH:mm
+  status         String   @default("Pending") // Pending | Confirmed | Cancelled
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  doctor       Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+}
+
+// ─── Research ────────────────────────────────────────────────────────────────
+
+model Research {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  publicationDate DateTime
+  link            String?
+  doctorId        String
+  organizationId  String
+  doctor          Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// ─── Conference ──────────────────────────────────────────────────────────────
+
+model Conference {
+  id             String   @id @default(uuid())
+  title          String
+  description    String?
+  date           DateTime
+  location       String?
+  doctorId       String
+  organizationId String
+  doctor         Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}

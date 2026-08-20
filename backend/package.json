@@ -1,0 +1,23 @@
+{
+  "name": "vexa-backend",
+  "version": "1.0.0",
+  "description": "VEXA Healthcare Platform - MVP Backend",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:studio": "prisma studio",
+    "prisma:reset": "prisma migrate reset --force",
+    "setup": "prisma generate && prisma migrate dev --name init && tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "keywords": ["healthcare", "medical", "appointments", "gemini", "ai"],
+  "author": "VEXA Team",
+  "license": "ISC"
+}
