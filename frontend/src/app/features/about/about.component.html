@@ -1,0 +1,162 @@
+<div class="about-page container">
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb">
+    <a routerLink="/">{{ langService.t('navHome') }}</a>
+    <span class="separator">/</span>
+    <span class="current">{{ langService.t('navAbout') }}</span>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <span class="badge badge-cyan">🏛️ {{ langService.currentLang() === 'ar' ? 'منظومة VEXA الطبية الرقمية' : 'VEXA Executive Healthcare Platform' }}</span>
+    <h1>{{ langService.currentLang() === 'ar' ? 'عن المنظومة والرؤية الاستراتيجية' : 'About VEXA Platform & Strategic Vision' }}</h1>
+    <p>{{ langService.currentLang() === 'ar' ? 'التحول الرقمي الشامل لربط شبكات المستشفيات، العيادات، والأطقم الطبية بالذكاء الاصطناعي.' : 'Comprehensive digital health operating system integrating hospital networks, specialist clinics, and emergency networks.' }}</p>
+  </header>
+
+  <!-- HERO VISION CARD -->
+  <div class="about-vision-card">
+    <div class="vision-content">
+      <h2>{{ langService.currentLang() === 'ar' ? 'التحول الرقمي والربط الطبي الموحد' : 'Empowering Healthcare Digital Transformation' }}</h2>
+      <p>
+        {{ langService.currentLang() === 'ar'
+          ? 'تعتبر منصة VEXA منظومة إكلينيكية متكاملة تهدف لإحداث طفرة رقمية في قطاع الرعاية الطبية، من خلال ربط شبكات المستشفيات والعيادات الخاصة والمستشفيات التخصصية بالمرضى، وتوفير محرك بحث ذكي بالذكاء الاصطناعي لترشيح أفضل الاستشاريين والتخصصات الطبية بدقة وسرعة فائقة.'
+          : 'VEXA is an integrated clinical operating system transforming healthcare accessibility by connecting accredited hospital networks, specialist clinics, and emergency services with patients through AI-driven provider matching and real-time scheduling.'
+        }}
+      </p>
+    </div>
+  </div>
+
+  <!-- STRATEGIC PILLARS & ARCHITECTURE (REPLACING BMC) -->
+  <section class="pillars-section">
+    <div class="section-title-wrap">
+      <h2>🏛️ {{ langService.currentLang() === 'ar' ? 'المحاور الاستراتيجية والبنية التحتية للمنظومة' : 'Strategic Pillars & Technical Infrastructure' }}</h2>
+      <p>{{ langService.currentLang() === 'ar' ? 'الركائز الأساسية التي ترتكز عليها منصة VEXA لتقديم أقصى درجات الكفاءة والأمان الطبي' : 'Core architectural layers driving performance, data privacy, and clinical reliability across all healthcare channels' }}</p>
+    </div>
+
+    <div class="pillars-grid">
+      <!-- 1. AI Clinical Matching -->
+      <div class="pillar-card">
+        <div class="pillar-icon icon-cyan">🤖</div>
+        <h3>{{ langService.currentLang() === 'ar' ? 'المحرك الطبي الذكي (VEXA AI)' : 'AI Clinical Matching Engine' }}</h3>
+        <p>
+          {{ langService.currentLang() === 'ar'
+            ? 'خوارزميات ذكاء اصطناعي متطورة تفهم الأعراض المرضية وتحللها باللغتين العربية والإنجليزية لترشيح أفضل الأطباء والمستشفيات المتخصصة فوراً.'
+            : 'SOTA AI clinical assistant capable of parsing natural language symptom descriptions in Arabic & English to suggest optimal medical specialists.'
+          }}
+        </p>
+        <ul class="pillar-list">
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'فهم الأعراض الطبية باللغة العربية الفصحى والعامية' : 'Dual Arabic/English Symptom Parsing' }}</li>
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'ترشيح مستشفيات وعيادات قريبة مع حساب رسوم الكشف' : 'Location-aware hospital & fee recommendation' }}</li>
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'إتاحة الدليل الطبي المباشر 24/7' : '24/7 Real-time clinical guidance' }}</li>
+        </ul>
+      </div>
+
+      <!-- 2. Integrated Emergency Network -->
+      <div class="pillar-card">
+        <div class="pillar-icon icon-red">🚑</div>
+        <h3>{{ langService.currentLang() === 'ar' ? 'شبكة الاستغاثة والطوارئ الموحدة' : 'Unified Emergency Response Network' }}</h3>
+        <p>
+          {{ langService.currentLang() === 'ar'
+            ? 'ربط مباشر ومباشر مع الخطوط الساخنة الوطنية للإسعاف (123)، الطوارئ الطبية (137)، والمطافئ (180) لخدمة الحالات الحرجة.'
+            : 'Direct technical integration with emergency helplines 123 (Ambulance), 137 (Medical Emergencies), and 180 (Fire Dept) for critical care.'
+          }}
+        </p>
+        <ul class="pillar-list">
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'الاتصال المباشر بنقاط الإسعاف والطوارئ' : 'One-touch emergency helpline dialing' }}</li>
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'تجهيزات غرف العناية المركزة والحضانات' : 'Real-time ICU & ventilator availability status' }}</li>
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'استجابة فائقة السرعة للأزمات الطبية' : 'Rapid emergency routing & crisis triage' }}</li>
+        </ul>
+      </div>
+
+      <!-- 3. Enterprise Hospital Portals -->
+      <div class="pillar-card">
+        <div class="pillar-icon icon-purple">🏢</div>
+        <h3>{{ langService.currentLang() === 'ar' ? 'بوابات إدارة المستشفيات والعيادات' : 'Enterprise Hospital & Clinic Portals' }}</h3>
+        <p>
+          {{ langService.currentLang() === 'ar'
+            ? 'لوحات تحكم برمجية خاصة لإدارات المستشفيات والأطباء لمتابعة المواعيد، تعديل جدول العيادة، وإعادة توزيع الحجوزات بسهولة.'
+            : 'Dedicated administrative dashboards for hospital chairs and doctors to streamline appointment schedules and patient registries.'
+          }}
+        </p>
+        <ul class="pillar-list">
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'دليل رؤساء الأقسام والأطقم الطبية' : 'Department chair & medical directory' }}</li>
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'جدولة زمعية دقيقة ومنع تعارض المواعيد' : 'Conflict-free appointment calendar' }}</li>
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'تقارير أداء العيادات ونسب الإشغال' : 'Analytics on clinic occupancy & patient visits' }}</li>
+        </ul>
+      </div>
+
+      <!-- 4. Security & HIPAA Compliance -->
+      <div class="pillar-card">
+        <div class="pillar-icon icon-green">🛡️</div>
+        <h3>{{ langService.currentLang() === 'ar' ? 'الأمان وتشفير البيانات الطبية' : 'Data Privacy & Clinical Security' }}</h3>
+        <p>
+          {{ langService.currentLang() === 'ar'
+            ? 'تشفير كامل لبيانات المرضى والحجوزات وفق أعلى المعايير الدولية للحفاظ على السرية التامة وتوفير بيئة رقمية آمنة.'
+            : 'End-to-end data encryption and strict HIPAA-aligned privacy controls protecting patient registries and confidential health records.'
+          }}
+        </p>
+        <ul class="pillar-list">
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'تشفير البيانات الحساسة ونقل المعاملات' : 'End-to-end SSL/TLS data encryption' }}</li>
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'حماية سرية الحجوزات الطبية' : 'Strict patient data isolation' }}</li>
+          <li>✓ {{ langService.currentLang() === 'ar' ? 'التوافق مع أعلى المعايير القياسية' : 'Compliance with global health standards' }}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLINICAL SPECIALTIES COVERAGE GRID -->
+  <section class="coverage-section">
+    <div class="section-title-wrap">
+      <h2>🏥 {{ langService.currentLang() === 'ar' ? 'التغطية الطبية والتخصصات الإكلينيكية' : 'Clinical Specialties & Hospital Network' }}</h2>
+      <p>{{ langService.currentLang() === 'ar' ? 'تغطي المنظومة كافة التخصصات الطبية الدقيقة وجراحات الميكروسكوب المتقدمة' : 'Full clinical coverage across major medical disciplines, diagnostic imaging, and surgical centers' }}</p>
+    </div>
+
+    <div class="coverage-grid">
+      <div class="coverage-card">
+        <span class="card-icon">🫀</span>
+        <h4>{{ langService.currentLang() === 'ar' ? 'أمراض القلب والقسطرة' : 'Cardiology & Catheterization' }}</h4>
+        <p>{{ langService.currentLang() === 'ar' ? 'قسطرة الشرايين التاجية والتركيبات الذكية للدعامات تحت إشراف كبار أساطين القلب.' : 'Interventional cardiology, coronary stenting, and cardiac rhythm management.' }}</p>
+      </div>
+
+      <div class="coverage-card">
+        <span class="card-icon">🧠</span>
+        <h4>{{ langService.currentLang() === 'ar' ? 'جراحة المخ والأعصاب' : 'Neurosurgery & Spine' }}</h4>
+        <p>{{ langService.currentLang() === 'ar' ? 'جراحات الميكروسكوب والتثبيت الديناميكي للفقرات بدون جراحة تقليدية.' : 'Microsurgical tumor resection, skull base surgery, and minimally invasive spine procedures.' }}</p>
+      </div>
+
+      <div class="coverage-card">
+        <span class="card-icon">👶</span>
+        <h4>{{ langService.currentLang() === 'ar' ? 'الأطفال وحضانات مبتسري الولادة' : 'Pediatrics & NICU Units' }}</h4>
+        <p>{{ langService.currentLang() === 'ar' ? 'حضانات ذكية مزودة بأجهزة تنفس صناعي حديثة ومتابعة النمو والذكاء.' : 'Neonatal intensive care units, incubator support, and pediatric developmental health.' }}</p>
+      </div>
+
+      <div class="coverage-card">
+        <span class="card-icon">🦴</span>
+        <h4>{{ langService.currentLang() === 'ar' ? 'جراحة العظام والمناظير' : 'Orthopedics & Joint Surgery' }}</h4>
+        <p>{{ langService.currentLang() === 'ar' ? 'تغيير المفاصل الصناعية ومناظير إصابات الملعب والرباط الصليبي.' : 'Joint replacement surgery, knee/shoulder arthroscopy, and sports injury rehabilitation.' }}</p>
+      </div>
+
+      <div class="coverage-card">
+        <span class="card-icon">✨</span>
+        <h4>{{ langService.currentLang() === 'ar' ? 'الجلدية والعلاج بالليزر' : 'Dermatology & Laser Center' }}</h4>
+        <p>{{ langService.currentLang() === 'ar' ? 'التجميل الطبي المتطور وعلاج البهاق والصدفية بالليزر الكربوني الحديث.' : 'Advanced aesthetic dermatology, laser therapy, and specialized skin condition treatments.' }}</p>
+      </div>
+
+      <div class="coverage-card">
+        <span class="card-icon">🩺</span>
+        <h4>{{ langService.currentLang() === 'ar' ? 'الكشف المبكر والأورام' : 'Oncology & Screening Center' }}</h4>
+        <p>{{ langService.currentLang() === 'ar' ? 'بروتوكولات العلاج الكيماوي والإشعاعي الموجه تحت إشراف لجنة أورام استشارية.' : 'Early detection screening, targeted chemotherapy, and multidisciplinary oncology boards.' }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <div class="about-cta-banner">
+    <h2>{{ langService.currentLang() === 'ar' ? 'هل ترغب بانضمام مستشفاك أو عيادتك لشبكة VEXA؟' : 'Ready to Onboard Your Hospital Network?' }}</h2>
+    <p>{{ langService.currentLang() === 'ar' ? 'انضم الآن لشبكة كبرى المستشفيات والعيادات المعتمدة واحصل على ملف منشأة فاخر ولوحة تحكم متكاملة.' : 'Join accredited healthcare providers and access enterprise clinical management tools today.' }}</p>
+    <div class="cta-actions">
+      <a routerLink="/contact" class="btn btn-primary btn-lg">{{ langService.t('navContact') }} &rarr;</a>
+      <a routerLink="/organizations" class="btn btn-outline btn-lg">{{ langService.t('navOrganizations') }}</a>
+    </div>
+  </div>
+</div>

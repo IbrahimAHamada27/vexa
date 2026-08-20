@@ -1,0 +1,241 @@
+.about-page {
+  padding-top: 2rem;
+  padding-bottom: 5rem;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-subtle);
+  margin-bottom: 1.5rem;
+}
+.breadcrumb a { color: var(--color-text-muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--color-primary); }
+.breadcrumb .separator { color: var(--color-border); }
+.breadcrumb .current { color: var(--color-text-main); font-weight: 700; }
+
+.page-header {
+  margin-bottom: 2.5rem;
+}
+
+.badge-cyan {
+  background: var(--color-primary-glow);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border-glow);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+  font-weight: 800;
+  display: inline-block;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0.75rem 0 0.5rem 0;
+  color: var(--color-text-main);
+}
+
+.page-header p {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.about-vision-card {
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2.5rem;
+  margin-bottom: 3.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.vision-content h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-main);
+}
+
+.vision-content p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* STRATEGIC PILLARS GRID */
+.pillars-section {
+  margin-bottom: 4rem;
+}
+
+.section-title-wrap {
+  margin-bottom: 2rem;
+}
+
+.section-title-wrap h2 {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+  color: var(--color-text-main);
+}
+
+.section-title-wrap p {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.75rem;
+}
+
+@media (max-width: 768px) {
+  .pillars-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pillar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  transition: all 0.25s ease;
+}
+
+.pillar-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.pillar-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.25rem;
+}
+
+.icon-cyan { background: var(--color-primary-glow); color: var(--color-primary); }
+.icon-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.icon-purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.icon-green { background: var(--color-secondary-glow); color: var(--color-secondary); }
+
+.pillar-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.6rem;
+  color: var(--color-text-main);
+}
+
+.pillar-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.pillar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.pillar-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* CLINICAL SPECIALTIES COVERAGE */
+.coverage-section {
+  margin-bottom: 4rem;
+}
+
+.coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .coverage-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .coverage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coverage-card {
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.coverage-card h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+  color: var(--color-text-main);
+}
+
+.coverage-card p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* CTA BANNER */
+.about-cta-banner {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-glow);
+}
+
+.about-cta-banner h2 {
+  color: #ffffff;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.about-cta-banner p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  max-width: 680px;
+  margin: 0 auto 2rem auto;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}

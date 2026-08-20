@@ -224,7 +224,7 @@ export class LanguageService {
       faqSub: 'Comprehensive answers for patients, doctors, and hospital administrators',
       contactTitle: 'Get in Touch with VEXA',
       contactSub: 'Support 24/7 and direct onboarding for accredited healthcare providers',
-      aboutTitle: 'About VEXA & Business Model Canvas',
+      aboutTitle: 'About VEXA & Executive Vision',
       aboutSub: 'Operational Architecture and Value Propositions for Private Healthcare Transformation',
 
       // Admin & Doctor Portals

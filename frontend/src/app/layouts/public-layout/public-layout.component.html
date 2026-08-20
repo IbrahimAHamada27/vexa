@@ -135,7 +135,7 @@
           <h4>{{ langService.currentLang() === 'ar' ? 'بوابات الإدارة والتحكيم' : 'Portals & Architecture' }}</h4>
           <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }" (click)="onNavClick()">{{ langService.t('navAdminPortal') }}</a>
           <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }" (click)="onNavClick()">{{ langService.t('navDoctorPortal') }}</a>
-          <a routerLink="/about" (click)="onNavClick()">Business Model Canvas (BMC)</a>
+          <a routerLink="/about" (click)="onNavClick()">{{ langService.currentLang() === 'ar' ? 'الرؤية التقنية والتغطية الطبية' : 'Tech Architecture & Clinical Scope' }}</a>
         </div>
       </div>
     </div>
