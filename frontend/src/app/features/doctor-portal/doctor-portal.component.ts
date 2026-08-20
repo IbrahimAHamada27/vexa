@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { DoctorService } from '../../core/services/doctor.service';
 import { AppointmentService } from '../../core/services/appointment.service';
+import { LanguageService } from '../../core/services/language.service';
 import { Doctor } from '../../core/models/doctor.model';
 import { Appointment, AppointmentStatus } from '../../core/models/appointment.model';
 import { AvailabilitySlot } from '../../core/models/availability-slot.model';
@@ -20,6 +21,7 @@ export class DoctorPortalComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly doctorService = inject(DoctorService);
   private readonly appointmentService = inject(AppointmentService);
+  readonly langService = inject(LanguageService);
 
   // Doctor Data
   doctor = signal<Doctor | null>(null);
@@ -110,14 +112,14 @@ export class DoctorPortalComponent implements OnInit {
       id: 'doc-1',
       organizationId: 'org-1',
       departmentId: 'dept-1',
-      name: 'Sarah Mansour',
-      title: 'Dr.',
-      specialty: 'Cardiology & Cardiovascular Medicine',
-      bio: 'Senior Consultant Cardiologist specializing in echocardiography and preventive cardiac health.',
-      experienceYears: 14,
-      languages: ['English', 'Arabic'],
-      rating: 4.9,
-      reviewCount: 112,
+      name: 'أ.د. أحمد عبد الرحمن الحسين',
+      title: 'أ.د.',
+      specialty: 'استشاري أمراض القلب والأوعية الدموية والقسطرة',
+      bio: 'أستاذ أمراض القلب بكلية الطب، خبرة 22 عاماً.',
+      experienceYears: 22,
+      languages: ['العربية', 'English'],
+      rating: 4.95,
+      reviewCount: 180,
       consultationFee: 450,
       currency: 'EGP',
       isAvailableForBooking: true
@@ -129,7 +131,7 @@ export class DoctorPortalComponent implements OnInit {
       {
         id: 'app-1',
         patientId: 'pat-1',
-        patient: { id: 'pat-1', firstName: 'Mohamed', lastName: 'Ali', email: 'm.ali@example.com', phone: '+20 100 123 4567' },
+        patient: { id: 'pat-1', firstName: 'محمد', lastName: 'علي سليمان', email: 'm.ali@example.com', phone: '+20 100 123 4567' },
         doctorId: 'doc-1',
         organizationId: 'org-1',
         slotId: 'slot-1',
@@ -142,7 +144,7 @@ export class DoctorPortalComponent implements OnInit {
       {
         id: 'app-2',
         patientId: 'pat-2',
-        patient: { id: 'pat-2', firstName: 'Khaled', lastName: 'Ibrahim', email: 'k.ibrahim@example.com', phone: '+20 111 987 6543' },
+        patient: { id: 'pat-2', firstName: 'خالد', lastName: 'إبراهيم', email: 'k.ibrahim@example.com', phone: '+20 111 987 6543' },
         doctorId: 'doc-1',
         organizationId: 'org-1',
         slotId: 'slot-4',

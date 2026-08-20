@@ -12,9 +12,9 @@
   margin-bottom: 1.5rem;
 }
 .breadcrumb a { color: var(--color-text-muted); text-decoration: none; }
-.breadcrumb a:hover { color: #38bdf8; }
+.breadcrumb a:hover { color: var(--color-primary); }
 .breadcrumb .separator { color: var(--color-border); }
-.breadcrumb .current { color: #ffffff; font-weight: 700; }
+.breadcrumb .current { color: var(--color-primary); font-weight: 700; }
 
 .page-header {
   margin-bottom: 2.25rem;
@@ -23,7 +23,7 @@
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 .page-header p {
   color: var(--color-text-muted);
@@ -36,13 +36,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--bg-glass);
-  backdrop-filter: blur(16px);
+  background: var(--bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem 2.25rem;
   margin-bottom: 3rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-card);
 }
 
 .step-item {
@@ -53,10 +52,10 @@
 }
 
 .step-num {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--bg-space);
   border: 2px solid var(--color-border);
   color: var(--color-text-subtle);
   font-weight: 800;
@@ -75,20 +74,20 @@
 }
 
 .step-item.active .step-num {
-  background: linear-gradient(135deg, #06b6d4, #0284c7);
-  border-color: #38bdf8;
+  background: linear-gradient(135deg, var(--color-primary), #0284c7);
+  border-color: var(--color-primary);
   color: #ffffff;
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 20px rgba(13, 137, 236, 0.4);
 }
 
 .step-item.active .step-lbl {
-  color: #ffffff;
+  color: var(--color-text-main);
   font-weight: 800;
 }
 
 .step-item.completed .step-num {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #34d399;
+  background: linear-gradient(135deg, var(--color-secondary), #059669);
+  border-color: var(--color-secondary);
   color: #ffffff;
 }
 
@@ -105,7 +104,7 @@
 }
 
 .step-line.completed {
-  background: #10b981;
+  background: var(--color-secondary);
 }
 
 @media (max-width: 768px) {
@@ -122,18 +121,17 @@
 
 /* Step Cards & Forms */
 .step-card {
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
+  background: var(--bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 2.5rem;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-card);
 }
 
 .step-card h2 {
   font-size: 1.8rem;
   margin-bottom: 0.4rem;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .step-desc {
@@ -166,7 +164,7 @@
 .form-group label {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .form-control,
@@ -176,26 +174,26 @@
   font-family: inherit;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: rgba(15, 23, 42, 0.8);
-  color: #ffffff;
+  background: var(--bg-space);
+  color: var(--color-text-main);
 }
 
 .form-control:focus,
 .form-select:focus {
   outline: none;
-  border-color: #38bdf8;
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
 }
 
 .field-error {
   font-size: 0.8rem;
-  color: #fca5a5;
+  color: var(--color-error);
 }
 
 /* Provider Summary Box */
 .provider-summary-box {
   margin-top: 1.75rem;
-  background: var(--bg-card);
+  background: var(--bg-space);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 1.5rem;
@@ -208,25 +206,25 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #06b6d4, #10b981);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
   flex-shrink: 0;
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+  box-shadow: var(--shadow-glow);
 }
 
 .provider-summary-box h3 {
   font-size: 1.25rem;
   margin: 0 0 0.25rem 0;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .specialty-text {
   font-size: 0.9rem;
-  color: #34d399;
+  color: var(--color-secondary);
   font-weight: 700;
   margin-bottom: 0.25rem;
 }
@@ -240,9 +238,9 @@
 .fee-badge {
   font-size: 0.85rem;
   font-weight: 800;
-  color: #38bdf8;
-  background: rgba(6, 182, 212, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: var(--color-primary);
+  background: var(--color-primary-glow);
+  border: 1px solid var(--color-border-glow);
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-pill);
 }
@@ -257,7 +255,7 @@
   font-weight: 700;
   display: block;
   margin-bottom: 1.1rem;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .slots-grid {
@@ -273,7 +271,7 @@
 }
 
 .slot-button {
-  background: var(--bg-card);
+  background: var(--bg-space);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 0.95rem 1.1rem;
@@ -288,21 +286,21 @@
 
 .slot-button:hover,
 .slot-button.selected {
-  border-color: #38bdf8;
-  background: rgba(6, 182, 212, 0.15);
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+  border-color: var(--color-primary);
+  background: var(--color-primary-glow);
+  box-shadow: var(--shadow-glow);
 }
 
 .slot-date {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .slot-time {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #38bdf8;
+  color: var(--color-primary);
 }
 
 /* Review Grid */
@@ -320,7 +318,7 @@
 }
 
 .review-box {
-  background: var(--bg-card);
+  background: var(--bg-space);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 1.75rem;
@@ -338,13 +336,13 @@
 .box-header h3 {
   font-size: 1.2rem;
   margin: 0;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .btn-link {
   background: none;
   border: none;
-  color: #38bdf8;
+  color: var(--color-primary);
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -374,15 +372,15 @@
 
 .review-list .val {
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .review-list .val.highlight {
-  color: #38bdf8;
+  color: var(--color-primary);
 }
 
 .review-list .val.price {
-  color: #34d399;
+  color: var(--color-secondary);
   font-size: 1.2rem;
   font-weight: 800;
 }
@@ -390,7 +388,7 @@
 .error-alert {
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  color: var(--color-error);
   padding: 1rem 1.5rem;
   border-radius: var(--radius-md);
   font-size: 0.95rem;
@@ -413,22 +411,21 @@
 
 /* Success Card */
 .success-card {
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  background: var(--bg-card);
+  border: 1px solid var(--color-secondary);
   border-radius: var(--radius-lg);
   padding: 4.5rem 2.5rem;
   text-align: center;
   max-width: 640px;
   margin: 0 auto;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), var(--shadow-emerald);
+  box-shadow: var(--shadow-card);
 }
 
 .success-icon {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, var(--color-secondary), #059669);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -442,7 +439,7 @@
 .success-card h2 {
   font-size: 2rem;
   margin-bottom: 0.6rem;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .success-desc {
@@ -453,9 +450,9 @@
 
 .ref-badge {
   display: inline-block;
-  background: rgba(6, 182, 212, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: #38bdf8;
+  background: var(--color-primary-glow);
+  border: 1px solid var(--color-border-glow);
+  color: var(--color-primary);
   padding: 0.6rem 1.5rem;
   border-radius: var(--radius-pill);
   font-size: 0.95rem;
@@ -464,7 +461,7 @@
 }
 
 .confirmed-details-box {
-  background: var(--bg-card);
+  background: var(--bg-space);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 1.75rem;
@@ -487,7 +484,7 @@
 
 .detail-row .val {
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-text-main);
 }
 
 .success-actions {
