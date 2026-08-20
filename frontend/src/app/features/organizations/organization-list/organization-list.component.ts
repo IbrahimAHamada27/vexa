@@ -39,7 +39,6 @@ export class OrganizationListComponent implements OnInit {
   filteredOrganizations = computed(() => {
     const query = this.searchQuery().toLowerCase().trim().replace(/\s+/g, ' ');
     const type = this.selectedType();
-    const dept = this.selectedDepartment().toLowerCase().trim();
     const city = this.selectedCity();
 
     return this.organizations().filter(org => {
@@ -109,11 +108,11 @@ export class OrganizationListComponent implements OnInit {
         id: '1',
         name: 'مستشفى الشروق الدولي التخصصي',
         type: 'hospital',
-        description: 'مستشفى استثماري مجهز بالكامل بوحدات القسطرة القلبية والرعاية المركزة وغرف العمليات الكبرى.',
-        address: 'حي الأشجار - مدينة الشروق',
+        description: 'صرح طبي استثماري متكامل بمدينة الشروق يضم وحدات القسطرة القلبية، الطوارئ على مدار 24 ساعة، وجراحات المناظير المتقدمة.',
+        address: 'حي الأشجار، الحي السابع - مدينة الشروق',
         city: 'الشروق',
         phone: '01000000001',
-        email: 'info@shoroukhospital.com',
+        email: 'info@shorouk-hospital.com',
         rating: 4.9,
         reviewCount: 142,
         isVerified: true,
@@ -121,9 +120,9 @@ export class OrganizationListComponent implements OnInit {
       },
       {
         id: '2',
-        name: 'مركز فيكسا الطبي المتقدم',
+        name: 'مركز فيكسا الطبي المتقدم بالتجمع',
         type: 'medical_center',
-        description: 'عيادات تخصصية متكاملة تشمل الأوعية الدموية، الجلدية والتجميل، وطب الأطفال.',
+        description: 'مركز طبي فاخر بقلب التجمع الخامس يوفر أحدث تقنيات التشخيص، الأشعة المقطعية، وعيادات كبار الاستشاريين أساتذة الجامعات.',
         address: 'شارع التسعين الجنوبي - التجمع الخامس',
         city: 'القاهرة الجديده',
         phone: '01000000002',
@@ -137,11 +136,11 @@ export class OrganizationListComponent implements OnInit {
         id: '3',
         name: 'مستشفى السلام الدولي بالمعادي',
         type: 'hospital',
-        description: 'أعرق الصروح الطبية الخاصة الرائدة في جراحات المخ والأعصاب وزراعة الأعضاء.',
-        address: 'كورنيش المعادي',
+        description: 'من أعرق المستشفيات الخاصة في مصر الحاصلة على الاعتماد الدولي JCI، متخصصة في زراعة الأعضاء وجراحات القلب والمخ والأعصاب.',
+        address: 'كورنيش المعادي، برج الأطباء',
         city: 'القاهرة',
         phone: '01000000003',
-        email: 'info@alsalamhospital.com',
+        email: 'info@alsalam-hospital.com',
         rating: 4.95,
         reviewCount: 310,
         isVerified: true,
@@ -149,15 +148,43 @@ export class OrganizationListComponent implements OnInit {
       },
       {
         id: '4',
-        name: 'مجمع عيادات النيل التخصصي',
-        type: 'clinic',
-        description: 'مجمع عيادات شامل لاستشاريين وأساتذة الجامعات في طب وجراحة العيون والأنف والأذن.',
-        address: 'الدقي - الجيزة',
+        name: 'مستشفى دار الفؤاد 6 أكتوبر',
+        type: 'hospital',
+        description: 'مركز تميز إقليمي لجراحات القلب والأورام والعظام، مجهز بأحدث الرعايات المركزة وأجنحة الإقامة الفاخرة.',
+        address: 'امتداد محور 26 يوليو - 6 أكتوبر',
         city: 'الجيزة',
         phone: '01000000004',
-        email: 'nileclinics@vexa-health.com',
+        email: 'info@daralfouad.org',
+        rating: 4.92,
+        reviewCount: 220,
+        isVerified: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '5',
+        name: 'مستشفى الصفوة التخصصي بالإسكندرية',
+        type: 'hospital',
+        description: 'مستشفى استثماري رائد بالعروس الإسكندرية يقدم خدمات الجراحة العامة، مناظير الجهاز الهضمي، وعيادات طب الأطفال والنساء.',
+        address: 'طريق الجيش، لوران - الإسكندرية',
+        city: 'الإسكندرية',
+        phone: '01000000005',
+        email: 'contact@alsafwa-alex.com',
+        rating: 4.8,
+        reviewCount: 115,
+        isVerified: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '6',
+        name: 'مجمع عيادات النيل التخصصية بالدقي',
+        type: 'clinic',
+        description: 'عيادات تخصصية خاصة لأستاذة طب وجراحة العيون والأنف والأذن والحنجرة، وجراحات الجلدية والتجميل.',
+        address: 'شارع مصدق، الدقي - الجيزة',
+        city: 'الجيزة',
+        phone: '01000000006',
+        email: 'info@nileclinics.com',
         rating: 4.75,
-        reviewCount: 64,
+        reviewCount: 88,
         isVerified: true,
         createdAt: new Date().toISOString()
       }
