@@ -17,7 +17,7 @@ import { Organization } from '../../../core/models/organization.model';
           <h3 class="org-name">
             {{ organization().name }}
             @if (organization().isVerified) {
-              <span class="verified-icon" title="Verified Organization">✓</span>
+              <span class="verified-icon" title="Verified Hospital Node">✓</span>
             }
           </h3>
           <div class="rating-row">
@@ -29,52 +29,55 @@ import { Organization } from '../../../core/models/organization.model';
       </div>
 
       <div class="card-body">
-        <p class="org-location">📍 {{ organization().city }} - {{ organization().address }}</p>
+        <p class="org-location">📍 {{ organization().city }} · {{ organization().address }}</p>
         <p class="org-desc">{{ organization().description }}</p>
       </div>
 
       <div class="card-footer">
-        <a [routerLink]="['/organizations', organization().id]" class="btn-card">View Organization &rarr;</a>
+        <a [routerLink]="['/organizations', organization().id]" class="btn-card">View Institution Profile &rarr;</a>
       </div>
     </div>
   `,
   styles: [`
     .org-card {
-      background-color: var(--color-surface);
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
       border: 1px solid var(--color-border);
-      border-radius: 12px;
-      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
       display: flex;
       flex-direction: column;
       height: 100%;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .org-card:hover {
+      border-color: var(--color-border-glow);
       transform: translateY(-4px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-glow);
     }
 
     .card-header {
       display: flex;
-      gap: 1rem;
+      gap: 1.25rem;
       align-items: flex-start;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
     .org-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--color-primary), #0274cb);
+      width: 54px;
+      height: 54px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #06b6d4, #0284c7);
       color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
     }
 
     .header-content {
@@ -84,31 +87,33 @@ import { Organization } from '../../../core/models/organization.model';
     .type-badge {
       display: inline-block;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--color-primary);
-      background-color: rgba(13, 137, 236, 0.1);
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-      margin-bottom: 0.25rem;
+      color: #38bdf8;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.25rem 0.7rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 0.35rem;
     }
 
     .org-name {
-      font-size: 1.15rem;
-      font-weight: 700;
+      font-size: 1.2rem;
+      font-weight: 800;
       margin: 0.2rem 0;
       display: flex;
       align-items: center;
       gap: 0.4rem;
+      color: #ffffff;
     }
 
     .verified-icon {
-      background-color: var(--color-success);
+      background: #10b981;
       color: white;
       font-size: 0.65rem;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
@@ -118,7 +123,7 @@ import { Organization } from '../../../core/models/organization.model';
     .rating-row {
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
       font-size: 0.85rem;
     }
 
@@ -128,28 +133,28 @@ import { Organization } from '../../../core/models/organization.model';
 
     .rating-score {
       font-weight: 700;
-      color: var(--color-text);
+      color: #ffffff;
     }
 
     .review-count {
-      color: var(--color-muted);
+      color: var(--color-text-subtle);
     }
 
     .card-body {
       flex: 1;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
     }
 
     .org-location {
-      font-size: 0.85rem;
-      color: var(--color-muted);
-      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 0.6rem;
     }
 
     .org-desc {
-      font-size: 0.9rem;
-      color: #334155;
-      line-height: 1.4;
+      font-size: 0.925rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -158,26 +163,28 @@ import { Organization } from '../../../core/models/organization.model';
 
     .card-footer {
       border-top: 1px solid var(--color-border);
-      padding-top: 1rem;
+      padding-top: 1.25rem;
     }
 
     .btn-card {
       display: inline-block;
       width: 100%;
       text-align: center;
-      background-color: transparent;
-      color: var(--color-primary);
-      border: 1px solid var(--color-primary);
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
-      font-weight: 600;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--color-primary-light);
+      border: 1px solid var(--color-border);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      font-weight: 700;
       font-size: 0.9rem;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
 
     .btn-card:hover {
-      background-color: var(--color-primary);
+      background: linear-gradient(135deg, #06b6d4, #0284c7);
       color: #ffffff;
+      border-color: #06b6d4;
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
       text-decoration: none;
     }
   `]

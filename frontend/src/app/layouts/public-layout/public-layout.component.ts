@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeService } from '../../core/services/theme.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -11,29 +12,42 @@ import { AuthService } from '../../core/services/auth.service';
       <header class="app-header">
         <div class="container header-inner">
           <a routerLink="/" class="brand-logo">
-            <span class="brand-name">VEXA</span>
-            <span class="brand-tagline">Healthcare Discovery</span>
+            <div class="brand-icon">❖</div>
+            <div class="brand-text">
+              <span class="brand-name">VEXA</span>
+              <span class="brand-tagline">Clinical OS & Discovery</span>
+            </div>
           </a>
 
-          <button class="mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
-            ☰
-          </button>
+          <div class="header-right-group">
+            <button type="button" class="theme-toggle-btn" (click)="themeService.toggleTheme()" [title]="'Switch to ' + (themeService.currentTheme() === 'light' ? 'Dark' : 'Light') + ' Mode'">
+              @if (themeService.currentTheme() === 'light') {
+                <span>🌙 Dark</span>
+              } @else {
+                <span>☀️ Light</span>
+              }
+            </button>
+
+            <button class="mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
+              ☰
+            </button>
+          </div>
 
           <nav class="main-nav" [class.open]="isMobileMenuOpen()">
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Home</a>
             <a routerLink="/organizations" routerLinkActive="active" (click)="closeMobileMenu()">Organizations</a>
-            <a routerLink="/booking" routerLinkActive="active" (click)="closeMobileMenu()">Booking</a>
+            <a routerLink="/booking" routerLinkActive="active" (click)="closeMobileMenu()">Smart Booking</a>
 
             @if (authService.isDoctor()) {
-              <a routerLink="/doctor-portal" class="nav-admin-link" (click)="closeMobileMenu()">👨‍⚕️ Doctor Portal</a>
+              <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="closeMobileMenu()">👨‍⚕️ Doctor Portal</a>
             } @else {
-              <a routerLink="/admin" class="nav-admin-link" (click)="closeMobileMenu()">🏥 Admin Portal</a>
+              <a routerLink="/admin" class="nav-portal-badge admin" (click)="closeMobileMenu()">🏥 Hospital Admin</a>
             }
 
             @if (authService.isLoggedIn()) {
               <button type="button" class="btn-logout-sm" (click)="logout()">Sign Out</button>
             } @else {
-              <a routerLink="/login" class="btn-primary-sm" (click)="closeMobileMenu()">Sign In</a>
+              <a routerLink="/login" class="btn-signin-sm" (click)="closeMobileMenu()">Sign In</a>
             }
           </nav>
         </div>
@@ -46,33 +60,36 @@ import { AuthService } from '../../core/services/auth.service';
       <footer class="app-footer">
         <div class="container footer-inner">
           <div class="footer-brand">
-            <span class="footer-logo">VEXA</span>
-            <p>Empowering healthcare discovery & appointment booking across organizations, clinics, and medical specialists.</p>
+            <div class="brand-logo">
+              <div class="brand-icon">❖</div>
+              <span class="footer-logo">VEXA OS</span>
+            </div>
+            <p>Empowering private hospital networks, clinical operations, and AI-driven appointment discovery across top-tier medical institutions.</p>
           </div>
           <div class="footer-links">
             <div class="footer-col">
               <h4>Platform</h4>
               <a routerLink="/">Home</a>
               <a routerLink="/organizations">Organizations</a>
-              <a routerLink="/booking">Booking</a>
+              <a routerLink="/booking">Smart Booking</a>
             </div>
             <div class="footer-col">
-              <h4>Portals</h4>
-              <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }">Hospital Admin</a>
-              <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }">Doctor Portal</a>
+              <h4>Management Portals</h4>
+              <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }">Hospital Admin OS</a>
+              <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }">Doctor Clinical Portal</a>
             </div>
           </div>
         </div>
 
         <div class="container footer-disclaimer">
           <p>
-            ℹ️ <strong>Medical Disclaimer:</strong> VEXA helps you discover healthcare providers and book appointments. It does not provide medical diagnosis or treatment advice.
+            🛡️ <strong>Private Healthcare Network Disclaimer:</strong> VEXA is a clinical technology platform facilitating appointment scheduling and doctor discovery. It does not replace direct emergency response.
           </p>
         </div>
 
         <div class="footer-bottom">
           <div class="container">
-            <p>&copy; 2026 VEXA Healthcare Discovery Platform. Built for Vibe Coding Arena.</p>
+            <p>&copy; 2026 VEXA HealthTech Inc. All Rights Reserved. Private Hospital Edition.</p>
           </div>
         </div>
       </footer>
@@ -86,69 +103,90 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .app-header {
-      background-color: var(--color-surface);
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--color-border);
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      box-shadow: var(--shadow-sm);
     }
 
     .header-inner {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 70px;
+      height: 76px;
     }
 
     .brand-logo {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
       text-decoration: none;
     }
 
-    .brand-name {
-      font-size: 1.6rem;
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
       font-weight: 800;
-      color: var(--color-primary);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--color-text-main);
       letter-spacing: 0.05em;
+      line-height: 1;
     }
 
     .brand-tagline {
-      font-size: 0.75rem;
-      color: var(--color-muted);
+      font-size: 0.7rem;
+      color: var(--color-primary);
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      border-left: 1px solid var(--color-border);
-      padding-left: 0.5rem;
-      display: none;
+      margin-top: 0.2rem;
     }
 
-    @media (min-width: 640px) {
-      .brand-tagline {
-        display: inline-block;
-      }
+    .header-right-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
     .mobile-toggle {
       display: none;
       background: none;
       font-size: 1.5rem;
-      color: var(--color-text);
+      color: var(--color-text-main);
       padding: 0.4rem;
     }
 
     .main-nav {
       display: flex;
-      gap: 1.25rem;
+      gap: 1.5rem;
       align-items: center;
     }
 
     .main-nav a {
-      color: var(--color-text);
-      font-weight: 500;
-      transition: color 0.2s ease;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      transition: all 0.2s ease;
       font-size: 0.95rem;
     }
 
@@ -158,36 +196,52 @@ import { AuthService } from '../../core/services/auth.service';
       text-decoration: none;
     }
 
-    .nav-admin-link {
-      background-color: rgba(13, 137, 236, 0.08);
+    .nav-portal-badge {
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.85rem !important;
+      border: 1px solid var(--color-border);
+    }
+
+    .nav-portal-badge.doctor {
+      background: var(--color-secondary-glow);
+      color: var(--color-secondary) !important;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .nav-portal-badge.admin {
+      background: var(--color-primary-glow);
       color: var(--color-primary) !important;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      font-weight: 600 !important;
+      border-color: var(--color-border-glow);
     }
 
-    .btn-primary-sm {
-      background-color: var(--color-primary);
+    .btn-signin-sm {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
       color: #ffffff !important;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-weight: 600 !important;
-      transition: background-color 0.2s ease;
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-weight: 700 !important;
+      box-shadow: var(--shadow-glow);
     }
 
-    .btn-primary-sm:hover {
-      background-color: var(--color-primary-hover);
+    .btn-signin-sm:hover {
+      transform: translateY(-1px);
     }
 
     .btn-logout-sm {
-      background-color: #fef2f2;
-      border: 1px solid #fecaca;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
       color: #ef4444;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-md);
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    .btn-logout-sm:hover {
+      background: rgba(239, 68, 68, 0.3);
+      color: #ffffff;
     }
 
     @media (max-width: 768px) {
@@ -198,14 +252,13 @@ import { AuthService } from '../../core/services/auth.service';
       .main-nav {
         display: none;
         position: absolute;
-        top: 70px;
+        top: 76px;
         left: 0;
         right: 0;
-        background-color: var(--color-surface);
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--color-border);
         flex-direction: column;
         padding: 1.5rem;
-        border-bottom: 1px solid var(--color-border);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         gap: 1rem;
         align-items: stretch;
       }
@@ -214,7 +267,7 @@ import { AuthService } from '../../core/services/auth.service';
         display: flex;
       }
 
-      .btn-primary-sm, .btn-logout-sm {
+      .btn-signin-sm, .btn-logout-sm {
         text-align: center;
       }
     }
@@ -224,17 +277,18 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .app-footer {
-      background-color: #0f172a;
-      color: #94a3b8;
-      padding: 3rem 0 0 0;
-      margin-top: 4rem;
+      background: var(--bg-card);
+      border-top: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      padding: 4rem 0 0 0;
+      margin-top: 5rem;
     }
 
     .footer-inner {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 2rem;
-      padding-bottom: 2rem;
+      gap: 2.5rem;
+      padding-bottom: 2.5rem;
     }
 
     @media (min-width: 768px) {
@@ -246,15 +300,14 @@ import { AuthService } from '../../core/services/auth.service';
     .footer-logo {
       font-size: 1.5rem;
       font-weight: 800;
-      color: var(--color-primary);
-      display: block;
-      margin-bottom: 0.5rem;
+      color: var(--color-text-main);
     }
 
     .footer-brand p {
-      max-width: 450px;
+      max-width: 480px;
       font-size: 0.9rem;
       line-height: 1.6;
+      margin-top: 0.75rem;
     }
 
     .footer-links {
@@ -263,29 +316,29 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .footer-col h4 {
-      color: #ffffff;
+      color: var(--color-text-main);
       font-size: 0.95rem;
       margin-bottom: 1rem;
     }
 
     .footer-col a {
       display: block;
-      color: #94a3b8;
-      font-size: 0.85rem;
-      margin-bottom: 0.5rem;
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.6rem;
       transition: color 0.2s ease;
     }
 
     .footer-col a:hover {
-      color: #ffffff;
+      color: var(--color-primary);
       text-decoration: none;
     }
 
     .footer-disclaimer {
-      border-top: 1px solid #1e293b;
+      border-top: 1px solid var(--color-border);
       padding: 1.25rem 0;
-      font-size: 0.825rem;
-      color: #64748b;
+      font-size: 0.85rem;
+      color: var(--color-text-subtle);
     }
 
     .footer-disclaimer p {
@@ -294,10 +347,11 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .footer-bottom {
-      border-top: 1px solid #1e293b;
+      border-top: 1px solid var(--color-border);
       padding: 1.5rem 0;
       font-size: 0.85rem;
       text-align: center;
+      background: var(--bg-space);
     }
 
     .footer-bottom p {
@@ -307,6 +361,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class PublicLayoutComponent {
   readonly authService = inject(AuthService);
+  readonly themeService = inject(ThemeService);
   readonly isMobileMenuOpen = signal(false);
 
   toggleMobileMenu(): void {
