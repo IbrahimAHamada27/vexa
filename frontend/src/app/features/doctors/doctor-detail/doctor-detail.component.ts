@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, input, effect } from '@angular/core'
 import { RouterLink } from '@angular/router';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { OrganizationService } from '../../../core/services/organization.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { Doctor } from '../../../core/models/doctor.model';
 import { Organization } from '../../../core/models/organization.model';
 import { AvailabilitySlot } from '../../../core/models/availability-slot.model';
@@ -18,6 +19,7 @@ export class DoctorDetailComponent implements OnInit {
 
   private readonly doctorService = inject(DoctorService);
   private readonly orgService = inject(OrganizationService);
+  readonly langService = inject(LanguageService);
 
   // States
   isLoading = signal(true);
@@ -117,10 +119,10 @@ export class DoctorDetailComponent implements OnInit {
   }
 
   formatLanguages(languages?: string[] | string): string {
-    if (!languages) return 'English, Arabic';
-    if (Array.isArray(languages)) return languages.join(', ');
-    if (typeof languages === 'string') return languages;
-    return 'English, Arabic';
+    if (!languages) return this.langService.currentLang() === 'ar' ? 'العربية، English' : 'English, Arabic';
+    if (Array.isArray(languages)) return languages.map(l => this.langService.localizeText(l)).join(', ');
+    if (typeof languages === 'string') return this.langService.localizeText(languages);
+    return this.langService.currentLang() === 'ar' ? 'العربية، English' : 'English, Arabic';
   }
 
   getInitials(name: string): string {
@@ -139,14 +141,14 @@ export class DoctorDetailComponent implements OnInit {
         id: 'doc-1',
         organizationId: 'org-1',
         departmentId: 'dept-1',
-        name: 'Sarah Mansour',
-        title: 'Dr.',
-        specialty: 'Cardiology & Cardiovascular Medicine',
-        bio: 'Dr. Sarah Mansour is a Senior Consultant Cardiologist with over 14 years of clinical experience in non-invasive cardiac imaging, echocardiography, hypertension management, and preventive cardiovascular healthcare.',
-        experienceYears: 14,
-        languages: ['English', 'Arabic'],
-        rating: 4.9,
-        reviewCount: 112,
+        name: 'أ.د. أحمد عبد الرحمن الحسين',
+        title: 'أ.د.',
+        specialty: 'استشاري أمراض القلب والأوعية الدموية والقسطرة',
+        bio: 'أستاذ أمراض القلب بكلية الطب، زميل الكلية الأمريكية للقلب FACC، خبرة أكثر من 22 عاماً في قسطرة الشرايين التاجية وتوسيع الصمامات.',
+        experienceYears: 22,
+        languages: ['العربية', 'English'],
+        rating: 4.95,
+        reviewCount: 180,
         consultationFee: 450,
         currency: 'EGP',
         isAvailableForBooking: true
@@ -155,14 +157,14 @@ export class DoctorDetailComponent implements OnInit {
         id: 'doc-2',
         organizationId: 'org-3',
         departmentId: 'dept-2',
-        name: 'Ahmed Hassan',
-        title: 'Dr.',
-        specialty: 'Dermatology & Laser Surgery',
-        bio: 'Dr. Ahmed Hassan is a Consultant Dermatologist specializing in clinical dermatology, advanced laser skin procedures, aesthetic treatments, and surgical dermatopathology.',
-        experienceYears: 10,
-        languages: ['English', 'Arabic', 'French'],
-        rating: 4.8,
-        reviewCount: 84,
+        name: 'د. مريم الشناوي',
+        title: 'د.',
+        specialty: 'استشاري أمراض الجلدية والتجميل والليزر',
+        bio: 'استشاري جراحات الجلد والتجميل، خبرة 14 عاماً في علاج الصدفية والبهاق وحب الشباب المستعصي وأحدث تقنيات الفيلر والخيوط الفرنسية.',
+        experienceYears: 14,
+        languages: ['العربية', 'English'],
+        rating: 4.88,
+        reviewCount: 112,
         consultationFee: 350,
         currency: 'EGP',
         isAvailableForBooking: true
@@ -171,15 +173,15 @@ export class DoctorDetailComponent implements OnInit {
         id: 'doc-3',
         organizationId: 'org-1',
         departmentId: 'dept-3',
-        name: 'Layla Mahmoud',
-        title: 'Dr.',
-        specialty: 'Pediatrics & Neonatal Care',
-        bio: 'Dr. Layla Mahmoud is a dedicated Consultant Pediatrician focused on child wellness, growth milestone tracking, pediatric infectious disease management, and neonatal care.',
-        experienceYears: 12,
-        languages: ['English', 'Arabic'],
+        name: 'د. خالد مصطفى السويفي',
+        title: 'د.',
+        specialty: 'استشاري طب وجراحة الأطفال والحديثي الولادة',
+        bio: 'استشاري الأطفال ورعاية الحديثي الولادة، متخصص في أمراض الصدر والحساسية ومتابعة النمو والتغذية السليمة للأطفال.',
+        experienceYears: 16,
+        languages: ['العربية', 'English'],
         rating: 4.9,
         reviewCount: 95,
-        consultationFee: 400,
+        consultationFee: 300,
         currency: 'EGP',
         isAvailableForBooking: true
       }
@@ -191,11 +193,11 @@ export class DoctorDetailComponent implements OnInit {
   private getFallbackOrganization(orgId: string): Organization {
     return {
       id: orgId,
-      name: 'El Shorouk International Hospital',
+      name: 'مستشفى الشروق الدولي التخصصي',
       type: 'hospital',
-      description: 'Comprehensive tertiary hospital with 24/7 Emergency & ICU care.',
-      city: 'El Shorouk',
-      address: 'Central District, Block 4',
+      description: 'صرح طبي استثماري متكامل بمدينة الشروق يضم وحدات القسطرة القلبية، الطوارئ على مدار 24 ساعة، وجراحات المناظير المتقدمة.',
+      city: 'الشروق',
+      address: 'حي الأشجار، الحي السابع - مدينة الشروق',
       phone: '+20 2 2680 0000',
       email: 'info@shorouk-hospital.com',
       rating: 4.9,

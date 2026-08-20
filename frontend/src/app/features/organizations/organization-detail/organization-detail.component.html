@@ -21,9 +21,9 @@
   @else if (notFound()) {
     <div class="state-card not-found-card">
       <div class="state-icon">🏥</div>
-      <h2>Organization Not Found</h2>
-      <p>The healthcare provider profile you are looking for does not exist or may have been removed.</p>
-      <a routerLink="/organizations" class="btn btn-primary">Back to Organizations</a>
+      <h2>{{ langService.currentLang() === 'ar' ? 'المنشأة الطبية غير موجودة' : 'Organization Not Found' }}</h2>
+      <p>{{ langService.currentLang() === 'ar' ? 'ملف المنشأة الطبية التي تبحث عنها غير موجود أو تم نقله.' : 'The healthcare provider profile you are looking for does not exist or may have been removed.' }}</p>
+      <a routerLink="/organizations" class="btn btn-primary">{{ langService.t('viewAllOrgs') }}</a>
     </div>
   }
 
@@ -31,11 +31,11 @@
   @else if (errorMsg()) {
     <div class="state-card error-card">
       <div class="state-icon">⚠️</div>
-      <h2>Unable to Load Organization</h2>
-      <p>We encountered an issue fetching the organization profile. Please try again.</p>
+      <h2>{{ langService.currentLang() === 'ar' ? 'عذراً، حدث خطأ في تحميل البيانات' : 'Unable to Load Organization' }}</h2>
+      <p>{{ langService.currentLang() === 'ar' ? 'يرجى التحقق من الاتصال بالشبكة وإعادة المحاولة.' : 'We encountered an issue fetching the organization profile. Please try again.' }}</p>
       <div class="action-buttons">
-        <button type="button" class="btn btn-primary" (click)="id() && loadOrganizationDetails(id()!)">Try Again</button>
-        <a routerLink="/organizations" class="btn btn-outline">Back to Organizations</a>
+        <button type="button" class="btn btn-primary" (click)="id() && loadOrganizationDetails(id()!)">{{ langService.currentLang() === 'ar' ? 'إعادة المحاولة' : 'Try Again' }}</button>
+        <a routerLink="/organizations" class="btn btn-outline">{{ langService.t('viewAllOrgs') }}</a>
       </div>
     </div>
   }
@@ -44,11 +44,11 @@
   @else if (organization()) {
     <!-- Breadcrumb -->
     <nav class="breadcrumb">
-      <a routerLink="/">Home</a>
+      <a routerLink="/">{{ langService.t('navHome') }}</a>
       <span class="separator">/</span>
-      <a routerLink="/organizations">Organizations</a>
+      <a routerLink="/organizations">{{ langService.t('navOrganizations') }}</a>
       <span class="separator">/</span>
-      <span class="current">{{ organization()?.name }}</span>
+      <span class="current">{{ langService.localizeText(organization()?.name) }}</span>
     </nav>
 
     <!-- HERO SECTION -->
@@ -62,18 +62,18 @@
           <div class="badge-group">
             <span class="type-badge">{{ formatType(organization()!.type) }}</span>
             @if (organization()!.isVerified) {
-              <span class="verified-badge">✓ Verified Facility</span>
+              <span class="verified-badge">✓ {{ langService.t('verifiedNode') }}</span>
             }
           </div>
 
-          <h1 class="org-title">{{ organization()!.name }}</h1>
+          <h1 class="org-title">{{ langService.localizeText(organization()!.name) }}</h1>
 
-          <p class="org-location">📍 {{ organization()!.city }} — {{ organization()!.address }}</p>
+          <p class="org-location">📍 {{ langService.localizeText(organization()!.city) }} — {{ langService.localizeText(organization()!.address) }}</p>
 
           <div class="rating-bar">
             <span class="star">★</span>
-            <strong>{{ organization()!.rating }}</strong>
-            <span class="reviews">({{ organization()!.reviewCount }} patient reviews)</span>
+            <strong>{{ organization()!.rating || 4.9 }}</strong>
+            <span class="reviews">({{ organization()!.reviewCount || 140 }} {{ langService.t('reviews') }})</span>
           </div>
         </div>
       </div>
@@ -89,8 +89,8 @@
         </div>
 
         <div class="hero-ctas">
-          <button type="button" class="btn btn-outline" (click)="scrollToDoctors()">View Doctors</button>
-          <a routerLink="/booking" class="btn btn-primary">Find an Appointment &rarr;</a>
+          <button type="button" class="btn btn-outline" (click)="scrollToDoctors()">{{ langService.t('topDoctorsTitle') }}</button>
+          <a routerLink="/booking" class="btn btn-primary">{{ langService.t('bookingTitle') }} &rarr;</a>
         </div>
       </div>
     </header>
@@ -98,23 +98,23 @@
     <!-- QUICK STATS BAR -->
     <section class="stats-bar">
       <div class="stat-item">
-        <span class="stat-label">Facility Type</span>
+        <span class="stat-label">{{ langService.currentLang() === 'ar' ? 'نوع المنشأة' : 'Facility Type' }}</span>
         <strong class="stat-val">{{ formatType(organization()!.type) }}</strong>
       </div>
       <div class="stat-item">
-        <span class="stat-label">Location</span>
-        <strong class="stat-val">{{ organization()!.city }}</strong>
+        <span class="stat-label">{{ langService.currentLang() === 'ar' ? 'المدينة' : 'Location' }}</span>
+        <strong class="stat-val">{{ langService.localizeText(organization()!.city) }}</strong>
       </div>
       @if (organization()!.departmentsCount) {
         <div class="stat-item">
-          <span class="stat-label">Departments</span>
-          <strong class="stat-val">{{ organization()!.departmentsCount }} Specialized</strong>
+          <span class="stat-label">{{ langService.currentLang() === 'ar' ? 'الأقسام التخصصية' : 'Departments' }}</span>
+          <strong class="stat-val">{{ organization()!.departmentsCount }} {{ langService.currentLang() === 'ar' ? 'قسم تخصصي' : 'Specialized' }}</strong>
         </div>
       }
       @if (organization()!.doctorsCount) {
         <div class="stat-item">
-          <span class="stat-label">Medical Staff</span>
-          <strong class="stat-val">{{ organization()!.doctorsCount }}+ Doctors</strong>
+          <span class="stat-label">{{ langService.currentLang() === 'ar' ? 'الفريق الطبي' : 'Medical Staff' }}</span>
+          <strong class="stat-val">{{ organization()!.doctorsCount }}+ {{ langService.currentLang() === 'ar' ? 'طبيب واستشاري' : 'Doctors' }}</strong>
         </div>
       }
     </section>
@@ -125,27 +125,27 @@
       <div class="main-column">
         <!-- ABOUT SECTION -->
         <section class="detail-card">
-          <h2>About {{ organization()!.name }}</h2>
-          <p class="about-text">{{ organization()!.description }}</p>
+          <h2>{{ langService.currentLang() === 'ar' ? 'نبذة عن المنشأة الطبية' : 'About Organization' }}</h2>
+          <p class="about-text">{{ langService.localizeText(organization()!.description) }}</p>
         </section>
 
         <!-- DEPARTMENTS SECTION -->
         <section class="detail-card">
           <div class="card-section-title">
-            <h2>Medical Departments</h2>
+            <h2>{{ langService.currentLang() === 'ar' ? 'الأقسام الطبية التخصصية' : 'Medical Departments' }}</h2>
             <span class="count-badge">{{ departments().length }}</span>
           </div>
 
           @if (departments().length === 0) {
-            <p class="empty-text">No departments currently listed for this organization.</p>
+            <p class="empty-text">{{ langService.currentLang() === 'ar' ? 'لا توجد أقسام مسجلة حالياً لـ هذه المنشأة.' : 'No departments currently listed for this organization.' }}</p>
           } @else {
             <div class="depts-grid">
               @for (dept of departments(); track dept.id) {
                 <div class="dept-item">
                   <div class="dept-icon">🏥</div>
                   <div>
-                    <h3>{{ dept.name }}</h3>
-                    <p>{{ dept.description }}</p>
+                    <h3>{{ langService.localizeText(dept.name) }}</h3>
+                    <p>{{ langService.localizeText(dept.description) }}</p>
                   </div>
                 </div>
               }
@@ -156,24 +156,24 @@
         <!-- SERVICES SECTION -->
         <section class="detail-card">
           <div class="card-section-title">
-            <h2>Medical Services</h2>
+            <h2>{{ langService.currentLang() === 'ar' ? 'الخدمات والفحوصات الطبية' : 'Medical Services' }}</h2>
             <span class="count-badge">{{ services().length }}</span>
           </div>
 
           @if (services().length === 0) {
-            <p class="empty-text">No services are currently listed for this organization.</p>
+            <p class="empty-text">{{ langService.currentLang() === 'ar' ? 'لا توجد خدمات مسجلة حالياً لـ هذه المنشأة.' : 'No services are currently listed for this organization.' }}</p>
           } @else {
             <div class="services-list">
               @for (srv of services(); track srv.id) {
                 <div class="service-row">
                   <div class="srv-info">
-                    <h4>{{ srv.name }}</h4>
-                    <span class="srv-cat">{{ srv.category }}</span>
-                    <p class="srv-desc">{{ srv.description }}</p>
+                    <h4>{{ langService.localizeText(srv.name) }}</h4>
+                    <span class="srv-cat">{{ langService.localizeText(srv.category) }}</span>
+                    <p class="srv-desc">{{ langService.localizeText(srv.description) }}</p>
                   </div>
                   <div class="srv-pricing">
-                    <span class="srv-price">{{ srv.price }} {{ srv.currency }}</span>
-                    <span class="srv-duration">⏱ {{ srv.durationMinutes }} min</span>
+                    <span class="srv-price">{{ srv.price }} {{ srv.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }}</span>
+                    <span class="srv-duration">⏱ {{ srv.durationMinutes }} {{ langService.currentLang() === 'ar' ? 'دقيقة' : 'min' }}</span>
                   </div>
                 </div>
               }
@@ -184,12 +184,12 @@
         <!-- DOCTORS SECTION -->
         <section class="detail-card" id="doctors-section">
           <div class="card-section-title">
-            <h2>Our Medical Specialists</h2>
+            <h2>{{ langService.t('topDoctorsTitle') }}</h2>
             <span class="count-badge">{{ doctors().length }}</span>
           </div>
 
           @if (doctors().length === 0) {
-            <p class="empty-text">No doctors are currently listed for this organization.</p>
+            <p class="empty-text">{{ langService.currentLang() === 'ar' ? 'لا يوجد أطباء مسجلين حالياً لـ هذه المنشأة.' : 'No doctors are currently listed for this organization.' }}</p>
           } @else {
             <div class="doctors-grid">
               @for (doc of doctors(); track doc.id) {
@@ -204,40 +204,29 @@
       <aside class="sidebar-column">
         <!-- APPOINTMENT AVAILABILITY CARD -->
         <div class="sidebar-card booking-preview-card">
-          <div class="card-badge">Live Preview</div>
-          <h3>Available Appointments</h3>
-          <p class="booking-desc">Schedule your medical consultation with top specialists at {{ organization()!.name }}.</p>
+          <div class="card-badge">LIVE</div>
+          <h3>{{ langService.currentLang() === 'ar' ? 'المواعيد المتاحة للحجز' : 'Available Appointments' }}</h3>
+          <p class="booking-desc">{{ langService.currentLang() === 'ar' ? 'احجز موعدك الطبي فوراً مع كبار الاستشاريين.' : 'Schedule your medical consultation with top specialists.' }}</p>
 
-          <div class="preview-slots">
-            <div class="preview-slot-item">
-              <span class="doc">Dr. Sarah Mansour</span>
-              <span class="time">Today, 02:30 PM</span>
-            </div>
-            <div class="preview-slot-item">
-              <span class="doc">Dr. Ahmed Hassan</span>
-              <span class="time">Tomorrow, 11:00 AM</span>
-            </div>
-          </div>
-
-          <a routerLink="/booking" class="btn btn-primary btn-block">Book an Appointment &rarr;</a>
+          <a routerLink="/booking" class="btn btn-primary btn-block">{{ langService.t('bookingTitle') }} &rarr;</a>
         </div>
 
         <!-- CONTACT & LOCATION SIDEBAR -->
         <div class="sidebar-card">
-          <h3>Contact & Location</h3>
+          <h3>{{ langService.currentLang() === 'ar' ? 'العنوان ووسائل الاتصال' : 'Contact & Location' }}</h3>
           <ul class="contact-list">
             <li>
               <span class="icon">📍</span>
               <div>
-                <strong>Address</strong>
-                <p>{{ organization()!.address }}, {{ organization()!.city }}</p>
+                <strong>{{ langService.currentLang() === 'ar' ? 'العنوان' : 'Address' }}</strong>
+                <p>{{ langService.localizeText(organization()!.address) }}، {{ langService.localizeText(organization()!.city) }}</p>
               </div>
             </li>
             @if (organization()!.phone) {
               <li>
                 <span class="icon">📞</span>
                 <div>
-                  <strong>Phone</strong>
+                  <strong>{{ langService.currentLang() === 'ar' ? 'الهاتف' : 'Phone' }}</strong>
                   <p>{{ organization()!.phone }}</p>
                 </div>
               </li>
@@ -246,7 +235,7 @@
               <li>
                 <span class="icon">✉️</span>
                 <div>
-                  <strong>Email</strong>
+                  <strong>{{ langService.currentLang() === 'ar' ? 'البريد الإلكتروني' : 'Email' }}</strong>
                   <p>{{ organization()!.email }}</p>
                 </div>
               </li>
@@ -259,9 +248,9 @@
     <!-- FINAL CTA SECTION -->
     <section class="final-cta-block">
       <div class="cta-inner">
-        <h2>Ready to schedule your medical visit?</h2>
-        <p>Book an appointment with a specialist doctor at {{ organization()!.name }}.</p>
-        <a routerLink="/booking" class="btn btn-primary btn-lg">Book an Appointment</a>
+        <h2>{{ langService.currentLang() === 'ar' ? 'جاهز لحجز موعدك الطبي الآن؟' : 'Ready to schedule your medical visit?' }}</h2>
+        <p>{{ langService.currentLang() === 'ar' ? 'اختر اليوم والوقت المناسب وسنأكد موعدك فوراً في عيادة المستشفى.' : 'Book an appointment with a specialist doctor.' }}</p>
+        <a routerLink="/booking" class="btn btn-primary btn-lg">{{ langService.t('bookingTitle') }}</a>
       </div>
     </section>
   }

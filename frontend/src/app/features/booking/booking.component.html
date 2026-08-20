@@ -1,14 +1,14 @@
 <div class="booking-page container">
   <!-- Breadcrumb -->
   <nav class="breadcrumb">
-    <a routerLink="/">Home</a>
+    <a routerLink="/">{{ langService.t('navHome') }}</a>
     <span class="separator">/</span>
-    <span class="current">Book an Appointment</span>
+    <span class="current">{{ langService.t('navBooking') }}</span>
   </nav>
 
   <header class="page-header">
-    <h1>Book Your Appointment</h1>
-    <p>Schedule your consultation with top accredited healthcare providers and doctors.</p>
+    <h1>{{ langService.t('bookingTitle') }}</h1>
+    <p>{{ langService.t('bookingSub') }}</p>
   </header>
 
   <!-- STEPPER PROGRESS BAR (Only show during steps 1-4) -->
@@ -16,25 +16,25 @@
     <div class="stepper-bar">
       <div class="step-item" [class.active]="currentStep() === 1" [class.completed]="currentStep() > 1" (click)="goToStep(1)">
         <span class="step-num">1</span>
-        <span class="step-lbl">Provider</span>
+        <span class="step-lbl">{{ langService.t('stepSelectProvider') }}</span>
       </div>
       <div class="step-line" [class.completed]="currentStep() > 1"></div>
 
       <div class="step-item" [class.active]="currentStep() === 2" [class.completed]="currentStep() > 2" (click)="goToStep(2)">
         <span class="step-num">2</span>
-        <span class="step-lbl">Date & Time</span>
+        <span class="step-lbl">{{ langService.t('stepSelectTime') }}</span>
       </div>
       <div class="step-line" [class.completed]="currentStep() > 2"></div>
 
       <div class="step-item" [class.active]="currentStep() === 3" [class.completed]="currentStep() > 3" (click)="goToStep(3)">
         <span class="step-num">3</span>
-        <span class="step-lbl">Patient Details</span>
+        <span class="step-lbl">{{ langService.t('stepPatientDetails') }}</span>
       </div>
       <div class="step-line" [class.completed]="currentStep() > 3"></div>
 
       <div class="step-item" [class.active]="currentStep() === 4" [class.completed]="currentStep() > 4" (click)="goToStep(4)">
         <span class="step-num">4</span>
-        <span class="step-lbl">Review & Confirm</span>
+        <span class="step-lbl">{{ langService.currentLang() === 'ar' ? '٤. مراجعة وتأكيد' : '4. Review & Confirm' }}</span>
       </div>
     </div>
   }
@@ -44,29 +44,29 @@
     <!-- STEP 1: PROVIDER SELECTION -->
     @if (currentStep() === 1) {
       <div class="step-card">
-        <h2>1. Select Provider & Doctor</h2>
-        <p class="step-desc">Choose the healthcare organization and specialist doctor you wish to book with.</p>
+        <h2>{{ langService.t('stepSelectProvider') }}</h2>
+        <p class="step-desc">{{ langService.currentLang() === 'ar' ? 'اختر المنشأة الطبية ثم حدد الطبيب أو الاستشاري المطلوب للكشف.' : 'Choose the healthcare organization and specialist doctor you wish to book with.' }}</p>
 
         <div class="form-grid">
           <!-- Select Organization -->
           <div class="form-group full-width">
-            <label for="orgSelect">Healthcare Organization *</label>
+            <label for="orgSelect">{{ langService.currentLang() === 'ar' ? 'المنشأة الطبية / المستشفى' : 'Healthcare Organization' }} *</label>
             <select
               id="orgSelect"
               [ngModel]="selectedOrgId()"
               (ngModelChange)="onOrgChange($event)"
               class="form-select"
             >
-              <option value="" disabled>-- Select Organization --</option>
+              <option value="" disabled>-- {{ langService.currentLang() === 'ar' ? 'اختر المنشأة الطبية' : 'Select Organization' }} --</option>
               @for (org of organizations(); track org.id) {
-                <option [value]="org.id">{{ org.name }} ({{ org.city }})</option>
+                <option [value]="org.id">{{ langService.localizeText(org.name) }} ({{ langService.localizeText(org.city) }})</option>
               }
             </select>
           </div>
 
           <!-- Select Doctor -->
           <div class="form-group full-width">
-            <label for="docSelect">Specialist Doctor *</label>
+            <label for="docSelect">{{ langService.currentLang() === 'ar' ? 'الطبيب الاستشاري' : 'Specialist Doctor' }} *</label>
             <select
               id="docSelect"
               [ngModel]="selectedDoctorId()"
@@ -74,9 +74,9 @@
               class="form-select"
               [disabled]="!selectedOrgId()"
             >
-              <option value="" disabled>-- Select Doctor --</option>
+              <option value="" disabled>-- {{ langService.currentLang() === 'ar' ? 'اختر الطبيب المعالج' : 'Select Doctor' }} --</option>
               @for (doc of filteredDoctors(); track doc.id) {
-                <option [value]="doc.id">{{ doc.title }} {{ doc.name }} — {{ doc.specialty }} ({{ doc.consultationFee }} {{ doc.currency }})</option>
+                <option [value]="doc.id">{{ langService.localizeText(doc.name) }} — {{ langService.localizeText(doc.specialty) }} ({{ doc.consultationFee }} {{ doc.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }})</option>
               }
             </select>
           </div>
@@ -87,12 +87,12 @@
           <div class="provider-summary-box">
             <div class="summary-avatar">👨‍⚕️</div>
             <div>
-              <h3>{{ selectedDoctor()!.title }} {{ selectedDoctor()!.name }}</h3>
-              <p class="specialty-text">{{ selectedDoctor()!.specialty }}</p>
+              <h3>{{ langService.localizeText(selectedDoctor()!.name) }}</h3>
+              <p class="specialty-text">{{ langService.localizeText(selectedDoctor()!.specialty) }}</p>
               @if (selectedOrganization()) {
-                <p class="org-text">🏥 {{ selectedOrganization()!.name }} ({{ selectedOrganization()!.city }})</p>
+                <p class="org-text">🏥 {{ langService.localizeText(selectedOrganization()!.name) }} ({{ langService.localizeText(selectedOrganization()!.city) }})</p>
               }
-              <span class="fee-badge">Consultation Fee: {{ selectedDoctor()!.consultationFee }} {{ selectedDoctor()!.currency }}</span>
+              <span class="fee-badge">{{ langService.t('consultationFee') }}: {{ selectedDoctor()!.consultationFee }} {{ selectedDoctor()!.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }}</span>
             </div>
           </div>
         }
@@ -104,7 +104,7 @@
             [disabled]="!selectedOrgId() || !selectedDoctorId()"
             (click)="goToStep(2)"
           >
-            Continue to Date & Time &rarr;
+            {{ langService.currentLang() === 'ar' ? 'المتابعة لتحديد الموعد ←' : 'Continue to Date & Time →' }}
           </button>
         </div>
       </div>
@@ -113,19 +113,19 @@
     <!-- STEP 2: DATE & TIME SELECTION -->
     @if (currentStep() === 2) {
       <div class="step-card">
-        <h2>2. Select Appointment Date & Time Slot</h2>
-        <p class="step-desc">Choose your preferred available time slot with {{ selectedDoctor()?.title }} {{ selectedDoctor()?.name }}.</p>
+        <h2>{{ langService.t('stepSelectTime') }}</h2>
+        <p class="step-desc">{{ langService.currentLang() === 'ar' ? 'اختر الموعد المتاح والمناسب لزيارتك مع' : 'Choose your preferred available time slot with' }} {{ langService.localizeText(selectedDoctor()?.name) }}.</p>
 
         @if (isLoadingAvailability()) {
-          <div class="loading-state">Loading available appointments...</div>
+          <div class="loading-state">{{ langService.currentLang() === 'ar' ? 'جاري جلب المواعيد المتاحة...' : 'Loading available appointments...' }}</div>
         } @else if (availabilitySlots().length === 0) {
           <div class="empty-state">
-            <p>No available appointment slots for this doctor at the moment.</p>
-            <button type="button" class="btn btn-outline" (click)="goToStep(1)">Change Doctor</button>
+            <p>{{ langService.currentLang() === 'ar' ? 'جميع مواعيد هذا الطبيب محجوزة اليوم، يمكنك تغيير الطبيب أو اختيار ميعاد آخر.' : 'No available appointment slots for this doctor at the moment.' }}</p>
+            <button type="button" class="btn btn-outline" (click)="goToStep(1)">{{ langService.currentLang() === 'ar' ? 'تغيير الطبيب' : 'Change Doctor' }}</button>
           </div>
         } @else {
           <div class="slots-section">
-            <span class="section-label">Available Time Slots:</span>
+            <span class="section-label">{{ langService.currentLang() === 'ar' ? 'المواعيد المتاحة للجز:' : 'Available Time Slots:' }}</span>
             <div class="slots-grid">
               @for (slot of availabilitySlots(); track slot.id) {
                 <button
@@ -143,14 +143,14 @@
         }
 
         <div class="step-actions">
-          <button type="button" class="btn btn-outline" (click)="goToStep(1)">&larr; Back to Provider</button>
+          <button type="button" class="btn btn-outline" (click)="goToStep(1)">&larr; {{ langService.currentLang() === 'ar' ? 'السابق' : 'Back' }}</button>
           <button
             type="button"
             class="btn btn-primary"
             [disabled]="!selectedSlotId()"
             (click)="goToStep(3)"
           >
-            Continue to Patient Details &rarr;
+            {{ langService.currentLang() === 'ar' ? 'المتابعة لبيانات المريض ←' : 'Continue to Patient Details →' }}
           </button>
         </div>
       </div>
@@ -159,45 +159,45 @@
     <!-- STEP 3: PATIENT DETAILS FORM -->
     @if (currentStep() === 3) {
       <div class="step-card">
-        <h2>3. Patient Details</h2>
-        <p class="step-desc">Please enter your contact information to receive appointment confirmation.</p>
+        <h2>{{ langService.t('stepPatientDetails') }}</h2>
+        <p class="step-desc">{{ langService.currentLang() === 'ar' ? 'يرجى إدخال بيانات المريض لتأكيد الحجز المباشر واستلام رقم المرجعية.' : 'Please enter your contact information to receive appointment confirmation.' }}</p>
 
         <form [formGroup]="patientForm" (ngSubmit)="goToStep(4)">
           <div class="form-grid">
             <div class="form-group full-width">
-              <label for="fullName">Full Name *</label>
-              <input id="fullName" type="text" formControlName="fullName" placeholder="e.g. Mohamed Ali" class="form-control" />
+              <label for="fullName">{{ langService.currentLang() === 'ar' ? 'اسم المريض بالكامل' : 'Full Name' }} *</label>
+              <input id="fullName" type="text" formControlName="fullName" [placeholder]="langService.currentLang() === 'ar' ? 'مثال: محمد علي سليمان' : 'e.g. Mohamed Ali'" class="form-control" />
               @if (patientForm.get('fullName')?.invalid && patientForm.get('fullName')?.touched) {
-                <span class="field-error">Full name is required (at least 3 characters).</span>
+                <span class="field-error">{{ langService.currentLang() === 'ar' ? 'الاسم مطلوب (٣ أحرف على الأقل)' : 'Full name is required (at least 3 characters).' }}</span>
               }
             </div>
 
             <div class="form-group">
-              <label for="phone">Mobile Phone (Egypt) *</label>
-              <input id="phone" type="text" formControlName="phone" placeholder="e.g. 01012345678 or +201012345678" class="form-control" />
+              <label for="phone">{{ langService.currentLang() === 'ar' ? 'رقم الهاتف (مصر)' : 'Mobile Phone (Egypt)' }} *</label>
+              <input id="phone" type="text" formControlName="phone" placeholder="01000000000" class="form-control" />
               @if (patientForm.get('phone')?.invalid && patientForm.get('phone')?.touched) {
-                <span class="field-error">Please enter a valid mobile phone number.</span>
+                <span class="field-error">{{ langService.currentLang() === 'ar' ? 'يرجى إدخال رقم هاتف صحيح.' : 'Please enter a valid mobile phone number.' }}</span>
               }
             </div>
 
             <div class="form-group">
-              <label for="email">Email Address *</label>
-              <input id="email" type="email" formControlName="email" placeholder="e.g. m.ali@example.com" class="form-control" />
+              <label for="email">{{ langService.currentLang() === 'ar' ? 'البريد الإلكتروني' : 'Email Address' }} *</label>
+              <input id="email" type="email" formControlName="email" placeholder="patient@example.com" class="form-control" />
               @if (patientForm.get('email')?.invalid && patientForm.get('email')?.touched) {
-                <span class="field-error">Please enter a valid email address.</span>
+                <span class="field-error">{{ langService.currentLang() === 'ar' ? 'يرجى إدخال بريد إلكتروني صحيح.' : 'Please enter a valid email address.' }}</span>
               }
             </div>
 
             <div class="form-group full-width">
-              <label for="notes">Additional Notes / Symptoms (Optional)</label>
-              <textarea id="notes" rows="3" formControlName="notes" placeholder="Any specific notes for the doctor or clinic..." class="form-control"></textarea>
+              <label for="notes">{{ langService.currentLang() === 'ar' ? 'ملاحظات إضافية / الأعراض (اختياري)' : 'Additional Notes / Symptoms (Optional)' }}</label>
+              <textarea id="notes" rows="3" formControlName="notes" [placeholder]="langService.currentLang() === 'ar' ? 'اكتب ما تشتكي منه للطبيب...' : 'Any specific notes for the doctor or clinic...'" class="form-control"></textarea>
             </div>
           </div>
 
           <div class="step-actions">
-            <button type="button" class="btn btn-outline" (click)="goToStep(2)">&larr; Back to Date & Time</button>
+            <button type="button" class="btn btn-outline" (click)="goToStep(2)">&larr; {{ langService.currentLang() === 'ar' ? 'السابق' : 'Back' }}</button>
             <button type="submit" class="btn btn-primary" [disabled]="patientForm.invalid">
-              Review Booking &rarr;
+              {{ langService.currentLang() === 'ar' ? 'مراجعة بيانات الحجز ←' : 'Review Booking →' }}
             </button>
           </div>
         </form>
@@ -207,36 +207,36 @@
     <!-- STEP 4: REVIEW & CONFIRM -->
     @if (currentStep() === 4) {
       <div class="step-card">
-        <h2>4. Review & Confirm Booking</h2>
-        <p class="step-desc">Please verify all appointment details before submitting your booking request.</p>
+        <h2>{{ langService.currentLang() === 'ar' ? '٤. مراجعة وتأكيد الحجز الفوري' : '4. Review & Confirm Booking' }}</h2>
+        <p class="step-desc">{{ langService.currentLang() === 'ar' ? 'راجع تفاصيل الكشف والمريض قبل الاعتماد المباشر.' : 'Please verify all appointment details before submitting your booking request.' }}</p>
 
         <div class="review-grid">
           <!-- APPOINTMENT DETAILS BOX -->
           <div class="review-box">
             <div class="box-header">
-              <h3>Appointment Details</h3>
-              <button type="button" class="btn-link" (click)="goToStep(1)">Edit</button>
+              <h3>{{ langService.currentLang() === 'ar' ? 'تفاصيل الموعد والمنشأة' : 'Appointment Details' }}</h3>
+              <button type="button" class="btn-link" (click)="goToStep(1)">{{ langService.currentLang() === 'ar' ? 'تعديل' : 'Edit' }}</button>
             </div>
             <ul class="review-list">
               <li>
-                <span class="lbl">Organization:</span>
-                <span class="val">{{ selectedOrganization()?.name }} ({{ selectedOrganization()?.city }})</span>
+                <span class="lbl">{{ langService.currentLang() === 'ar' ? 'المنشأة الطبية:' : 'Organization:' }}</span>
+                <span class="val">{{ langService.localizeText(selectedOrganization()?.name) }} ({{ langService.localizeText(selectedOrganization()?.city) }})</span>
               </li>
               <li>
-                <span class="lbl">Specialist Doctor:</span>
-                <span class="val">{{ selectedDoctor()?.title }} {{ selectedDoctor()?.name }} ({{ selectedDoctor()?.specialty }})</span>
+                <span class="lbl">{{ langService.currentLang() === 'ar' ? 'الطبيب الاستشاري:' : 'Specialist Doctor:' }}</span>
+                <span class="val">{{ langService.localizeText(selectedDoctor()?.name) }} ({{ langService.localizeText(selectedDoctor()?.specialty) }})</span>
               </li>
               <li>
-                <span class="lbl">Date:</span>
+                <span class="lbl">{{ langService.currentLang() === 'ar' ? 'التاريخ:' : 'Date:' }}</span>
                 <span class="val highlight">📅 {{ selectedSlotDate() }}</span>
               </li>
               <li>
-                <span class="lbl">Time:</span>
+                <span class="lbl">{{ langService.currentLang() === 'ar' ? 'التوقيت:' : 'Time:' }}</span>
                 <span class="val highlight">⏰ {{ selectedSlotTime() }}</span>
               </li>
               <li>
-                <span class="lbl">Consultation Fee:</span>
-                <span class="val price">{{ selectedDoctor()?.consultationFee }} {{ selectedDoctor()?.currency }}</span>
+                <span class="lbl">{{ langService.t('consultationFee') }}:</span>
+                <span class="val price">{{ selectedDoctor()?.consultationFee }} {{ selectedDoctor()?.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }}</span>
               </li>
             </ul>
           </div>
@@ -244,25 +244,25 @@
           <!-- PATIENT DETAILS BOX -->
           <div class="review-box">
             <div class="box-header">
-              <h3>Patient Information</h3>
-              <button type="button" class="btn-link" (click)="goToStep(3)">Edit</button>
+              <h3>{{ langService.t('stepPatientDetails') }}</h3>
+              <button type="button" class="btn-link" (click)="goToStep(3)">{{ langService.currentLang() === 'ar' ? 'تعديل' : 'Edit' }}</button>
             </div>
             <ul class="review-list">
               <li>
-                <span class="lbl">Patient Name:</span>
+                <span class="lbl">{{ langService.currentLang() === 'ar' ? 'اسم المريض:' : 'Patient Name:' }}</span>
                 <span class="val">{{ patientForm.value.fullName }}</span>
               </li>
               <li>
-                <span class="lbl">Phone Number:</span>
+                <span class="lbl">{{ langService.currentLang() === 'ar' ? 'رقم الهاتف:' : 'Phone Number:' }}</span>
                 <span class="val">{{ patientForm.value.phone }}</span>
               </li>
               <li>
-                <span class="lbl">Email:</span>
+                <span class="lbl">{{ langService.currentLang() === 'ar' ? 'البريد الإلكتروني:' : 'Email:' }}</span>
                 <span class="val">{{ patientForm.value.email }}</span>
               </li>
               @if (patientForm.value.notes) {
                 <li>
-                  <span class="lbl">Notes:</span>
+                  <span class="lbl">{{ langService.currentLang() === 'ar' ? 'الملاحظات:' : 'Notes:' }}</span>
                   <span class="val">{{ patientForm.value.notes }}</span>
                 </li>
               }
@@ -275,14 +275,14 @@
         }
 
         <div class="step-actions">
-          <button type="button" class="btn btn-outline" (click)="goToStep(3)">&larr; Back to Patient Details</button>
+          <button type="button" class="btn btn-outline" (click)="goToStep(3)">&larr; {{ langService.currentLang() === 'ar' ? 'السابق' : 'Back' }}</button>
           <button
             type="button"
             class="btn btn-primary btn-lg"
             [disabled]="isSubmitting()"
             (click)="submitBooking()"
           >
-            {{ isSubmitting() ? 'Submitting Booking...' : 'Confirm Booking' }}
+            {{ isSubmitting() ? (langService.currentLang() === 'ar' ? 'جاري التأكيد...' : 'Submitting Booking...') : langService.t('confirmBookingBtn') }}
           </button>
         </div>
       </div>
@@ -292,36 +292,36 @@
     @if (currentStep() === 5 && createdAppointment()) {
       <div class="success-card">
         <div class="success-icon">✓</div>
-        <h2>Appointment Request Confirmed</h2>
-        <p class="success-desc">Your appointment request has been submitted successfully.</p>
+        <h2>{{ langService.t('bookingSuccessTitle') }}</h2>
+        <p class="success-desc">{{ langService.t('bookingSuccessDesc') }}</p>
 
         @if (createdAppointment()?.id) {
-          <div class="ref-badge">Booking Reference ID: <strong>{{ createdAppointment()!.id }}</strong></div>
+          <div class="ref-badge">{{ langService.t('refNumber') }} <strong>{{ createdAppointment()!.id }}</strong></div>
         }
 
         <div class="confirmed-details-box">
           <div class="detail-row">
-            <span class="lbl">Doctor:</span>
-            <span class="val">{{ selectedDoctor()?.title }} {{ selectedDoctor()?.name }}</span>
+            <span class="lbl">{{ langService.currentLang() === 'ar' ? 'الطبيب المعالج:' : 'Doctor:' }}</span>
+            <span class="val">{{ langService.localizeText(selectedDoctor()?.name) }}</span>
           </div>
           <div class="detail-row">
-            <span class="lbl">Organization:</span>
-            <span class="val">{{ selectedOrganization()?.name }}</span>
+            <span class="lbl">{{ langService.currentLang() === 'ar' ? 'المستشفي / المنشأة:' : 'Organization:' }}</span>
+            <span class="val">{{ langService.localizeText(selectedOrganization()?.name) }}</span>
           </div>
           <div class="detail-row">
-            <span class="lbl">Date & Time:</span>
+            <span class="lbl">{{ langService.currentLang() === 'ar' ? 'الموعد والتاريخ:' : 'Date & Time:' }}</span>
             <span class="val">📅 {{ createdAppointment()?.appointmentDate }} at ⏰ {{ createdAppointment()?.startTime }} - {{ createdAppointment()?.endTime }}</span>
           </div>
           <div class="detail-row">
-            <span class="lbl">Patient Name:</span>
+            <span class="lbl">{{ langService.currentLang() === 'ar' ? 'اسم المريض:' : 'Patient Name:' }}</span>
             <span class="val">{{ patientForm.value.fullName }}</span>
           </div>
         </div>
 
         <div class="success-actions">
-          <a routerLink="/" class="btn btn-primary">Back to Home</a>
+          <a routerLink="/" class="btn btn-primary">{{ langService.t('backToHome') }}</a>
           @if (selectedOrganization()) {
-            <a [routerLink]="['/organizations', selectedOrganization()!.id]" class="btn btn-outline">View Organization Profile</a>
+            <a [routerLink]="['/organizations', selectedOrganization()!.id]" class="btn btn-outline">{{ langService.t('viewOrgProfile') }}</a>
           }
         </div>
       </div>

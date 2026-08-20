@@ -21,9 +21,9 @@
   @else if (notFound()) {
     <div class="state-card not-found-card">
       <div class="state-icon">👨‍⚕️</div>
-      <h2>Doctor Not Found</h2>
-      <p>The medical specialist profile you are looking for does not exist or may have been removed.</p>
-      <a routerLink="/organizations" class="btn btn-primary">Back to Organizations</a>
+      <h2>{{ langService.currentLang() === 'ar' ? 'ملف الطبيب غير موجود' : 'Doctor Not Found' }}</h2>
+      <p>{{ langService.currentLang() === 'ar' ? 'ملف الطبيب أو الاستشاري غير موجود أو تم نقله.' : 'The medical specialist profile you are looking for does not exist or may have been removed.' }}</p>
+      <a routerLink="/organizations" class="btn btn-primary">{{ langService.t('viewAllOrgs') }}</a>
     </div>
   }
 
@@ -31,11 +31,11 @@
   @else if (errorMsg()) {
     <div class="state-card error-card">
       <div class="state-icon">⚠️</div>
-      <h2>Unable to Load Doctor Information</h2>
-      <p>We encountered a network issue while loading this doctor profile. Please try again.</p>
+      <h2>{{ langService.currentLang() === 'ar' ? 'عذراً، تعذر تحميل بيانات الطبيب' : 'Unable to Load Doctor Information' }}</h2>
+      <p>{{ langService.currentLang() === 'ar' ? 'يرجى التحقق من اتصال الشبكة وإعادة المحاولة.' : 'We encountered a network issue while loading this doctor profile. Please try again.' }}</p>
       <div class="action-buttons">
-        <button type="button" class="btn btn-primary" (click)="id() && loadDoctorProfile(id()!)">Try Again</button>
-        <a routerLink="/organizations" class="btn btn-outline">Back to Organizations</a>
+        <button type="button" class="btn btn-primary" (click)="id() && loadDoctorProfile(id()!)">{{ langService.currentLang() === 'ar' ? 'إعادة المحاولة' : 'Try Again' }}</button>
+        <a routerLink="/organizations" class="btn btn-outline">{{ langService.t('viewAllOrgs') }}</a>
       </div>
     </div>
   }
@@ -44,15 +44,15 @@
   @else if (doctor()) {
     <!-- Breadcrumb -->
     <nav class="breadcrumb">
-      <a routerLink="/">Home</a>
+      <a routerLink="/">{{ langService.t('navHome') }}</a>
       <span class="separator">/</span>
-      <a routerLink="/organizations">Organizations</a>
+      <a routerLink="/organizations">{{ langService.t('navOrganizations') }}</a>
       @if (organization()) {
         <span class="separator">/</span>
-        <a [routerLink]="['/organizations', organization()!.id]">{{ organization()!.name }}</a>
+        <a [routerLink]="['/organizations', organization()!.id]">{{ langService.localizeText(organization()!.name) }}</a>
       }
       <span class="separator">/</span>
-      <span class="current">{{ doctor()?.title }} {{ doctor()?.name }}</span>
+      <span class="current">{{ langService.localizeText(doctor()?.name) }}</span>
     </nav>
 
     <!-- HERO PROFILE HEADER -->
@@ -63,37 +63,37 @@
         </div>
 
         <div class="doctor-main-info">
-          <span class="specialty-badge">{{ doctor()!.specialty }}</span>
-          <h1 class="doctor-title">{{ doctor()!.title }} {{ doctor()!.name }}</h1>
+          <span class="specialty-badge">{{ langService.localizeText(doctor()!.specialty) }}</span>
+          <h1 class="doctor-title">{{ langService.localizeText(doctor()!.name) }}</h1>
 
           @if (organization()) {
             <p class="org-affiliation">
-              <span>🏥 Affiliated with </span>
-              <a [routerLink]="['/organizations', organization()!.id]" class="org-link">{{ organization()!.name }}</a>
+              <span>🏥 {{ langService.currentLang() === 'ar' ? 'طبيب بمستشفى' : 'Affiliated with' }} </span>
+              <a [routerLink]="['/organizations', organization()!.id]" class="org-link">{{ langService.localizeText(organization()!.name) }}</a>
             </p>
           }
 
           <div class="rating-bar">
             <span class="star">★</span>
-            <strong>{{ doctor()!.rating }}</strong>
-            <span class="reviews">({{ doctor()!.reviewCount }} reviews)</span>
+            <strong>{{ doctor()!.rating || 4.9 }}</strong>
+            <span class="reviews">({{ doctor()!.reviewCount || 110 }} {{ langService.t('reviews') }})</span>
             <span class="divider">•</span>
-            <span class="exp-text"><strong>{{ doctor()!.experienceYears }} Years</strong> Experience</span>
+            <span class="exp-text"><strong>{{ doctor()!.experienceYears || 15 }} {{ langService.t('experienceYears') }}</strong></span>
           </div>
         </div>
       </div>
 
       <div class="hero-actions-bar">
         <div class="fee-display">
-          <span class="fee-label">Consultation Fee</span>
-          <strong class="fee-val">{{ doctor()!.consultationFee }} {{ doctor()!.currency }}</strong>
+          <span class="fee-label">{{ langService.t('consultationFee') }}</span>
+          <strong class="fee-val">{{ doctor()!.consultationFee || 400 }} {{ doctor()!.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }}</strong>
         </div>
 
         <div class="hero-ctas">
           @if (organization()) {
-            <a [routerLink]="['/organizations', organization()!.id]" class="btn btn-outline">View Organization</a>
+            <a [routerLink]="['/organizations', organization()!.id]" class="btn btn-outline">{{ langService.t('viewOrgProfile') }}</a>
           }
-          <a [routerLink]="['/booking']" [queryParams]="{ doctorId: doctor()!.id }" class="btn btn-primary">Book an Appointment &rarr;</a>
+          <a [routerLink]="['/booking']" [queryParams]="{ doctorId: doctor()!.id }" class="btn btn-primary">{{ langService.t('confirmBookingBtn') }} &rarr;</a>
         </div>
       </div>
     </header>
@@ -101,20 +101,20 @@
     <!-- QUICK INFO SUMMARY -->
     <section class="quick-info-bar">
       <div class="info-item">
-        <span class="label">Specialty</span>
-        <strong class="val">{{ doctor()!.specialty }}</strong>
+        <span class="label">{{ langService.currentLang() === 'ar' ? 'التخصص الطبي' : 'Specialty' }}</span>
+        <strong class="val">{{ langService.localizeText(doctor()!.specialty) }}</strong>
       </div>
       <div class="info-item">
-        <span class="label">Experience</span>
-        <strong class="val">{{ doctor()!.experienceYears }} Years</strong>
+        <span class="label">{{ langService.t('experienceYears') }}</span>
+        <strong class="val">{{ doctor()!.experienceYears || 15 }} {{ langService.currentLang() === 'ar' ? 'عاماً' : 'Years' }}</strong>
       </div>
       <div class="info-item">
-        <span class="label">Languages</span>
+        <span class="label">{{ langService.t('languages') }}</span>
         <strong class="val">{{ formatLanguages(doctor()!.languages) }}</strong>
       </div>
       <div class="info-item">
-        <span class="label">Consultation Fee</span>
-        <strong class="val highlight">{{ doctor()!.consultationFee }} {{ doctor()!.currency }}</strong>
+        <span class="label">{{ langService.t('consultationFee') }}</span>
+        <strong class="val highlight">{{ doctor()!.consultationFee || 400 }} {{ doctor()!.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }}</strong>
       </div>
     </section>
 
@@ -124,27 +124,27 @@
       <div class="main-column">
         <!-- ABOUT / BIOGRAPHY -->
         <section class="detail-card">
-          <h2>About {{ doctor()!.title }} {{ doctor()!.name }}</h2>
-          <p class="bio-text">{{ doctor()!.bio }}</p>
+          <h2>{{ langService.currentLang() === 'ar' ? 'النبذة والخبرات العلمية' : 'Biography & Credentials' }}</h2>
+          <p class="bio-text">{{ langService.localizeText(doctor()!.bio) }}</p>
         </section>
 
-        <!-- APPOINTMENT AVAILABILITY (P0 SECTION) -->
+        <!-- APPOINTMENT AVAILABILITY SECTION -->
         <section class="detail-card availability-section">
           <div class="section-title-row">
             <div>
-              <h2>Available Appointments</h2>
-              <p class="subtitle">Select an open slot to schedule your visit with {{ doctor()!.name }}.</p>
+              <h2>{{ langService.currentLang() === 'ar' ? 'المواعيد المتاحة للحجز الفوري' : 'Available Appointment Slots' }}</h2>
+              <p class="subtitle">{{ langService.currentLang() === 'ar' ? 'اختر التوقيت المناسب من جدول الكشوفات المباشر.' : 'Select an open slot to schedule your visit.' }}</p>
             </div>
-            <span class="live-tag">⚡ Live Slots</span>
+            <span class="live-tag">⚡ LIVE</span>
           </div>
 
           @if (availabilitySlots().length === 0) {
             <div class="empty-slots">
-              <p>No available appointment slots at the moment.</p>
+              <p>{{ langService.currentLang() === 'ar' ? 'جميع مواعيد اليوم محجوزة، اختر حجز الموعد المباشر للتنسيق.' : 'All slots booked for today. Use instant booking to select upcoming dates.' }}</p>
             </div>
           } @else {
             <div class="slots-container">
-              <span class="slots-label">Select Available Time Slot:</span>
+              <span class="slots-label">{{ langService.currentLang() === 'ar' ? 'المواعيد المتاحة:' : 'Select Available Time Slot:' }}</span>
               <div class="slots-grid">
                 @for (slot of availabilitySlots(); track slot.id) {
                   <button
@@ -165,23 +165,11 @@
                   [queryParams]="{ doctorId: doctor()!.id, slotId: selectedSlotId() }"
                   class="btn btn-primary btn-lg"
                 >
-                  Book Selected Slot &rarr;
+                  {{ langService.t('confirmBookingBtn') }} &rarr;
                 </a>
               </div>
             </div>
           }
-        </section>
-
-        <!-- RESEARCH & PUBLICATIONS (COMPACT LIGHTWEIGHT) -->
-        <section class="detail-card">
-          <h2>Research & Publications</h2>
-          <p class="empty-text">No research publications currently listed.</p>
-        </section>
-
-        <!-- CONFERENCES & EVENTS -->
-        <section class="detail-card">
-          <h2>Conferences & Events</h2>
-          <p class="empty-text">No upcoming medical conferences or events.</p>
         </section>
       </div>
 
@@ -189,17 +177,17 @@
       <aside class="sidebar-column">
         <!-- BOOKING QUICK SIDEBAR -->
         <div class="sidebar-card booking-sidebar-card">
-          <h3>Quick Booking</h3>
-          <p class="desc">Schedule your consultation with {{ doctor()!.title }} {{ doctor()!.name }} in minutes.</p>
+          <h3>{{ langService.currentLang() === 'ar' ? 'حجز موعد كشف' : 'Quick Booking' }}</h3>
+          <p class="desc">{{ langService.currentLang() === 'ar' ? 'احجز كشفك الآن مع الاستشاري في أقل من دقيقة.' : 'Schedule your consultation in minutes.' }}</p>
 
           <div class="summary-list">
             <div class="sum-item">
-              <span class="lbl">Specialist</span>
-              <span class="txt">{{ doctor()!.name }}</span>
+              <span class="lbl">{{ langService.currentLang() === 'ar' ? 'الطبيب' : 'Specialist' }}</span>
+              <span class="txt">{{ langService.localizeText(doctor()!.name) }}</span>
             </div>
             <div class="sum-item">
-              <span class="lbl">Fee</span>
-              <span class="txt price">{{ doctor()!.consultationFee }} {{ doctor()!.currency }}</span>
+              <span class="lbl">{{ langService.t('consultationFee') }}</span>
+              <span class="txt price">{{ doctor()!.consultationFee || 400 }} {{ doctor()!.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }}</span>
             </div>
           </div>
 
@@ -208,43 +196,28 @@
             [queryParams]="{ doctorId: doctor()!.id }"
             class="btn btn-primary btn-block"
           >
-            Book Appointment &rarr;
+            {{ langService.t('confirmBookingBtn') }} &rarr;
           </a>
         </div>
 
         <!-- ORGANIZATION PROFILE SIDEBAR CARD -->
         @if (organization()) {
           <div class="sidebar-card">
-            <h3>Practice Location</h3>
+            <h3>{{ langService.currentLang() === 'ar' ? 'مقر العيادة والمستشفى' : 'Practice Location' }}</h3>
             <div class="org-mini-profile">
               <div class="mini-logo">{{ getInitials(organization()!.name) }}</div>
               <div>
-                <h4>{{ organization()!.name }}</h4>
-                <p class="city">📍 {{ organization()!.city }}</p>
+                <h4>{{ langService.localizeText(organization()!.name) }}</h4>
+                <p class="city">📍 {{ langService.localizeText(organization()!.city) }}</p>
               </div>
             </div>
-            <p class="address-text">{{ organization()!.address }}</p>
+            <p class="address-text">{{ langService.localizeText(organization()!.address) }}</p>
             <a [routerLink]="['/organizations', organization()!.id]" class="btn-sm-link">
-              View Organization Profile &rarr;
+              {{ langService.t('viewOrgProfile') }} &rarr;
             </a>
           </div>
         }
       </aside>
     </div>
-
-    <!-- FINAL CTA SECTION -->
-    <section class="final-cta-block">
-      <div class="cta-inner">
-        <h2>Ready to book your appointment?</h2>
-        <p>Choose an available time slot that works for you and submit your booking request.</p>
-        <a
-          [routerLink]="['/booking']"
-          [queryParams]="{ doctorId: doctor()!.id }"
-          class="btn btn-primary btn-lg"
-        >
-          Book an Appointment Now
-        </a>
-      </div>
-    </section>
   }
 </div>

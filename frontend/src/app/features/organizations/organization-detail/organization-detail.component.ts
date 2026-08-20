@@ -4,6 +4,7 @@ import { OrganizationService } from '../../../core/services/organization.service
 import { DepartmentService } from '../../../core/services/department.service';
 import { ServiceService } from '../../../core/services/service.service';
 import { DoctorService } from '../../../core/services/doctor.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { Organization } from '../../../core/models/organization.model';
 import { Department } from '../../../core/models/department.model';
 import { MedicalService } from '../../../core/models/service.model';
@@ -25,6 +26,7 @@ export class OrganizationDetailComponent implements OnInit {
   private readonly deptService = inject(DepartmentService);
   private readonly serviceService = inject(ServiceService);
   private readonly doctorService = inject(DoctorService);
+  readonly langService = inject(LanguageService);
 
   // Component States
   isLoading = signal(true);
@@ -151,12 +153,13 @@ export class OrganizationDetailComponent implements OnInit {
   }
 
   formatType(type: string): string {
-    switch (type) {
-      case 'hospital': return 'Hospital';
-      case 'clinic': return 'Specialized Clinic';
-      case 'medical_center': return 'Medical Center';
-      case 'research_institute': return 'Research Institute';
-      default: return type;
+    const isAr = this.langService.currentLang() === 'ar';
+    switch (type?.toLowerCase()) {
+      case 'hospital': return isAr ? 'مستشفى خاص' : 'Private Hospital';
+      case 'clinic': return isAr ? 'عيادة تخصصية' : 'Specialized Clinic';
+      case 'medical_center': return isAr ? 'مركز طبي' : 'Medical Center';
+      case 'research_institute': return isAr ? 'معهد أبحاث' : 'Research Institute';
+      default: return isAr ? 'منشأة معتمدة' : 'Verified Node';
     }
   }
 
@@ -165,11 +168,11 @@ export class OrganizationDetailComponent implements OnInit {
     const fallbacks: Record<string, Organization> = {
       'org-1': {
         id: 'org-1',
-        name: 'El Shorouk International Hospital',
+        name: 'مستشفى الشروق الدولي التخصصي',
         type: 'hospital',
-        description: 'Comprehensive multi-specialty tertiary hospital featuring 24/7 Emergency, Cardiology, Pediatrics, Neurology & ICU facilities. Dedicated to world-class medical innovation and compassionate patient care.',
-        city: 'El Shorouk',
-        address: 'Central District, Block 4',
+        description: 'صرح طبي استثماري متكامل بمدينة الشروق يضم وحدات القسطرة القلبية، الطوارئ على مدار 24 ساعة، وجراحات المناظير المتقدمة.',
+        city: 'الشروق',
+        address: 'حي الأشجار، الحي السابع - مدينة الشروق',
         phone: '+20 2 2680 0000',
         email: 'info@shorouk-hospital.com',
         website: 'https://shorouk-hospital.com',
@@ -183,14 +186,14 @@ export class OrganizationDetailComponent implements OnInit {
       },
       'org-2': {
         id: 'org-2',
-        name: 'Cairo Heart & Vascular Center',
+        name: 'مركز فيكسا الطبي المتقدم بالتجمع',
         type: 'medical_center',
-        description: 'Premier cardiovascular medical center specializing in non-invasive cardiology, coronary angiography, heart failure management, and vascular surgery.',
-        city: 'Cairo',
-        address: '5th Settlement, 90th Street',
+        description: 'مركز طبي فاخر بقلب التجمع الخامس يوفر أحدث تقنيات التشخيص، الأشعة المقطعية، وعيادات كبار الاستشاريين أساتذة الجامعات.',
+        city: 'القاهرة الجديده',
+        address: 'شارع التسعين الجنوبي، مجمع العيادات الفاخرة - التجمع الخامس',
         phone: '+20 2 2790 1111',
-        email: 'contact@cairoheart.org',
-        website: 'https://cairoheart.org',
+        email: 'contact@vexa-center.com',
+        website: 'https://vexa-center.com',
         rating: 4.8,
         reviewCount: 98,
         departmentsCount: 4,
@@ -201,18 +204,18 @@ export class OrganizationDetailComponent implements OnInit {
       },
       'org-3': {
         id: 'org-3',
-        name: 'Nile Skin & Laser Clinic',
-        type: 'clinic',
-        description: 'Advanced dermatology, cosmetic skin procedures, aesthetic laser care, and dermatopathology center staffed by European-trained consultants.',
-        city: 'New Cairo',
-        address: 'Medical Park 1, Office 204',
+        name: 'مستشفى السلام الدولي بالمعادي',
+        type: 'hospital',
+        description: 'من أعرق المستشفيات الخاصة في مصر الحاصلة على الاعتماد الدولي JCI، متخصصة في زراعة الأعضاء وجراحات القلب والمخ والأعصاب.',
+        city: 'القاهرة',
+        address: 'كورنيش المعادي، برج الأطباء - القاهرة',
         phone: '+20 2 2810 2222',
-        email: 'appointments@nileskin.com',
-        rating: 4.7,
-        reviewCount: 76,
-        departmentsCount: 2,
-        doctorsCount: 8,
-        servicesCount: 12,
+        email: 'appointments@alsalam.com',
+        rating: 4.95,
+        reviewCount: 310,
+        departmentsCount: 8,
+        doctorsCount: 35,
+        servicesCount: 28,
         isVerified: true,
         createdAt: '2026-01-10'
       }
@@ -223,68 +226,68 @@ export class OrganizationDetailComponent implements OnInit {
 
   private getFallbackDepartments(orgId: string): Department[] {
     return [
-      { id: 'dept-1', organizationId: orgId, name: 'Cardiology & Vascular Medicine', description: 'Advanced cardiac catheterization, 24/7 chest pain unit, and preventive heart care.' },
-      { id: 'dept-2', organizationId: orgId, name: 'Dermatology & Laser Surgery', description: 'Clinical skin treatments, laser therapy, and aesthetic dermatology.' },
-      { id: 'dept-3', organizationId: orgId, name: 'Pediatrics & Neonatology', description: 'Comprehensive child healthcare, neonatal ICU, and developmental monitoring.' },
-      { id: 'dept-4', organizationId: orgId, name: 'Neurology & Brain Health', description: 'Stroke care unit, epilepsy diagnosis, and neuro-rehabilitation.' }
+      { id: 'dept-1', organizationId: orgId, name: 'قسم أمراض القلب والقسطرة', description: 'تشخيص وعلاج أمراض القسطرة التداخلية والشرايين التاجية.' },
+      { id: 'dept-2', organizationId: orgId, name: 'قسم الجلدية والتجميل والليزر', description: 'علاج الأمراض الجلدية والعلاج بالليزر وتقنيات النضارة.' },
+      { id: 'dept-3', organizationId: orgId, name: 'قسم طب وجراحة الأطفال', description: 'رعاية صحية شاملة للأطفال والحضانة وحديثي الولادة.' },
+      { id: 'dept-4', organizationId: orgId, name: 'قسم المخ والأعصاب والعمود الفقري', description: 'جراحات الغضروف والانزلاق الغضروفي وعلاج الصداع والمخ.' }
     ];
   }
 
   private getFallbackServices(orgId: string): MedicalService[] {
     return [
-      { id: 'srv-1', organizationId: orgId, name: 'Comprehensive Cardiac Screening', category: 'Cardiology', description: 'Includes ECG, Echocardiogram, Stress Test, and Consultant Evaluation.', price: 1200, currency: 'EGP', durationMinutes: 45 },
-      { id: 'srv-2', organizationId: orgId, name: 'Full Skin & Dermatoscopy Exam', category: 'Dermatology', description: 'Detailed mole mapping, skin cancer screening, and dermatological diagnosis.', price: 500, currency: 'EGP', durationMinutes: 30 },
-      { id: 'srv-3', organizationId: orgId, name: 'Pediatric Growth & Wellness Checkup', category: 'Pediatrics', description: 'Growth milestone evaluation, routine vaccination check, and nutritional guidance.', price: 400, currency: 'EGP', durationMinutes: 30 }
+      { id: 'srv-1', organizationId: orgId, name: 'رسم القلب الكهربائي واختبار المجهود ECG', category: 'أمراض القلب', description: 'تقييم شامل لسلامة الشرايين التاجية وعضلة القلب.', price: 1200, currency: 'EGP', durationMinutes: 45 },
+      { id: 'srv-2', organizationId: orgId, name: 'فحص الجلدية الشامل والديرموسكوب', category: 'الجلدية والتجميل', description: 'تشخيص مبكر للشامات والتغيرات الجلدية وأمراض الصدفية.', price: 500, currency: 'EGP', durationMinutes: 30 },
+      { id: 'srv-3', organizationId: orgId, name: 'متابعة نمو وتغذية الأطفال والرضع', category: 'طب الأطفال', description: 'جدول التطعيمات وقياس المعدلات الحركية والذهنية.', price: 400, currency: 'EGP', durationMinutes: 30 }
     ];
   }
 
   private getFallbackDoctors(orgId: string): Doctor[] {
     return [
       {
-        id: 'doc-1',
+        id: 'doc1',
         organizationId: orgId,
         departmentId: 'dept-1',
-        name: 'Sarah Mansour',
-        title: 'Dr.',
-        specialty: 'Cardiology & Cardiovascular',
-        bio: 'Senior Consultant Cardiologist with 14+ years of expertise in non-invasive cardiac imaging.',
-        experienceYears: 14,
-        languages: ['English', 'Arabic'],
-        rating: 4.9,
-        reviewCount: 112,
+        name: 'أ.د. أحمد عبد الرحمن الحسين',
+        title: 'أ.د.',
+        specialty: 'استشاري أمراض القلب والأوعية الدموية والقسطرة',
+        bio: 'أستاذ أمراض القلب بكلية الطب، زميل الكلية الأمريكية للقلب FACC، خبرة أكثر من 22 عاماً في قسطرة الشرايين التاجية وتوسيع الصمامات.',
+        experienceYears: 22,
+        languages: ['العربية', 'English'],
+        rating: 4.95,
+        reviewCount: 180,
         consultationFee: 450,
         currency: 'EGP',
         isAvailableForBooking: true
       },
       {
-        id: 'doc-2',
+        id: 'doc2',
         organizationId: orgId,
         departmentId: 'dept-2',
-        name: 'Ahmed Hassan',
-        title: 'Dr.',
-        specialty: 'Dermatology & Cosmetic Care',
-        bio: 'Consultant Dermatologist specializing in laser treatments and cosmetic skin surgery.',
-        experienceYears: 10,
-        languages: ['English', 'Arabic', 'French'],
-        rating: 4.8,
-        reviewCount: 84,
+        name: 'د. مريم الشناوي',
+        title: 'د.',
+        specialty: 'استشاري أمراض الجلدية والتجميل والليزر',
+        bio: 'استشاري جراحات الجلد والتجميل، خبرة 14 عاماً في علاج الصدفية والبهاق وحب الشباب المستعصي وأحدث تقنيات الفيلر والخيوط الفرنسية.',
+        experienceYears: 14,
+        languages: ['العربية', 'English'],
+        rating: 4.88,
+        reviewCount: 112,
         consultationFee: 350,
         currency: 'EGP',
         isAvailableForBooking: true
       },
       {
-        id: 'doc-3',
+        id: 'doc3',
         organizationId: orgId,
         departmentId: 'dept-3',
-        name: 'Layla Mahmoud',
-        title: 'Dr.',
-        specialty: 'Pediatrics & Child Health',
-        bio: 'Consultant Pediatrician dedicated to pediatric health and neonatal development.',
-        experienceYears: 12,
-        languages: ['English', 'Arabic'],
+        name: 'د. خالد مصطفى السويفي',
+        title: 'د.',
+        specialty: 'استشاري طب وجراحة الأطفال والحديثي الولادة',
+        bio: 'استشاري الأطفال ورعاية الحديثي الولادة، متخصص في أمراض الصدر والحساسية ومتابعة النمو والتغذية السليمة للأطفال.',
+        experienceYears: 16,
+        languages: ['العربية', 'English'],
         rating: 4.9,
         reviewCount: 95,
-        consultationFee: 400,
+        consultationFee: 300,
         currency: 'EGP',
         isAvailableForBooking: true
       }

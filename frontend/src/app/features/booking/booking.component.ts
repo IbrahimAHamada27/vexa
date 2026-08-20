@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } 
 import { OrganizationService } from '../../core/services/organization.service';
 import { DoctorService } from '../../core/services/doctor.service';
 import { AppointmentService } from '../../core/services/appointment.service';
+import { LanguageService } from '../../core/services/language.service';
 import { Organization } from '../../core/models/organization.model';
 import { Doctor } from '../../core/models/doctor.model';
 import { AvailabilitySlot } from '../../core/models/availability-slot.model';
 import { Appointment, CreateAppointmentRequest } from '../../core/models/appointment.model';
-import { ApiResponse, PaginatedData } from '../../core/models/api-response.model';
+import { ApiResponse } from '../../core/models/api-response.model';
 
 @Component({
   selector: 'app-booking',
@@ -23,6 +24,7 @@ export class BookingComponent implements OnInit {
   private readonly orgService = inject(OrganizationService);
   private readonly doctorService = inject(DoctorService);
   private readonly appointmentService = inject(AppointmentService);
+  readonly langService = inject(LanguageService);
 
   // Stepper State (1: Provider, 2: Date/Time, 3: Patient, 4: Review, 5: Success)
   currentStep = signal<number>(1);
@@ -190,6 +192,9 @@ export class BookingComponent implements OnInit {
     if (step === 4 && this.patientForm.invalid) return;
 
     this.currentStep.set(step);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }
 
   fetchDoctorSlots(docId: string): void {
@@ -261,12 +266,18 @@ export class BookingComponent implements OnInit {
           this.createdAppointment.set(this.createFallbackSuccessAppointment(req));
         }
         this.currentStep.set(5);
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
       },
       error: () => {
         this.isSubmitting.set(false);
         // Seamless fallback for local demo
         this.createdAppointment.set(this.createFallbackSuccessAppointment(req));
         this.currentStep.set(5);
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
       }
     });
   }
@@ -299,11 +310,11 @@ export class BookingComponent implements OnInit {
     return [
       {
         id: 'org-1',
-        name: 'El Shorouk International Hospital',
+        name: 'مستشفى الشروق الدولي التخصصي',
         type: 'hospital',
-        description: 'Comprehensive multi-specialty tertiary care hospital.',
-        city: 'El Shorouk',
-        address: 'Central District, Block 4',
+        description: 'صرح طبي استثماري متكامل بمدينة الشروق يضم وحدات القسطرة القلبية الطارئة.',
+        city: 'الشروق',
+        address: 'حي الأشجار، الحي السابع - مدينة الشروق',
         phone: '+20 2 2680 0000',
         email: 'info@shorouk-hospital.com',
         rating: 4.9,
@@ -313,13 +324,13 @@ export class BookingComponent implements OnInit {
       },
       {
         id: 'org-2',
-        name: 'Cairo Heart & Vascular Center',
+        name: 'مركز فيكسا الطبي المتقدم بالتجمع',
         type: 'medical_center',
-        description: 'Leading cardiovascular center.',
-        city: 'Cairo',
-        address: '5th Settlement, 90th Street',
+        description: 'مركز طبي فاخر بقلب التجمع الخامس.',
+        city: 'القاهرة الجديده',
+        address: 'شارع التسعين الجنوبي، مجمع العيادات الفاخرة',
         phone: '+20 2 2790 1111',
-        email: 'contact@cairoheart.org',
+        email: 'contact@vexa-center.com',
         rating: 4.8,
         reviewCount: 98,
         isVerified: true,
@@ -327,15 +338,15 @@ export class BookingComponent implements OnInit {
       },
       {
         id: 'org-3',
-        name: 'Nile Skin & Laser Clinic',
-        type: 'clinic',
-        description: 'Advanced dermatology & cosmetology clinic.',
-        city: 'New Cairo',
-        address: 'Medical Park 1, Office 204',
+        name: 'مستشفى السلام الدولي بالمعادي',
+        type: 'hospital',
+        description: 'مستشفى خاص فاخر بقلب المعادي.',
+        city: 'القاهرة',
+        address: 'كورنيش المعادي، برج الأطباء',
         phone: '+20 2 2810 2222',
-        email: 'appointments@nileskin.com',
-        rating: 4.7,
-        reviewCount: 76,
+        email: 'appointments@alsalam.com',
+        rating: 4.95,
+        reviewCount: 310,
         isVerified: true,
         createdAt: '2026-01-10'
       }
@@ -348,14 +359,14 @@ export class BookingComponent implements OnInit {
         id: 'doc-1',
         organizationId: 'org-1',
         departmentId: 'dept-1',
-        name: 'Sarah Mansour',
-        title: 'Dr.',
-        specialty: 'Cardiology & Cardiovascular Medicine',
-        bio: 'Senior Consultant Cardiologist.',
-        experienceYears: 14,
-        languages: ['English', 'Arabic'],
-        rating: 4.9,
-        reviewCount: 112,
+        name: 'أ.د. أحمد عبد الرحمن الحسين',
+        title: 'أ.د.',
+        specialty: 'استشاري أمراض القلب والأوعية الدموية والقسطرة',
+        bio: 'أستاذ أمراض القلب بكلية الطب، خبرة 22 عاماً.',
+        experienceYears: 22,
+        languages: ['العربية', 'English'],
+        rating: 4.95,
+        reviewCount: 180,
         consultationFee: 450,
         currency: 'EGP',
         isAvailableForBooking: true
@@ -364,14 +375,14 @@ export class BookingComponent implements OnInit {
         id: 'doc-2',
         organizationId: 'org-3',
         departmentId: 'dept-2',
-        name: 'Ahmed Hassan',
-        title: 'Dr.',
-        specialty: 'Dermatology & Laser Surgery',
-        bio: 'Consultant Dermatologist.',
-        experienceYears: 10,
-        languages: ['English', 'Arabic'],
-        rating: 4.8,
-        reviewCount: 84,
+        name: 'د. مريم الشناوي',
+        title: 'د.',
+        specialty: 'استشاري أمراض الجلدية والتجميل والليزر',
+        bio: 'استشاري جراحات الجلد والتجميل، خبرة 14 عاماً.',
+        experienceYears: 14,
+        languages: ['العربية', 'English'],
+        rating: 4.88,
+        reviewCount: 112,
         consultationFee: 350,
         currency: 'EGP',
         isAvailableForBooking: true
@@ -380,15 +391,15 @@ export class BookingComponent implements OnInit {
         id: 'doc-3',
         organizationId: 'org-1',
         departmentId: 'dept-3',
-        name: 'Layla Mahmoud',
-        title: 'Dr.',
-        specialty: 'Pediatrics & Neonatal Care',
-        bio: 'Consultant Pediatrician.',
-        experienceYears: 12,
-        languages: ['English', 'Arabic'],
+        name: 'د. خالد مصطفى السويفي',
+        title: 'د.',
+        specialty: 'استشاري طب وجراحة الأطفال والحديثي الولادة',
+        bio: 'استشاري الأطفال ورعاية الحديثي الولادة، خبرة 16 عاماً.',
+        experienceYears: 16,
+        languages: ['العربية', 'English'],
         rating: 4.9,
         reviewCount: 95,
-        consultationFee: 400,
+        consultationFee: 300,
         currency: 'EGP',
         isAvailableForBooking: true
       }
