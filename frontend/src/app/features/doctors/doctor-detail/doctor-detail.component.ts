@@ -116,6 +116,13 @@ export class DoctorDetailComponent implements OnInit {
     this.selectedSlotId.set(slotId);
   }
 
+  formatLanguages(languages?: string[] | string): string {
+    if (!languages) return 'English, Arabic';
+    if (Array.isArray(languages)) return languages.join(', ');
+    if (typeof languages === 'string') return languages;
+    return 'English, Arabic';
+  }
+
   getInitials(name: string): string {
     if (!name) return 'DR';
     return name

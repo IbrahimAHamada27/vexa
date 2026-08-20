@@ -30,7 +30,7 @@ import { Doctor } from '../../../core/models/doctor.model';
         </div>
         <div class="info-row">
           <span class="label">Languages</span>
-          <span class="value lang">{{ doctor().languages.join(', ') }}</span>
+          <span class="value lang">{{ formatLanguages(doctor().languages) }}</span>
         </div>
       </div>
 
@@ -172,6 +172,13 @@ import { Doctor } from '../../../core/models/doctor.model';
 })
 export class DoctorCardComponent {
   readonly doctor = input.required<Doctor>();
+
+  formatLanguages(languages?: string[] | string): string {
+    if (!languages) return 'English, Arabic';
+    if (Array.isArray(languages)) return languages.join(', ');
+    if (typeof languages === 'string') return languages;
+    return 'English, Arabic';
+  }
 
   getInitials(name: string): string {
     if (!name) return 'DR';
