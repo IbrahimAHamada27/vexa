@@ -1,13 +1,11 @@
 /**
- * Gemini AI Service — Smart Healthcare Search Criteria Extractor
+ * Gemini AI Service — Smart Multilingual Healthcare Search Criteria Extractor
  *
  * Responsibilities:
- * 1. Call Gemini API to extract structured search criteria from natural language.
+ * 1. Call Gemini API to extract structured search criteria from Arabic/English queries.
  * 2. Enforce strict guardrails: NO medical advice, diagnosis, or prescriptions.
- * 3. Provide robust regex/keyword fallback when Gemini is unavailable.
+ * 3. Provide robust bilingual regex/keyword fallback when Gemini is unavailable.
  */
-
-// ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface ExtractedCriteria {
   specialty: string | null;
@@ -26,9 +24,8 @@ interface GeminiResponse {
   }>;
 }
 
-// ─── System Prompt ──────────────────────────────────────────────────────────
-
 const SYSTEM_PROMPT = `You are a healthcare search criteria extractor for the VEXA Healthcare Platform in Egypt.
+You support both Arabic and English user prompts.
 
 ROLE: Extract structured search parameters from user queries. That is your ONLY function.
 
@@ -36,49 +33,29 @@ STRICT RULES:
 - You MUST NEVER diagnose any condition.
 - You MUST NEVER prescribe or recommend any medication.
 - You MUST NEVER give medical advice of any kind.
-- You MUST NEVER suggest treatments or procedures.
-- If the user asks for medical advice, set all fields to null and put their query terms in keywords.
+- If the user asks for medical advice, set fields to appropriate general specialties and put keywords in keywords array.
 
-TASK: Given a user's natural language query about finding healthcare services, extract:
-1. "specialty" — the medical specialty mentioned (e.g., "Dermatology", "Cardiology", "Pediatrics", "Orthopedics"). Normalize to standard specialty names. Return null if not specified.
-2. "location" — the city, area, or district mentioned (e.g., "El Shorouk", "Cairo", "New Cairo"). Return null if not specified.
-3. "organizationType" — one of "Clinic", "MedicalCenter", "Hospital", or null if not specified.
-4. "keywords" — array of additional relevant search terms from the query.
+TASK: Given a user's natural language query (in Arabic or English), extract:
+1. "specialty" — standardized specialty in Arabic or English (e.g., "قلب" / "Cardiology", "جلدية" / "Dermatology", "أطفال" / "Pediatrics", "عظام" / "Orthopedics", "مخ وأعصاب" / "Neurosurgery").
+2. "location" — city or district mentioned (e.g., "الشروق" / "El Shorouk", "القاهرة" / "Cairo", "التجمع" / "New Cairo", "الإسكندرية" / "Alexandria", "الجيزة" / "Giza").
+3. "organizationType" — "hospital", "clinic", "medical_center", or null.
+4. "keywords" — array of additional search terms.
 
-OUTPUT FORMAT: Respond with ONLY valid JSON, no markdown, no explanation:
-{"specialty": string | null, "location": string | null, "organizationType": string | null, "keywords": string[]}
+OUTPUT FORMAT: Respond with ONLY valid JSON:
+{"specialty": string | null, "location": string | null, "organizationType": string | null, "keywords": string[]}`;
 
-EXAMPLES:
-Query: "I need a dermatologist near El Shorouk"
-Output: {"specialty": "Dermatology", "location": "El Shorouk", "organizationType": null, "keywords": ["dermatologist"]}
-
-Query: "heart doctor at a hospital in Cairo"
-Output: {"specialty": "Cardiology", "location": "Cairo", "organizationType": "Hospital", "keywords": ["heart", "doctor"]}
-
-Query: "children's doctor clinic"
-Output: {"specialty": "Pediatrics", "location": null, "organizationType": "Clinic", "keywords": ["children"]}
-
-Query: "best skin treatment for acne"
-Output: {"specialty": "Dermatology", "location": null, "organizationType": null, "keywords": ["skin", "acne", "treatment"]}`;
-
-// ─── Gemini API Call ────────────────────────────────────────────────────────
-
-/**
- * Call Gemini API to extract search criteria from the user's query.
- * Uses the REST API directly via fetch — no SDK dependency needed.
- */
 async function callGemini(query: string): Promise<ExtractedCriteria> {
   const apiKey = process.env['GEMINI_API_KEY'];
 
   if (!apiKey) {
-    console.warn('⚠️  GEMINI_API_KEY not set — falling back to keyword extraction');
+    console.warn('⚠️ GEMINI_API_KEY not set — falling back to bilingual keyword extraction');
     throw new Error('GEMINI_API_KEY not configured');
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+  const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
     const response = await fetch(url, {
@@ -96,7 +73,7 @@ async function callGemini(query: string): Promise<ExtractedCriteria> {
           },
         ],
         generationConfig: {
-          temperature: 0.1,
+          temperature: 0.2,
           maxOutputTokens: 256,
           responseMimeType: 'application/json',
         },
@@ -112,18 +89,15 @@ async function callGemini(query: string): Promise<ExtractedCriteria> {
     }
 
     const data = (await response.json()) as GeminiResponse;
-
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text) {
       throw new Error('Empty response from Gemini');
     }
 
-    // Parse JSON — strip markdown code fences if present
     const cleanText = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     const parsed = JSON.parse(cleanText) as Record<string, unknown>;
 
-    // Validate and normalize the parsed result
     return {
       specialty: typeof parsed['specialty'] === 'string' ? parsed['specialty'] : null,
       location: typeof parsed['location'] === 'string' ? parsed['location'] : null,
@@ -138,126 +112,65 @@ async function callGemini(query: string): Promise<ExtractedCriteria> {
   }
 }
 
-// ─── Regex / Keyword Fallback ───────────────────────────────────────────────
-
-/** Known medical specialties and their aliases */
-const SPECIALTY_MAP: Record<string, string> = {
-  // Dermatology
-  dermatologist: 'Dermatology',
-  dermatology: 'Dermatology',
-  skin: 'Dermatology',
-  'skin doctor': 'Dermatology',
-  acne: 'Dermatology',
-  eczema: 'Dermatology',
-  // Cardiology
-  cardiologist: 'Cardiology',
-  cardiology: 'Cardiology',
-  heart: 'Cardiology',
-  'heart doctor': 'Cardiology',
-  cardiac: 'Cardiology',
-  // Pediatrics
-  pediatrician: 'Pediatrics',
-  pediatrics: 'Pediatrics',
-  "children's doctor": 'Pediatrics',
-  'child doctor': 'Pediatrics',
-  children: 'Pediatrics',
-  // Orthopedics
-  orthopedic: 'Orthopedics',
-  orthopedics: 'Orthopedics',
-  bone: 'Orthopedics',
-  'bone doctor': 'Orthopedics',
-  joint: 'Orthopedics',
-  sports: 'Orthopedics',
-};
-
-/** Known locations in the VEXA demo data */
-const KNOWN_LOCATIONS = [
-  'El Shorouk',
-  'New Cairo',
-  'Cairo',
-  'Nasr City',
-  'Garden City',
-  'Heliopolis',
+/** Bilingual fallback extractor */
+const BILINGUAL_SPECIALTY_MAP: Array<{ keywords: string[]; value: string }> = [
+  { keywords: ['جلدية', 'تجميل', 'ليزر', 'derm', 'skin', 'acne'], value: 'جلدية' },
+  { keywords: ['قلب', 'قسطرة', 'شرايين', 'cardio', 'heart'], value: 'قلب' },
+  { keywords: ['أطفال', 'رضع', 'حديثي الولادة', 'pediatr', 'child'], value: 'أطفال' },
+  { keywords: ['عظام', 'مفاصل', 'ركبة', 'عمود فقري', 'ortho', 'bone'], value: 'عظام' },
+  { keywords: ['مخ', 'أعصاب', 'غضروف', 'neuro', 'brain'], value: 'أعصاب' },
+  { keywords: ['عيون', 'ليزك', 'بصر', 'eye', 'ophthalm'], value: 'عيون' },
+  { keywords: ['نساء', 'توليد', 'حقن مجهري', 'obgyn', 'women'], value: 'نساء' },
 ];
 
-/** Organization type aliases */
-const ORG_TYPE_MAP: Record<string, string> = {
-  clinic: 'Clinic',
-  hospital: 'Hospital',
-  'medical center': 'MedicalCenter',
-  'medical centre': 'MedicalCenter',
-  center: 'MedicalCenter',
-  centre: 'MedicalCenter',
-};
+const BILINGUAL_LOCATION_MAP: Array<{ keywords: string[]; value: string }> = [
+  { keywords: ['شروق', 'shorouk'], value: 'الشروق' },
+  { keywords: ['تجمع', 'new cairo'], value: 'القاهرة الجديده' },
+  { keywords: ['معادي', 'قاهرة', 'cairo'], value: 'القاهرة' },
+  { keywords: ['أكتوبر', 'جيزة', 'giza', 'october'], value: 'الجيزة' },
+  { keywords: ['إسكندرية', 'alex'], value: 'الإسكندرية' },
+];
 
-/**
- * Regex/keyword fallback extractor.
- * Parses the raw query to extract specialty, location, and org type
- * without any external API dependency.
- */
 function fallbackExtract(query: string): ExtractedCriteria {
   const lower = query.toLowerCase();
 
-  // Extract specialty
   let specialty: string | null = null;
-  for (const [keyword, mapped] of Object.entries(SPECIALTY_MAP)) {
-    if (lower.includes(keyword)) {
-      specialty = mapped;
+  for (const item of BILINGUAL_SPECIALTY_MAP) {
+    if (item.keywords.some((kw) => lower.includes(kw))) {
+      specialty = item.value;
       break;
     }
   }
 
-  // Extract location
   let location: string | null = null;
-  for (const loc of KNOWN_LOCATIONS) {
-    if (lower.includes(loc.toLowerCase())) {
-      location = loc;
+  for (const item of BILINGUAL_LOCATION_MAP) {
+    if (item.keywords.some((kw) => lower.includes(kw))) {
+      location = item.value;
       break;
     }
   }
 
-  // Extract organization type
   let organizationType: string | null = null;
-  for (const [keyword, mapped] of Object.entries(ORG_TYPE_MAP)) {
-    if (lower.includes(keyword)) {
-      organizationType = mapped;
-      break;
-    }
-  }
+  if (lower.includes('مستشفى') || lower.includes('hospital')) organizationType = 'hospital';
+  else if (lower.includes('عياد') || lower.includes('clinic')) organizationType = 'clinic';
+  else if (lower.includes('مركز') || lower.includes('center')) organizationType = 'medical_center';
 
-  // Extract keywords: remove stop words, keep meaningful terms
-  const stopWords = new Set([
-    'i', 'me', 'my', 'need', 'want', 'find', 'looking', 'for', 'a', 'an',
-    'the', 'in', 'at', 'near', 'to', 'with', 'and', 'or', 'of', 'can',
-    'you', 'please', 'help', 'get', 'best', 'good', 'nearby', 'around',
-    'close', 'search', 'show', 'recommend', 'suggestion',
-  ]);
-
-  const keywords = lower
-    .replace(/[^a-z0-9\s'-]/g, '')
-    .split(/\s+/)
-    .filter((word) => word.length > 2 && !stopWords.has(word));
+  const keywords = query.split(/\s+/).filter((w) => w.length > 2);
 
   return { specialty, location, organizationType, keywords };
 }
 
-// ─── Public API ─────────────────────────────────────────────────────────────
-
-/**
- * Extract search criteria from a user's natural language query.
- * Tries Gemini first, falls back to regex/keyword extraction on failure.
- */
 export async function extractSearchCriteria(query: string): Promise<{
   criteria: ExtractedCriteria;
   source: 'gemini' | 'fallback';
 }> {
   try {
     const criteria = await callGemini(query);
-    console.log('✅ Gemini extraction successful');
+    console.log('✅ Gemini extraction successful:', criteria);
     return { criteria, source: 'gemini' };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.warn(`⚠️  Gemini failed (${message}), using fallback extractor`);
+    console.warn(`⚠️ Gemini call bypassed (${message}), using bilingual fallback extractor`);
     const criteria = fallbackExtract(query);
     return { criteria, source: 'fallback' };
   }
