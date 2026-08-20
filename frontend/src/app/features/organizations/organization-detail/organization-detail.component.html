@@ -1,0 +1,268 @@
+<div class="org-detail-page container">
+  <!-- 1. LOADING STATE -->
+  @if (isLoading()) {
+    <div class="skeleton-detail">
+      <div class="skeleton-hero">
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-text-group">
+          <div class="skeleton-pill"></div>
+          <div class="skeleton-title"></div>
+          <div class="skeleton-subtitle"></div>
+        </div>
+      </div>
+      <div class="skeleton-grid">
+        <div class="skeleton-box"></div>
+        <div class="skeleton-box"></div>
+      </div>
+    </div>
+  }
+
+  <!-- 2. NOT FOUND STATE -->
+  @else if (notFound()) {
+    <div class="state-card not-found-card">
+      <div class="state-icon">🏥</div>
+      <h2>Organization Not Found</h2>
+      <p>The healthcare provider profile you are looking for does not exist or may have been removed.</p>
+      <a routerLink="/organizations" class="btn btn-primary">Back to Organizations</a>
+    </div>
+  }
+
+  <!-- 3. ERROR STATE -->
+  @else if (errorMsg()) {
+    <div class="state-card error-card">
+      <div class="state-icon">⚠️</div>
+      <h2>Unable to Load Organization</h2>
+      <p>We encountered an issue fetching the organization profile. Please try again.</p>
+      <div class="action-buttons">
+        <button type="button" class="btn btn-primary" (click)="id() && loadOrganizationDetails(id()!)">Try Again</button>
+        <a routerLink="/organizations" class="btn btn-outline">Back to Organizations</a>
+      </div>
+    </div>
+  }
+
+  <!-- 4. PROFILE CONTENT (SUCCESS) -->
+  @else if (organization()) {
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a routerLink="/">Home</a>
+      <span class="separator">/</span>
+      <a routerLink="/organizations">Organizations</a>
+      <span class="separator">/</span>
+      <span class="current">{{ organization()?.name }}</span>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="org-hero">
+      <div class="hero-top">
+        <div class="org-logo-box">
+          <span>{{ getInitials(organization()!.name) }}</span>
+        </div>
+
+        <div class="org-main-info">
+          <div class="badge-group">
+            <span class="type-badge">{{ formatType(organization()!.type) }}</span>
+            @if (organization()!.isVerified) {
+              <span class="verified-badge">✓ Verified Facility</span>
+            }
+          </div>
+
+          <h1 class="org-title">{{ organization()!.name }}</h1>
+
+          <p class="org-location">📍 {{ organization()!.city }} — {{ organization()!.address }}</p>
+
+          <div class="rating-bar">
+            <span class="star">★</span>
+            <strong>{{ organization()!.rating }}</strong>
+            <span class="reviews">({{ organization()!.reviewCount }} patient reviews)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-actions-bar">
+        <div class="contact-chips">
+          @if (organization()!.phone) {
+            <span class="chip">📞 {{ organization()!.phone }}</span>
+          }
+          @if (organization()!.email) {
+            <span class="chip">✉️ {{ organization()!.email }}</span>
+          }
+        </div>
+
+        <div class="hero-ctas">
+          <button type="button" class="btn btn-outline" (click)="scrollToDoctors()">View Doctors</button>
+          <a routerLink="/booking" class="btn btn-primary">Find an Appointment &rarr;</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- QUICK STATS BAR -->
+    <section class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-label">Facility Type</span>
+        <strong class="stat-val">{{ formatType(organization()!.type) }}</strong>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Location</span>
+        <strong class="stat-val">{{ organization()!.city }}</strong>
+      </div>
+      @if (organization()!.departmentsCount) {
+        <div class="stat-item">
+          <span class="stat-label">Departments</span>
+          <strong class="stat-val">{{ organization()!.departmentsCount }} Specialized</strong>
+        </div>
+      }
+      @if (organization()!.doctorsCount) {
+        <div class="stat-item">
+          <span class="stat-label">Medical Staff</span>
+          <strong class="stat-val">{{ organization()!.doctorsCount }}+ Doctors</strong>
+        </div>
+      }
+    </section>
+
+    <!-- PAGE BODY GRID -->
+    <div class="detail-body-grid">
+      <!-- MAIN LEFT CONTENT -->
+      <div class="main-column">
+        <!-- ABOUT SECTION -->
+        <section class="detail-card">
+          <h2>About {{ organization()!.name }}</h2>
+          <p class="about-text">{{ organization()!.description }}</p>
+        </section>
+
+        <!-- DEPARTMENTS SECTION -->
+        <section class="detail-card">
+          <div class="card-section-title">
+            <h2>Medical Departments</h2>
+            <span class="count-badge">{{ departments().length }}</span>
+          </div>
+
+          @if (departments().length === 0) {
+            <p class="empty-text">No departments currently listed for this organization.</p>
+          } @else {
+            <div class="depts-grid">
+              @for (dept of departments(); track dept.id) {
+                <div class="dept-item">
+                  <div class="dept-icon">🏥</div>
+                  <div>
+                    <h3>{{ dept.name }}</h3>
+                    <p>{{ dept.description }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+        <!-- SERVICES SECTION -->
+        <section class="detail-card">
+          <div class="card-section-title">
+            <h2>Medical Services</h2>
+            <span class="count-badge">{{ services().length }}</span>
+          </div>
+
+          @if (services().length === 0) {
+            <p class="empty-text">No services are currently listed for this organization.</p>
+          } @else {
+            <div class="services-list">
+              @for (srv of services(); track srv.id) {
+                <div class="service-row">
+                  <div class="srv-info">
+                    <h4>{{ srv.name }}</h4>
+                    <span class="srv-cat">{{ srv.category }}</span>
+                    <p class="srv-desc">{{ srv.description }}</p>
+                  </div>
+                  <div class="srv-pricing">
+                    <span class="srv-price">{{ srv.price }} {{ srv.currency }}</span>
+                    <span class="srv-duration">⏱ {{ srv.durationMinutes }} min</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+        <!-- DOCTORS SECTION -->
+        <section class="detail-card" id="doctors-section">
+          <div class="card-section-title">
+            <h2>Our Medical Specialists</h2>
+            <span class="count-badge">{{ doctors().length }}</span>
+          </div>
+
+          @if (doctors().length === 0) {
+            <p class="empty-text">No doctors are currently listed for this organization.</p>
+          } @else {
+            <div class="doctors-grid">
+              @for (doc of doctors(); track doc.id) {
+                <app-doctor-card [doctor]="doc" />
+              }
+            </div>
+          }
+        </section>
+      </div>
+
+      <!-- SIDEBAR RIGHT CONTENT -->
+      <aside class="sidebar-column">
+        <!-- APPOINTMENT AVAILABILITY CARD -->
+        <div class="sidebar-card booking-preview-card">
+          <div class="card-badge">Live Preview</div>
+          <h3>Available Appointments</h3>
+          <p class="booking-desc">Schedule your medical consultation with top specialists at {{ organization()!.name }}.</p>
+
+          <div class="preview-slots">
+            <div class="preview-slot-item">
+              <span class="doc">Dr. Sarah Mansour</span>
+              <span class="time">Today, 02:30 PM</span>
+            </div>
+            <div class="preview-slot-item">
+              <span class="doc">Dr. Ahmed Hassan</span>
+              <span class="time">Tomorrow, 11:00 AM</span>
+            </div>
+          </div>
+
+          <a routerLink="/booking" class="btn btn-primary btn-block">Book an Appointment &rarr;</a>
+        </div>
+
+        <!-- CONTACT & LOCATION SIDEBAR -->
+        <div class="sidebar-card">
+          <h3>Contact & Location</h3>
+          <ul class="contact-list">
+            <li>
+              <span class="icon">📍</span>
+              <div>
+                <strong>Address</strong>
+                <p>{{ organization()!.address }}, {{ organization()!.city }}</p>
+              </div>
+            </li>
+            @if (organization()!.phone) {
+              <li>
+                <span class="icon">📞</span>
+                <div>
+                  <strong>Phone</strong>
+                  <p>{{ organization()!.phone }}</p>
+                </div>
+              </li>
+            }
+            @if (organization()!.email) {
+              <li>
+                <span class="icon">✉️</span>
+                <div>
+                  <strong>Email</strong>
+                  <p>{{ organization()!.email }}</p>
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <!-- FINAL CTA SECTION -->
+    <section class="final-cta-block">
+      <div class="cta-inner">
+        <h2>Ready to schedule your medical visit?</h2>
+        <p>Book an appointment with a specialist doctor at {{ organization()!.name }}.</p>
+        <a routerLink="/booking" class="btn btn-primary btn-lg">Book an Appointment</a>
+      </div>
+    </section>
+  }
+</div>

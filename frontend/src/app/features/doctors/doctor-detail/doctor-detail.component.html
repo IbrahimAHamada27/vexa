@@ -1,0 +1,250 @@
+<div class="doctor-detail-page container">
+  <!-- 1. LOADING STATE -->
+  @if (isLoading()) {
+    <div class="skeleton-detail">
+      <div class="skeleton-hero">
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-text-group">
+          <div class="skeleton-pill"></div>
+          <div class="skeleton-title"></div>
+          <div class="skeleton-subtitle"></div>
+        </div>
+      </div>
+      <div class="skeleton-grid">
+        <div class="skeleton-box"></div>
+        <div class="skeleton-box"></div>
+      </div>
+    </div>
+  }
+
+  <!-- 2. NOT FOUND STATE -->
+  @else if (notFound()) {
+    <div class="state-card not-found-card">
+      <div class="state-icon">👨‍⚕️</div>
+      <h2>Doctor Not Found</h2>
+      <p>The medical specialist profile you are looking for does not exist or may have been removed.</p>
+      <a routerLink="/organizations" class="btn btn-primary">Back to Organizations</a>
+    </div>
+  }
+
+  <!-- 3. ERROR STATE -->
+  @else if (errorMsg()) {
+    <div class="state-card error-card">
+      <div class="state-icon">⚠️</div>
+      <h2>Unable to Load Doctor Information</h2>
+      <p>We encountered a network issue while loading this doctor profile. Please try again.</p>
+      <div class="action-buttons">
+        <button type="button" class="btn btn-primary" (click)="id() && loadDoctorProfile(id()!)">Try Again</button>
+        <a routerLink="/organizations" class="btn btn-outline">Back to Organizations</a>
+      </div>
+    </div>
+  }
+
+  <!-- 4. PROFILE CONTENT (SUCCESS) -->
+  @else if (doctor()) {
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a routerLink="/">Home</a>
+      <span class="separator">/</span>
+      <a routerLink="/organizations">Organizations</a>
+      @if (organization()) {
+        <span class="separator">/</span>
+        <a [routerLink]="['/organizations', organization()!.id]">{{ organization()!.name }}</a>
+      }
+      <span class="separator">/</span>
+      <span class="current">{{ doctor()?.title }} {{ doctor()?.name }}</span>
+    </nav>
+
+    <!-- HERO PROFILE HEADER -->
+    <header class="doctor-hero">
+      <div class="hero-top">
+        <div class="avatar-large">
+          <span>{{ getInitials(doctor()!.name) }}</span>
+        </div>
+
+        <div class="doctor-main-info">
+          <span class="specialty-badge">{{ doctor()!.specialty }}</span>
+          <h1 class="doctor-title">{{ doctor()!.title }} {{ doctor()!.name }}</h1>
+
+          @if (organization()) {
+            <p class="org-affiliation">
+              <span>🏥 Affiliated with </span>
+              <a [routerLink]="['/organizations', organization()!.id]" class="org-link">{{ organization()!.name }}</a>
+            </p>
+          }
+
+          <div class="rating-bar">
+            <span class="star">★</span>
+            <strong>{{ doctor()!.rating }}</strong>
+            <span class="reviews">({{ doctor()!.reviewCount }} reviews)</span>
+            <span class="divider">•</span>
+            <span class="exp-text"><strong>{{ doctor()!.experienceYears }} Years</strong> Experience</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-actions-bar">
+        <div class="fee-display">
+          <span class="fee-label">Consultation Fee</span>
+          <strong class="fee-val">{{ doctor()!.consultationFee }} {{ doctor()!.currency }}</strong>
+        </div>
+
+        <div class="hero-ctas">
+          @if (organization()) {
+            <a [routerLink]="['/organizations', organization()!.id]" class="btn btn-outline">View Organization</a>
+          }
+          <a [routerLink]="['/booking']" [queryParams]="{ doctorId: doctor()!.id }" class="btn btn-primary">Book an Appointment &rarr;</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- QUICK INFO SUMMARY -->
+    <section class="quick-info-bar">
+      <div class="info-item">
+        <span class="label">Specialty</span>
+        <strong class="val">{{ doctor()!.specialty }}</strong>
+      </div>
+      <div class="info-item">
+        <span class="label">Experience</span>
+        <strong class="val">{{ doctor()!.experienceYears }} Years</strong>
+      </div>
+      <div class="info-item">
+        <span class="label">Languages</span>
+        <strong class="val">{{ doctor()!.languages.join(', ') }}</strong>
+      </div>
+      <div class="info-item">
+        <span class="label">Consultation Fee</span>
+        <strong class="val highlight">{{ doctor()!.consultationFee }} {{ doctor()!.currency }}</strong>
+      </div>
+    </section>
+
+    <!-- MAIN BODY GRID -->
+    <div class="detail-body-grid">
+      <!-- MAIN LEFT COLUMN -->
+      <div class="main-column">
+        <!-- ABOUT / BIOGRAPHY -->
+        <section class="detail-card">
+          <h2>About {{ doctor()!.title }} {{ doctor()!.name }}</h2>
+          <p class="bio-text">{{ doctor()!.bio }}</p>
+        </section>
+
+        <!-- APPOINTMENT AVAILABILITY (P0 SECTION) -->
+        <section class="detail-card availability-section">
+          <div class="section-title-row">
+            <div>
+              <h2>Available Appointments</h2>
+              <p class="subtitle">Select an open slot to schedule your visit with {{ doctor()!.name }}.</p>
+            </div>
+            <span class="live-tag">⚡ Live Slots</span>
+          </div>
+
+          @if (availabilitySlots().length === 0) {
+            <div class="empty-slots">
+              <p>No available appointment slots at the moment.</p>
+            </div>
+          } @else {
+            <div class="slots-container">
+              <span class="slots-label">Select Available Time Slot:</span>
+              <div class="slots-grid">
+                @for (slot of availabilitySlots(); track slot.id) {
+                  <button
+                    type="button"
+                    class="slot-chip"
+                    [class.selected]="selectedSlotId() === slot.id"
+                    (click)="selectSlot(slot.id)"
+                  >
+                    <span class="slot-date">{{ slot.date }}</span>
+                    <span class="slot-time">⏰ {{ slot.startTime }} - {{ slot.endTime }}</span>
+                  </button>
+                }
+              </div>
+
+              <div class="booking-action-row">
+                <a
+                  [routerLink]="['/booking']"
+                  [queryParams]="{ doctorId: doctor()!.id, slotId: selectedSlotId() }"
+                  class="btn btn-primary btn-lg"
+                >
+                  Book Selected Slot &rarr;
+                </a>
+              </div>
+            </div>
+          }
+        </section>
+
+        <!-- RESEARCH & PUBLICATIONS (COMPACT LIGHTWEIGHT) -->
+        <section class="detail-card">
+          <h2>Research & Publications</h2>
+          <p class="empty-text">No research publications currently listed.</p>
+        </section>
+
+        <!-- CONFERENCES & EVENTS -->
+        <section class="detail-card">
+          <h2>Conferences & Events</h2>
+          <p class="empty-text">No upcoming medical conferences or events.</p>
+        </section>
+      </div>
+
+      <!-- SIDEBAR RIGHT COLUMN -->
+      <aside class="sidebar-column">
+        <!-- BOOKING QUICK SIDEBAR -->
+        <div class="sidebar-card booking-sidebar-card">
+          <h3>Quick Booking</h3>
+          <p class="desc">Schedule your consultation with {{ doctor()!.title }} {{ doctor()!.name }} in minutes.</p>
+
+          <div class="summary-list">
+            <div class="sum-item">
+              <span class="lbl">Specialist</span>
+              <span class="txt">{{ doctor()!.name }}</span>
+            </div>
+            <div class="sum-item">
+              <span class="lbl">Fee</span>
+              <span class="txt price">{{ doctor()!.consultationFee }} {{ doctor()!.currency }}</span>
+            </div>
+          </div>
+
+          <a
+            [routerLink]="['/booking']"
+            [queryParams]="{ doctorId: doctor()!.id }"
+            class="btn btn-primary btn-block"
+          >
+            Book Appointment &rarr;
+          </a>
+        </div>
+
+        <!-- ORGANIZATION PROFILE SIDEBAR CARD -->
+        @if (organization()) {
+          <div class="sidebar-card">
+            <h3>Practice Location</h3>
+            <div class="org-mini-profile">
+              <div class="mini-logo">{{ getInitials(organization()!.name) }}</div>
+              <div>
+                <h4>{{ organization()!.name }}</h4>
+                <p class="city">📍 {{ organization()!.city }}</p>
+              </div>
+            </div>
+            <p class="address-text">{{ organization()!.address }}</p>
+            <a [routerLink]="['/organizations', organization()!.id]" class="btn-sm-link">
+              View Organization Profile &rarr;
+            </a>
+          </div>
+        }
+      </aside>
+    </div>
+
+    <!-- FINAL CTA SECTION -->
+    <section class="final-cta-block">
+      <div class="cta-inner">
+        <h2>Ready to book your appointment?</h2>
+        <p>Choose an available time slot that works for you and submit your booking request.</p>
+        <a
+          [routerLink]="['/booking']"
+          [queryParams]="{ doctorId: doctor()!.id }"
+          class="btn btn-primary btn-lg"
+        >
+          Book an Appointment Now
+        </a>
+      </div>
+    </section>
+  }
+</div>
