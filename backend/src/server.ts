@@ -23,13 +23,19 @@ const PORT = parseInt(process.env['PORT'] || '5000', 10);
 
 // ─── Global Middleware ──────────────────────────────────────────────────────
 
-// CORS: Allow Angular dev server + all origins for hackathon demo
+// CORS: Allow local dev servers + Vercel frontend deployments
 app.use(cors({
-  origin: [
-    'http://localhost:4200',   // Angular dev
-    'http://localhost:3000',   // Alt frontend
-    'http://localhost:5173',   // Vite dev
-  ],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (
+      origin.includes('localhost') ||
+      origin.includes('vercel.app') ||
+      origin === 'https://vexa-1-vert.vercel.app'
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
