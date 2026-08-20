@@ -1,0 +1,161 @@
+<div class="organizations-page container">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/">Home</a>
+    <span class="separator">/</span>
+    <span class="current">Healthcare Providers</span>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1>Find Healthcare Providers</h1>
+    <p>Discover verified hospitals, specialized clinics, and medical centers near you.</p>
+  </header>
+
+  <!-- Search & Filters Container -->
+  <section class="filter-panel">
+    <!-- Search Bar -->
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search clinics, hospitals, specialties, or locations..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+      @if (searchQuery()) {
+        <button type="button" class="btn-clear" (click)="searchQuery.set('')" aria-label="Clear search text">&times;</button>
+      }
+    </div>
+
+    <!-- Dropdown Filters Row -->
+    <div class="filters-row">
+      <!-- Filter 1: Organization Type -->
+      <div class="filter-group">
+        <label for="type-select">Provider Type</label>
+        <select
+          id="type-select"
+          class="filter-select"
+          [ngModel]="selectedType()"
+          (ngModelChange)="selectedType.set($event)"
+        >
+          <option value="">All Types</option>
+          <option value="hospital">Hospital</option>
+          <option value="clinic">Specialized Clinic</option>
+          <option value="medical_center">Medical Center</option>
+          <option value="research_institute">Research Institute</option>
+        </select>
+      </div>
+
+      <!-- Filter 2: Department / Specialty -->
+      <div class="filter-group">
+        <label for="dept-select">Department / Specialty</label>
+        <select
+          id="dept-select"
+          class="filter-select"
+          [ngModel]="selectedDepartment()"
+          (ngModelChange)="selectedDepartment.set($event)"
+        >
+          <option value="">All Specialties</option>
+          @for (dept of departments(); track dept.id) {
+            <option [value]="dept.name">{{ dept.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Filter 3: City / Location -->
+      <div class="filter-group">
+        <label for="city-select">Location / City</label>
+        <select
+          id="city-select"
+          class="filter-select"
+          [ngModel]="selectedCity()"
+          (ngModelChange)="selectedCity.set($event)"
+        >
+          <option value="">All Locations</option>
+          <option value="El Shorouk">El Shorouk</option>
+          <option value="Cairo">Cairo</option>
+          <option value="New Cairo">New Cairo</option>
+          <option value="Giza">Giza</option>
+          <option value="Alexandria">Alexandria</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Active Filters & Summary Bar -->
+    <div class="filter-summary-bar">
+      <div class="summary-info">
+        <span class="results-count">
+          <strong>{{ filteredOrganizations().length }}</strong> {{ filteredOrganizations().length === 1 ? 'healthcare provider' : 'healthcare providers' }} found
+        </span>
+        @if (hasActiveFilters()) {
+          <span class="active-badge">{{ activeFiltersText() }}</span>
+        }
+      </div>
+
+      @if (hasActiveFilters()) {
+        <button type="button" class="btn-clear-filters" (click)="clearFilters()">
+          Clear All Filters ✕
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- CONTENT RESULTS AREA -->
+  <section class="results-section">
+    <!-- 1. LOADING STATE -->
+    @if (isLoading()) {
+      <div class="loading-grid">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton-header">
+              <div class="skeleton-circle"></div>
+              <div class="skeleton-lines">
+                <div class="skeleton-line short"></div>
+                <div class="skeleton-line title"></div>
+              </div>
+            </div>
+            <div class="skeleton-body">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+            <div class="skeleton-footer"></div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- 2. ERROR STATE -->
+    @else if (errorMsg()) {
+      <div class="state-card error-card">
+        <div class="state-icon">⚠️</div>
+        <h3>Unable to load healthcare providers</h3>
+        <p>Please try again or browse later.</p>
+        <div class="state-actions">
+          <button type="button" class="btn btn-primary" (click)="loadOrganizations()">Try Again</button>
+          <a routerLink="/" class="btn btn-outline">Back to Home</a>
+        </div>
+      </div>
+    }
+
+    <!-- 3. EMPTY STATE -->
+    @else if (filteredOrganizations().length === 0) {
+      <div class="state-card empty-card">
+        <div class="state-icon">🏥</div>
+        <h3>No healthcare providers found</h3>
+        <p>Try a different specialty, organization name, or location.</p>
+        <button type="button" class="btn btn-primary" (click)="clearFilters()">Clear Filters</button>
+      </div>
+    }
+
+    <!-- 4. SUCCESS STATE: ORGANIZATIONS GRID -->
+    @else {
+      <div class="grid grid-3">
+        @for (org of filteredOrganizations(); track org.id) {
+          <app-organization-card [organization]="org" />
+        }
+      </div>
+    }
+  </section>
+</div>
