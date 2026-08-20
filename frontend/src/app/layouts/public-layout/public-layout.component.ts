@@ -31,7 +31,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
       <!-- MAIN GLASS NAVIGATION HEADER -->
       <header class="app-header">
         <div class="container header-inner">
-          <a routerLink="/" class="brand-logo">
+          <a routerLink="/" class="brand-logo" (click)="onNavClick()">
             <div class="brand-icon-wrap">
               <span class="brand-icon">❖</span>
               <span class="live-dot"></span>
@@ -44,27 +44,27 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
 
           <!-- MAIN NAVIGATION LINKS -->
           <nav class="main-nav" [class.open]="isMobileMenuOpen()">
-            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onNavClick()">
               <span class="nav-icon">🏠</span>
               <span>{{ langService.t('navHome') }}</span>
             </a>
-            <a routerLink="/organizations" routerLinkActive="active" (click)="closeMobileMenu()">
+            <a routerLink="/organizations" routerLinkActive="active" (click)="onNavClick()">
               <span class="nav-icon">🏥</span>
               <span>{{ langService.t('navOrganizations') }}</span>
             </a>
-            <a routerLink="/booking" routerLinkActive="active" (click)="closeMobileMenu()">
+            <a routerLink="/booking" routerLinkActive="active" (click)="onNavClick()">
               <span class="nav-icon">📅</span>
               <span>{{ langService.t('navBooking') }}</span>
             </a>
-            <a routerLink="/faq" routerLinkActive="active" (click)="closeMobileMenu()">
+            <a routerLink="/faq" routerLinkActive="active" (click)="onNavClick()">
               <span class="nav-icon">💡</span>
               <span>{{ langService.t('navFaq') }}</span>
             </a>
-            <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">
+            <a routerLink="/contact" routerLinkActive="active" (click)="onNavClick()">
               <span class="nav-icon">📞</span>
               <span>{{ langService.t('navContact') }}</span>
             </a>
-            <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">
+            <a routerLink="/about" routerLinkActive="active" (click)="onNavClick()">
               <span class="nav-icon">📌</span>
               <span>{{ langService.t('navAbout') }}</span>
             </a>
@@ -72,15 +72,15 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
             <div class="nav-divider-mobile"></div>
 
             @if (authService.isDoctor()) {
-              <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="closeMobileMenu()">{{ langService.t('navDoctorPortal') }}</a>
+              <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="onNavClick()">{{ langService.t('navDoctorPortal') }}</a>
             } @else {
-              <a routerLink="/admin" class="nav-portal-badge admin" (click)="closeMobileMenu()">{{ langService.t('navAdminPortal') }}</a>
+              <a routerLink="/admin" class="nav-portal-badge admin" (click)="onNavClick()">{{ langService.t('navAdminPortal') }}</a>
             }
 
             @if (authService.isLoggedIn()) {
               <button type="button" class="btn-logout-sm" (click)="logout()">{{ langService.t('navSignOut') }}</button>
             } @else {
-              <a routerLink="/login" class="btn-signin-sm" (click)="closeMobileMenu()">{{ langService.t('navSignIn') }}</a>
+              <a routerLink="/login" class="btn-signin-sm" (click)="onNavClick()">{{ langService.t('navSignIn') }}</a>
             }
           </nav>
 
@@ -120,7 +120,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
       <footer class="app-footer">
         <div class="container footer-inner">
           <div class="footer-brand">
-            <div class="brand-logo">
+            <div class="brand-logo" (click)="onNavClick()">
               <div class="brand-icon-wrap">
                 <span class="brand-icon">❖</span>
               </div>
@@ -131,18 +131,18 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
           <div class="footer-links">
             <div class="footer-col">
               <h4>{{ langService.currentLang() === 'ar' ? 'المنصة والخدمات' : 'Platform & Services' }}</h4>
-              <a routerLink="/">{{ langService.t('navHome') }}</a>
-              <a routerLink="/organizations">{{ langService.t('navOrganizations') }}</a>
-              <a routerLink="/booking">{{ langService.t('navBooking') }}</a>
-              <a routerLink="/faq">{{ langService.t('navFaq') }}</a>
-              <a routerLink="/contact">{{ langService.t('navContact') }}</a>
-              <a routerLink="/about">{{ langService.t('navAbout') }}</a>
+              <a routerLink="/" (click)="onNavClick()">{{ langService.t('navHome') }}</a>
+              <a routerLink="/organizations" (click)="onNavClick()">{{ langService.t('navOrganizations') }}</a>
+              <a routerLink="/booking" (click)="onNavClick()">{{ langService.t('navBooking') }}</a>
+              <a routerLink="/faq" (click)="onNavClick()">{{ langService.t('navFaq') }}</a>
+              <a routerLink="/contact" (click)="onNavClick()">{{ langService.t('navContact') }}</a>
+              <a routerLink="/about" (click)="onNavClick()">{{ langService.t('navAbout') }}</a>
             </div>
             <div class="footer-col">
               <h4>{{ langService.currentLang() === 'ar' ? 'بوابات الإدارة والتحكيم' : 'Portals & Architecture' }}</h4>
-              <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }">{{ langService.t('navAdminPortal') }}</a>
-              <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }">{{ langService.t('navDoctorPortal') }}</a>
-              <a routerLink="/about">Business Model Canvas (BMC)</a>
+              <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }" (click)="onNavClick()">{{ langService.t('navAdminPortal') }}</a>
+              <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }" (click)="onNavClick()">{{ langService.t('navDoctorPortal') }}</a>
+              <a routerLink="/about" (click)="onNavClick()">Business Model Canvas (BMC)</a>
             </div>
           </div>
         </div>
@@ -269,6 +269,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
       align-items: center;
       gap: 0.85rem;
       text-decoration: none;
+      cursor: pointer;
     }
 
     .brand-icon-wrap {
@@ -373,6 +374,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
       font-size: 0.92rem;
       padding: 0.4rem 0.6rem;
       border-radius: var(--radius-sm);
+      cursor: pointer;
     }
 
     .nav-icon {
@@ -520,6 +522,7 @@ import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai
       font-size: 0.9rem;
       margin-bottom: 0.6rem;
       transition: color 0.2s ease;
+      cursor: pointer;
     }
 
     .footer-col a:hover {
@@ -562,12 +565,15 @@ export class PublicLayoutComponent {
     this.isMobileMenuOpen.update(val => !val);
   }
 
-  closeMobileMenu(): void {
+  onNavClick(): void {
     this.isMobileMenuOpen.set(false);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }
 
   logout(): void {
-    this.closeMobileMenu();
+    this.onNavClick();
     this.authService.logout();
   }
 }
