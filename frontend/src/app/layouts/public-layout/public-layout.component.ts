@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { LanguageService } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -14,17 +15,25 @@ import { ThemeService } from '../../core/services/theme.service';
           <a routerLink="/" class="brand-logo">
             <div class="brand-icon">❖</div>
             <div class="brand-text">
-              <span class="brand-name">VEXA</span>
-              <span class="brand-tagline">Clinical OS & Discovery</span>
+              <span class="brand-name">{{ langService.t('brandName') }}</span>
+              <span class="brand-tagline">{{ langService.t('brandTagline') }}</span>
             </div>
           </a>
 
           <div class="header-right-group">
-            <button type="button" class="theme-toggle-btn" (click)="themeService.toggleTheme()" [title]="'Switch to ' + (themeService.currentTheme() === 'light' ? 'Dark' : 'Light') + ' Mode'">
-              @if (themeService.currentTheme() === 'light') {
-                <span>🌙 Dark</span>
+            <button type="button" class="control-btn" (click)="langService.toggleLanguage()" [title]="langService.currentLang() === 'ar' ? 'Switch to English' : 'التحويل للغة العربية'">
+              @if (langService.currentLang() === 'ar') {
+                <span>🇬🇧 English</span>
               } @else {
-                <span>☀️ Light</span>
+                <span>🌐 العربية</span>
+              }
+            </button>
+
+            <button type="button" class="control-btn" (click)="themeService.toggleTheme()" [title]="'Switch to ' + (themeService.currentTheme() === 'light' ? 'Dark' : 'Light') + ' Mode'">
+              @if (themeService.currentTheme() === 'light') {
+                <span>🌙 {{ langService.currentLang() === 'ar' ? 'داكن' : 'Dark' }}</span>
+              } @else {
+                <span>☀️ {{ langService.currentLang() === 'ar' ? 'فاتح' : 'Light' }}</span>
               }
             </button>
 
@@ -34,20 +43,20 @@ import { ThemeService } from '../../core/services/theme.service';
           </div>
 
           <nav class="main-nav" [class.open]="isMobileMenuOpen()">
-            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Home</a>
-            <a routerLink="/organizations" routerLinkActive="active" (click)="closeMobileMenu()">Organizations</a>
-            <a routerLink="/booking" routerLinkActive="active" (click)="closeMobileMenu()">Smart Booking</a>
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">{{ langService.t('navHome') }}</a>
+            <a routerLink="/organizations" routerLinkActive="active" (click)="closeMobileMenu()">{{ langService.t('navOrganizations') }}</a>
+            <a routerLink="/booking" routerLinkActive="active" (click)="closeMobileMenu()">{{ langService.t('navBooking') }}</a>
 
             @if (authService.isDoctor()) {
-              <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="closeMobileMenu()">👨‍⚕️ Doctor Portal</a>
+              <a routerLink="/doctor-portal" class="nav-portal-badge doctor" (click)="closeMobileMenu()">{{ langService.t('navDoctorPortal') }}</a>
             } @else {
-              <a routerLink="/admin" class="nav-portal-badge admin" (click)="closeMobileMenu()">🏥 Hospital Admin</a>
+              <a routerLink="/admin" class="nav-portal-badge admin" (click)="closeMobileMenu()">{{ langService.t('navAdminPortal') }}</a>
             }
 
             @if (authService.isLoggedIn()) {
-              <button type="button" class="btn-logout-sm" (click)="logout()">Sign Out</button>
+              <button type="button" class="btn-logout-sm" (click)="logout()">{{ langService.t('navSignOut') }}</button>
             } @else {
-              <a routerLink="/login" class="btn-signin-sm" (click)="closeMobileMenu()">Sign In</a>
+              <a routerLink="/login" class="btn-signin-sm" (click)="closeMobileMenu()">{{ langService.t('navSignIn') }}</a>
             }
           </nav>
         </div>
@@ -62,34 +71,32 @@ import { ThemeService } from '../../core/services/theme.service';
           <div class="footer-brand">
             <div class="brand-logo">
               <div class="brand-icon">❖</div>
-              <span class="footer-logo">VEXA OS</span>
+              <span class="footer-logo">{{ langService.t('brandName') }} OS</span>
             </div>
-            <p>Empowering private hospital networks, clinical operations, and AI-driven appointment discovery across top-tier medical institutions.</p>
+            <p>{{ langService.t('footerTagline') }}</p>
           </div>
           <div class="footer-links">
             <div class="footer-col">
-              <h4>Platform</h4>
-              <a routerLink="/">Home</a>
-              <a routerLink="/organizations">Organizations</a>
-              <a routerLink="/booking">Smart Booking</a>
+              <h4>{{ langService.currentLang() === 'ar' ? 'المنصة' : 'Platform' }}</h4>
+              <a routerLink="/">{{ langService.t('navHome') }}</a>
+              <a routerLink="/organizations">{{ langService.t('navOrganizations') }}</a>
+              <a routerLink="/booking">{{ langService.t('navBooking') }}</a>
             </div>
             <div class="footer-col">
-              <h4>Management Portals</h4>
-              <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }">Hospital Admin OS</a>
-              <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }">Doctor Clinical Portal</a>
+              <h4>{{ langService.currentLang() === 'ar' ? 'بوابات الإدارة' : 'Portals' }}</h4>
+              <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }">{{ langService.t('navAdminPortal') }}</a>
+              <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }">{{ langService.t('navDoctorPortal') }}</a>
             </div>
           </div>
         </div>
 
         <div class="container footer-disclaimer">
-          <p>
-            🛡️ <strong>Private Healthcare Network Disclaimer:</strong> VEXA is a clinical technology platform facilitating appointment scheduling and doctor discovery. It does not replace direct emergency response.
-          </p>
+          <p>{{ langService.t('footerDisclaimer') }}</p>
         </div>
 
         <div class="footer-bottom">
           <div class="container">
-            <p>&copy; 2026 VEXA HealthTech Inc. All Rights Reserved. Private Hospital Edition.</p>
+            <p>{{ langService.t('footerRights') }}</p>
           </div>
         </div>
       </footer>
@@ -159,14 +166,14 @@ import { ThemeService } from '../../core/services/theme.service';
       color: var(--color-primary);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.05em;
       margin-top: 0.2rem;
     }
 
     .header-right-group {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.6rem;
     }
 
     .mobile-toggle {
@@ -362,6 +369,7 @@ import { ThemeService } from '../../core/services/theme.service';
 export class PublicLayoutComponent {
   readonly authService = inject(AuthService);
   readonly themeService = inject(ThemeService);
+  readonly langService = inject(LanguageService);
   readonly isMobileMenuOpen = signal(false);
 
   toggleMobileMenu(): void {

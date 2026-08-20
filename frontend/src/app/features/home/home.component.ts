@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { OrganizationService } from '../../core/services/organization.service';
 import { DoctorService } from '../../core/services/doctor.service';
 import { AiService } from '../../core/services/ai.service';
+import { LanguageService } from '../../core/services/language.service';
 import { Organization } from '../../core/models/organization.model';
 import { Doctor } from '../../core/models/doctor.model';
 import { AiRecommendationResponse } from '../../core/models/ai-recommendation.model';
@@ -23,6 +24,7 @@ export class HomeComponent implements OnInit {
   private readonly orgService = inject(OrganizationService);
   private readonly doctorService = inject(DoctorService);
   private readonly aiService = inject(AiService);
+  readonly langService = inject(LanguageService);
 
   // Reactive Form
   searchForm: FormGroup = this.fb.group({
@@ -127,56 +129,49 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // --- Fallback Local Data ---
   private getFallbackOrganizations(): Organization[] {
     return [
       {
-        id: 'org-1',
-        name: 'El Shorouk International Hospital',
+        id: '1',
+        name: 'مستشفى الشروق الدولي المخصص',
         type: 'hospital',
-        description: 'Comprehensive multi-specialty tertiary hospital featuring 24/7 Emergency, Cardiology, Pediatrics & ICU facilities.',
-        city: 'El Shorouk',
-        address: 'Central District, Block 4',
-        phone: '+20 2 2680 0000',
-        email: 'info@shorouk-hospital.com',
+        description: 'مستشفى استثماري متكامل يضم كافة التخصصات الدقيقة ووحدات الرعاية المركزة والقسطرة.',
+        address: 'حي الأشجار - مدينة الشروق',
+        city: 'الشروق',
+        phone: '01000000001',
+        email: 'info@shoroukhospital.com',
         rating: 4.9,
         reviewCount: 142,
-        departmentsCount: 12,
-        doctorsCount: 45,
         isVerified: true,
-        createdAt: '2026-01-01'
+        createdAt: new Date().toISOString()
       },
       {
-        id: 'org-2',
-        name: 'Cairo Heart & Vascular Center',
+        id: '2',
+        name: 'مركز فيكسا الطبي المتقدم',
         type: 'medical_center',
-        description: 'Premier cardiovascular medical center specializing in non-invasive cardiology, angiography, and vascular surgery.',
-        city: 'Cairo',
-        address: '5th Settlement, 90th Street',
-        phone: '+20 2 2790 1111',
-        email: 'contact@cairoheart.org',
+        description: 'مركز طوارئ وعيادات تخصصية مجهزة بأحدث أجهزة الأشعة والتحاليل الطبية.',
+        address: 'التجمع الخامس - شارع التسعين',
+        city: 'القاهرة الجديده',
+        phone: '01000000002',
+        email: 'contact@vexa-center.com',
         rating: 4.8,
         reviewCount: 98,
-        departmentsCount: 4,
-        doctorsCount: 18,
         isVerified: true,
-        createdAt: '2026-01-05'
+        createdAt: new Date().toISOString()
       },
       {
-        id: 'org-3',
-        name: 'Nile Skin & Laser Clinic',
-        type: 'clinic',
-        description: 'Advanced dermatology, cosmetic skin procedures, and laser care center staffed by senior consultants.',
-        city: 'New Cairo',
-        address: 'Medical Park 1, Office 204',
-        phone: '+20 2 2810 2222',
-        email: 'appointments@nileskin.com',
-        rating: 4.7,
-        reviewCount: 76,
-        departmentsCount: 2,
-        doctorsCount: 8,
+        id: '3',
+        name: 'مستشفى السلام الدولي',
+        type: 'hospital',
+        description: 'صرح طبي عريق يقدم خدمات الطوارئ على مدار الساعة وجراحات القلب والمناظير.',
+        address: 'المعادي - الكورنيش',
+        city: 'القاهرة',
+        phone: '01000000003',
+        email: 'info@alsalamhospital.com',
+        rating: 4.95,
+        reviewCount: 310,
         isVerified: true,
-        createdAt: '2026-01-10'
+        createdAt: new Date().toISOString()
       }
     ];
   }
@@ -184,52 +179,52 @@ export class HomeComponent implements OnInit {
   private getFallbackDoctors(): Doctor[] {
     return [
       {
-        id: 'doc-1',
-        organizationId: 'org-1',
-        departmentId: 'dept-1',
-        name: 'Sarah Mansour',
-        title: 'Dr.',
-        specialty: 'Cardiology & Cardiovascular Medicine',
-        bio: 'Senior Consultant Cardiologist specializing in echocardiography and preventive cardiac health.',
-        experienceYears: 14,
-        languages: ['English', 'Arabic'],
-        rating: 4.9,
-        reviewCount: 112,
+        id: 'doc1',
+        organizationId: '1',
+        departmentId: 'dept1',
+        name: 'أ.د. أحمد عبد الرحمن الحسين',
+        title: 'أ.د.',
+        specialty: 'استشاري أمراض القلب والأوعية الدموية والقسطرة',
+        bio: 'أستاذ أمراض القلب بكلية الطب، زميل الكلية الأمريكية للقلب، خبرة أكثر من ٢٢ عاماً في قسطرة الشرايين التاجية.',
         consultationFee: 450,
         currency: 'EGP',
-        isAvailableForBooking: true
+        experienceYears: 22,
+        rating: 4.95,
+        reviewCount: 180,
+        isAvailableForBooking: true,
+        languages: ['العربية', 'English', 'Français']
       },
       {
-        id: 'doc-2',
-        organizationId: 'org-3',
-        departmentId: 'dept-2',
-        name: 'Ahmed El-Sayed',
-        title: 'Dr.',
-        specialty: 'Dermatology & Laser Surgery',
-        bio: 'Consultant Dermatologist with expertise in aesthetic laser therapy and clinical dermatology.',
-        experienceYears: 11,
-        languages: ['English', 'Arabic'],
-        rating: 4.8,
-        reviewCount: 84,
-        consultationFee: 400,
-        currency: 'EGP',
-        isAvailableForBooking: true
-      },
-      {
-        id: 'doc-3',
-        organizationId: 'org-4',
-        departmentId: 'dept-3',
-        name: 'Mona Hassan',
-        title: 'Dr.',
-        specialty: 'Pediatrics & Neonatal Care',
-        bio: 'Pediatric specialist focusing on infant nutrition, growth tracking, and adolescent medicine.',
-        experienceYears: 9,
-        languages: ['English', 'Arabic', 'French'],
-        rating: 4.9,
-        reviewCount: 130,
+        id: 'doc2',
+        organizationId: '1',
+        departmentId: 'dept2',
+        name: 'د. مريم الشناوي',
+        title: 'د.',
+        specialty: 'استشاري أمراض الجلدية والتجميل والليزر',
+        bio: 'خبرة طويلة في علاج الأمراض الجلدية المستعصية وتقنيات النضرة والعلاج بالليزر.',
         consultationFee: 350,
         currency: 'EGP',
-        isAvailableForBooking: true
+        experienceYears: 14,
+        rating: 4.88,
+        reviewCount: 112,
+        isAvailableForBooking: true,
+        languages: ['العربية', 'English']
+      },
+      {
+        id: 'doc3',
+        organizationId: '2',
+        departmentId: 'dept3',
+        name: 'د. خالد مصطفى',
+        title: 'د.',
+        specialty: 'استشاري طب وجراحة الأطفال والحديثي الولادة',
+        bio: 'مدرس طب الأطفال، متخصص في متابعة النمو والتغذية وأمراض الصدر للأطفال.',
+        consultationFee: 300,
+        currency: 'EGP',
+        experienceYears: 16,
+        rating: 4.9,
+        reviewCount: 95,
+        isAvailableForBooking: true,
+        languages: ['العربية', 'English']
       }
     ];
   }

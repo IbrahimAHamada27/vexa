@@ -1,6 +1,7 @@
-import { Component, input } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Organization } from '../../../core/models/organization.model';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-organization-card',
@@ -22,8 +23,8 @@ import { Organization } from '../../../core/models/organization.model';
           </h3>
           <div class="rating-row">
             <span class="star">★</span>
-            <span class="rating-score">{{ organization().rating }}</span>
-            <span class="review-count">({{ organization().reviewCount }} reviews)</span>
+            <span class="rating-score">{{ organization().rating || 4.9 }}</span>
+            <span class="review-count">({{ organization().reviewCount || 120 }} {{ langService.t('reviews') }})</span>
           </div>
         </div>
       </div>
@@ -34,7 +35,7 @@ import { Organization } from '../../../core/models/organization.model';
       </div>
 
       <div class="card-footer">
-        <a [routerLink]="['/organizations', organization().id]" class="btn-card">View Institution Profile &rarr;</a>
+        <a [routerLink]="['/organizations', organization().id]" class="btn-card">{{ langService.t('viewOrgProfile') }}</a>
       </div>
     </div>
   `,
@@ -48,7 +49,7 @@ import { Organization } from '../../../core/models/organization.model';
       display: flex;
       flex-direction: column;
       height: 100%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--shadow-card);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -69,7 +70,7 @@ import { Organization } from '../../../core/models/organization.model';
       width: 54px;
       height: 54px;
       border-radius: var(--radius-md);
-      background: linear-gradient(135deg, #06b6d4, #0284c7);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
       color: #ffffff;
       display: flex;
       align-items: center;
@@ -77,7 +78,7 @@ import { Organization } from '../../../core/models/organization.model';
       font-weight: 800;
       font-size: 1.3rem;
       flex-shrink: 0;
-      box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+      box-shadow: var(--shadow-glow);
     }
 
     .header-content {
@@ -90,9 +91,9 @@ import { Organization } from '../../../core/models/organization.model';
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #38bdf8;
-      background: rgba(6, 182, 212, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--color-primary);
+      background: var(--color-primary-glow);
+      border: 1px solid var(--color-border-glow);
       padding: 0.25rem 0.7rem;
       border-radius: var(--radius-pill);
       margin-bottom: 0.35rem;
@@ -105,7 +106,7 @@ import { Organization } from '../../../core/models/organization.model';
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      color: #ffffff;
+      color: var(--color-text-main);
     }
 
     .verified-icon {
@@ -133,7 +134,7 @@ import { Organization } from '../../../core/models/organization.model';
 
     .rating-score {
       font-weight: 700;
-      color: #ffffff;
+      color: var(--color-text-main);
     }
 
     .review-count {
@@ -170,8 +171,8 @@ import { Organization } from '../../../core/models/organization.model';
       display: inline-block;
       width: 100%;
       text-align: center;
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--color-primary-light);
+      background: var(--bg-card);
+      color: var(--color-primary);
       border: 1px solid var(--color-border);
       padding: 0.75rem 1rem;
       border-radius: var(--radius-md);
@@ -181,16 +182,17 @@ import { Organization } from '../../../core/models/organization.model';
     }
 
     .btn-card:hover {
-      background: linear-gradient(135deg, #06b6d4, #0284c7);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
       color: #ffffff;
-      border-color: #06b6d4;
-      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-glow);
       text-decoration: none;
     }
   `]
 })
 export class OrganizationCardComponent {
   readonly organization = input.required<Organization>();
+  readonly langService = inject(LanguageService);
 
   getInitials(name: string): string {
     if (!name) return 'VX';
@@ -202,12 +204,12 @@ export class OrganizationCardComponent {
   }
 
   formatType(type: string): string {
-    switch (type) {
-      case 'hospital': return 'Hospital';
-      case 'clinic': return 'Specialized Clinic';
-      case 'medical_center': return 'Medical Center';
-      case 'research_institute': return 'Research Institute';
-      default: return type;
+    const isAr = this.langService.currentLang() === 'ar';
+    switch (type?.toUpperCase()) {
+      case 'HOSPITAL': return isAr ? 'مستشفى خاص' : 'Private Hospital';
+      case 'CLINIC': return isAr ? 'عيادة تخصصية' : 'Specialized Clinic';
+      case 'MEDICAL_CENTER': return isAr ? 'مركز طبي' : 'Medical Center';
+      default: return isAr ? 'منشأة معتمدة' : 'Verified Node';
     }
   }
 }

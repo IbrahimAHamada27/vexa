@@ -1,15 +1,15 @@
 <div class="organizations-page container">
   <!-- Breadcrumb -->
   <nav class="breadcrumb">
-    <a routerLink="/">Home</a>
+    <a routerLink="/">{{ langService.t('navHome') }}</a>
     <span class="separator">/</span>
-    <span class="current">Healthcare Providers</span>
+    <span class="current">{{ langService.t('navOrganizations') }}</span>
   </nav>
 
   <!-- Page Header -->
   <header class="page-header">
-    <h1>Find Healthcare Providers</h1>
-    <p>Discover verified hospitals, specialized clinics, and medical centers near you.</p>
+    <h1>{{ langService.t('topOrganizationsTitle') }}</h1>
+    <p>{{ langService.t('topOrganizationsSub') }}</p>
   </header>
 
   <!-- Search & Filters Container -->
@@ -20,7 +20,7 @@
       <input
         type="text"
         class="search-input"
-        placeholder="Search clinics, hospitals, specialties, or locations..."
+        [placeholder]="langService.t('searchOrgPlaceholder')"
         [ngModel]="searchQuery()"
         (ngModelChange)="searchQuery.set($event)"
       />
@@ -33,52 +33,35 @@
     <div class="filters-row">
       <!-- Filter 1: Organization Type -->
       <div class="filter-group">
-        <label for="type-select">Provider Type</label>
+        <label for="type-select">{{ langService.currentLang() === 'ar' ? 'نوع المنشأة' : 'Provider Type' }}</label>
         <select
           id="type-select"
           class="filter-select"
           [ngModel]="selectedType()"
           (ngModelChange)="selectedType.set($event)"
         >
-          <option value="">All Types</option>
-          <option value="hospital">Hospital</option>
-          <option value="clinic">Specialized Clinic</option>
-          <option value="medical_center">Medical Center</option>
-          <option value="research_institute">Research Institute</option>
+          <option value="">{{ langService.t('filterTypeAll') }}</option>
+          <option value="hospital">{{ langService.t('filterTypeHospital') }}</option>
+          <option value="clinic">{{ langService.t('filterTypeClinic') }}</option>
+          <option value="medical_center">{{ langService.t('filterTypeMedicalCenter') }}</option>
         </select>
       </div>
 
-      <!-- Filter 2: Department / Specialty -->
+      <!-- Filter 2: City / Location -->
       <div class="filter-group">
-        <label for="dept-select">Department / Specialty</label>
-        <select
-          id="dept-select"
-          class="filter-select"
-          [ngModel]="selectedDepartment()"
-          (ngModelChange)="selectedDepartment.set($event)"
-        >
-          <option value="">All Specialties</option>
-          @for (dept of departments(); track dept.id) {
-            <option [value]="dept.name">{{ dept.name }}</option>
-          }
-        </select>
-      </div>
-
-      <!-- Filter 3: City / Location -->
-      <div class="filter-group">
-        <label for="city-select">Location / City</label>
+        <label for="city-select">{{ langService.currentLang() === 'ar' ? 'المدينة / المنطقة' : 'Location / City' }}</label>
         <select
           id="city-select"
           class="filter-select"
           [ngModel]="selectedCity()"
           (ngModelChange)="selectedCity.set($event)"
         >
-          <option value="">All Locations</option>
-          <option value="El Shorouk">El Shorouk</option>
-          <option value="Cairo">Cairo</option>
-          <option value="New Cairo">New Cairo</option>
-          <option value="Giza">Giza</option>
-          <option value="Alexandria">Alexandria</option>
+          <option value="">{{ langService.t('filterCityAll') }}</option>
+          <option value="الشروق">{{ langService.t('filterCityShorouk') }}</option>
+          <option value="القاهرة">{{ langService.t('filterCityCairo') }}</option>
+          <option value="القاهرة الجديده">{{ langService.t('filterCityNewCairo') }}</option>
+          <option value="الجيزة">{{ langService.t('filterCityGiza') }}</option>
+          <option value="الإسكندرية">{{ langService.t('filterCityAlex') }}</option>
         </select>
       </div>
     </div>
@@ -87,16 +70,13 @@
     <div class="filter-summary-bar">
       <div class="summary-info">
         <span class="results-count">
-          <strong>{{ filteredOrganizations().length }}</strong> {{ filteredOrganizations().length === 1 ? 'healthcare provider' : 'healthcare providers' }} found
+          <strong>{{ filteredOrganizations().length }}</strong> {{ langService.currentLang() === 'ar' ? 'منشأة طبية متاحة' : 'healthcare providers found' }}
         </span>
-        @if (hasActiveFilters()) {
-          <span class="active-badge">{{ activeFiltersText() }}</span>
-        }
       </div>
 
-      @if (hasActiveFilters()) {
-        <button type="button" class="btn-clear-filters" (click)="clearFilters()">
-          Clear All Filters ✕
+      @if (searchQuery() || selectedType() || selectedCity()) {
+        <button type="button" class="btn-clear-filters" (click)="resetFilters()">
+          {{ langService.currentLang() === 'ar' ? 'مسح الفلاتر ✕' : 'Clear All Filters ✕' }}
         </button>
       }
     </div>
@@ -126,30 +106,17 @@
       </div>
     }
 
-    <!-- 2. ERROR STATE -->
-    @else if (errorMsg()) {
-      <div class="state-card error-card">
-        <div class="state-icon">⚠️</div>
-        <h3>Unable to load healthcare providers</h3>
-        <p>Please try again or browse later.</p>
-        <div class="state-actions">
-          <button type="button" class="btn btn-primary" (click)="loadOrganizations()">Try Again</button>
-          <a routerLink="/" class="btn btn-outline">Back to Home</a>
-        </div>
-      </div>
-    }
-
-    <!-- 3. EMPTY STATE -->
+    <!-- 2. EMPTY STATE -->
     @else if (filteredOrganizations().length === 0) {
       <div class="state-card empty-card">
         <div class="state-icon">🏥</div>
-        <h3>No healthcare providers found</h3>
-        <p>Try a different specialty, organization name, or location.</p>
-        <button type="button" class="btn btn-primary" (click)="clearFilters()">Clear Filters</button>
+        <h3>{{ langService.currentLang() === 'ar' ? 'لم يتم العثور على منشآت طبية بهذه المعايير' : 'No healthcare providers found' }}</h3>
+        <p>{{ langService.currentLang() === 'ar' ? 'جرب البحث بتخصص أو اسم مستشفى أو منطقة مختلفة.' : 'Try a different specialty, organization name, or location.' }}</p>
+        <button type="button" class="btn btn-primary" (click)="resetFilters()">{{ langService.currentLang() === 'ar' ? 'إعادة ضبط البحث' : 'Clear Filters' }}</button>
       </div>
     }
 
-    <!-- 4. SUCCESS STATE: ORGANIZATIONS GRID -->
+    <!-- 3. SUCCESS STATE: ORGANIZATIONS GRID -->
     @else {
       <div class="grid grid-3">
         @for (org of filteredOrganizations(); track org.id) {

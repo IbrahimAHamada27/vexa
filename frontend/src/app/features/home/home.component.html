@@ -2,10 +2,10 @@
   <!-- HERO & SMART DISCOVERY SECTION -->
   <section class="hero-section">
     <div class="container hero-inner">
-      <div class="hero-badge">⚡ Smart Healthcare Discovery</div>
-      <h1 class="hero-title">Find the right healthcare provider</h1>
+      <div class="hero-badge">{{ langService.t('heroBadge') }}</div>
+      <h1 class="hero-title">{{ langService.t('heroTitle') }}</h1>
       <p class="hero-subtitle">
-        Tell VEXA what kind of healthcare provider you're looking for and discover relevant hospitals, clinics, and specialist doctors.
+        {{ langService.t('heroSubtitle') }}
       </p>
 
       <!-- REACTIVE SMART DISCOVERY FORM -->
@@ -15,7 +15,7 @@
           <input
             type="text"
             formControlName="query"
-            placeholder="e.g. I need a dermatologist near El Shorouk"
+            [placeholder]="langService.t('searchPlaceholder')"
             class="search-input"
           />
           <button
@@ -24,41 +24,43 @@
             [disabled]="searchForm.invalid || isSearching()"
           >
             @if (isSearching()) {
-              <span>Finding providers...</span>
+              <span>{{ langService.t('findingProvidersBtn') }}</span>
             } @else {
-              <span>Find Providers &rarr;</span>
+              <span>{{ langService.t('findProvidersBtn') }}</span>
             }
           </button>
         </div>
 
         @if (searchForm.get('query')?.invalid && searchForm.get('query')?.touched) {
-          <p class="field-error">Please enter at least 3 characters describing the specialty or location.</p>
+          <p class="field-error">
+            {{ langService.currentLang() === 'ar' ? 'برجاء كتابة ٣ أحرف على الأقل لوصف العرض الطبي أو المنطقة.' : 'Please enter at least 3 characters describing the specialty or location.' }}
+          </p>
         }
       </form>
 
       <!-- EXAMPLE SUGGESTION CHIPS -->
       <div class="example-chips">
-        <span class="chip-label">Try searching:</span>
+        <span class="chip-label">{{ langService.t('trySearching') }}</span>
         <button
           type="button"
           class="chip-btn"
-          (click)="fillSearch('I need a dermatologist near El Shorouk.')"
+          (click)="fillSearch(langService.currentLang() === 'ar' ? 'أحتاج استشاري أمراض جلدية وتجميل في الشروق' : 'I need a dermatologist near El Shorouk.')"
         >
-          "I need a dermatologist near El Shorouk."
+          "{{ langService.currentLang() === 'ar' ? 'أحتاج استشاري أمراض جلدية وتجميل في الشروق' : 'I need a dermatologist near El Shorouk.' }}"
         </button>
         <button
           type="button"
           class="chip-btn"
-          (click)="fillSearch('Find a cardiologist in Cairo.')"
+          (click)="fillSearch(langService.currentLang() === 'ar' ? 'البحث عن أستاذ أمراض قلب وقسطرة في القاهرة' : 'Find a cardiologist in Cairo.')"
         >
-          "Find a cardiologist in Cairo."
+          "{{ langService.currentLang() === 'ar' ? 'البحث عن أستاذ أمراض قلب وقسطرة في القاهرة' : 'Find a cardiologist in Cairo.' }}"
         </button>
         <button
           type="button"
           class="chip-btn"
-          (click)="fillSearch('I need a pediatric clinic near Nasr City.')"
+          (click)="fillSearch(langService.currentLang() === 'ar' ? 'عيادة أطفال وتغذية حديثي الولادة بالتجمع الخامس' : 'Pediatric clinic near Nasr City.')"
         >
-          "Pediatric clinic near Nasr City."
+          "{{ langService.currentLang() === 'ar' ? 'عيادة أطفال وتغذية حديثي الولادة بالتجمع الخامس' : 'Pediatric clinic near Nasr City.' }}"
         </button>
       </div>
 
@@ -67,11 +69,11 @@
         <div class="search-error-card">
           <span class="icon">⚠️</span>
           <div>
-            <h4>Smart Discovery Notice</h4>
+            <h4>{{ langService.currentLang() === 'ar' ? 'تنويه الاكتشاف الذكي' : 'Smart Discovery Notice' }}</h4>
             <p>{{ searchError() }}</p>
             <div class="error-ctas">
-              <button type="button" class="btn btn-outline" (click)="onSearch()">Try Again</button>
-              <a routerLink="/organizations" class="btn btn-primary">Browse Organizations &rarr;</a>
+              <button type="button" class="btn btn-outline" (click)="onSearch()">{{ langService.currentLang() === 'ar' ? 'إعادة المحاولة' : 'Try Again' }}</button>
+              <a routerLink="/organizations" class="btn btn-primary">{{ langService.t('viewAllOrgs') }}</a>
             </div>
           </div>
         </div>
@@ -84,23 +86,23 @@
     <div class="trust-grid">
       <div class="trust-card">
         <span class="trust-icon">🔍</span>
-        <h3>Easy Discovery</h3>
-        <p>Explore healthcare organizations, specialized clinics, and senior doctors all in one organized place.</p>
+        <h3>{{ langService.t('trustTitle1') }}</h3>
+        <p>{{ langService.t('trustDesc1') }}</p>
       </div>
       <div class="trust-card">
         <span class="trust-icon">⚡</span>
-        <h3>Smart Provider Matching</h3>
-        <p>Describe what you are looking for in natural language to quickly discover matching medical specialists.</p>
+        <h3>{{ langService.t('trustTitle2') }}</h3>
+        <p>{{ langService.t('trustDesc2') }}</p>
       </div>
       <div class="trust-card">
         <span class="trust-icon">📅</span>
-        <h3>Simple Booking</h3>
-        <p>Select available consultation dates and time slots with instant confirmation details.</p>
+        <h3>{{ langService.t('trustTitle3') }}</h3>
+        <p>{{ langService.t('trustDesc3') }}</p>
       </div>
       <div class="trust-card">
         <span class="trust-icon">🏥</span>
-        <h3>Professional Profiles</h3>
-        <p>Review comprehensive facility profiles, medical departments, clinical services, and consultant credentials.</p>
+        <h3>{{ langService.t('trustTitle4') }}</h3>
+        <p>{{ langService.t('trustDesc4') }}</p>
       </div>
     </div>
   </section>
@@ -110,13 +112,13 @@
     <section class="ai-results-section container">
       <div class="results-header">
         <div>
-          <h2>Recommended Healthcare Providers</h2>
+          <h2>{{ langService.currentLang() === 'ar' ? 'الترشيحات الطبية المخصصة لك' : 'Recommended Healthcare Providers' }}</h2>
           <p class="summary-text">{{ aiResults()!.summary }}</p>
           <span class="understanding-pill">
-            Specialty: <strong>{{ aiResults()!.suggestedSpecialty }}</strong>
+            {{ langService.currentLang() === 'ar' ? 'التخصص المرشح:' : 'Specialty:' }} <strong>{{ aiResults()!.suggestedSpecialty }}</strong>
           </span>
         </div>
-        <button type="button" class="btn btn-outline btn-sm" (click)="clearSearch()">Clear Search</button>
+        <button type="button" class="btn btn-outline btn-sm" (click)="clearSearch()">{{ langService.currentLang() === 'ar' ? 'مسح نتائج البحث' : 'Clear Search' }}</button>
       </div>
 
       <div class="recommendations-grid">
@@ -129,14 +131,14 @@
                 <span class="match-specialty">{{ match.specialty }}</span>
               </div>
               <div class="score-badge-wrap">
-                <span class="match-score">{{ match.matchScore }}% Match</span>
-                <span class="score-sub">Based on search criteria</span>
+                <span class="match-score">{{ match.matchScore }}% {{ langService.currentLang() === 'ar' ? 'نسبة التطابق' : 'Match' }}</span>
+                <span class="score-sub">{{ langService.currentLang() === 'ar' ? 'بناءً على الأعراض المدخلة' : 'Based on search criteria' }}</span>
               </div>
             </div>
             <p class="match-reason">💡 {{ match.reason }}</p>
             <div class="match-actions">
-              <a [routerLink]="['/doctors', match.doctorId]" class="btn btn-outline btn-sm">View Doctor Profile</a>
-              <a [routerLink]="['/booking']" [queryParams]="{ doctorId: match.doctorId }" class="btn btn-primary btn-sm">Book Appointment &rarr;</a>
+              <a [routerLink]="['/doctors', match.doctorId]" class="btn btn-outline btn-sm">{{ langService.t('viewProfile') }}</a>
+              <a [routerLink]="['/booking']" [queryParams]="{ doctorId: match.doctorId }" class="btn btn-primary btn-sm">{{ langService.t('bookingTitle') }} &rarr;</a>
             </div>
           </div>
         }
@@ -148,10 +150,10 @@
   <section class="section container">
     <div class="section-header">
       <div>
-        <h2>Featured Healthcare Organizations</h2>
-        <p>Top hospitals, clinics, and medical centers in Cairo & El Shorouk.</p>
+        <h2>{{ langService.t('topOrganizationsTitle') }}</h2>
+        <p>{{ langService.t('topOrganizationsSub') }}</p>
       </div>
-      <a routerLink="/organizations" class="link-more">Browse All Organizations &rarr;</a>
+      <a routerLink="/organizations" class="link-more">{{ langService.t('viewAllOrgs') }}</a>
     </div>
 
     @if (isLoadingOrgs()) {
@@ -174,9 +176,10 @@
     <div class="container">
       <div class="section-header">
         <div>
-          <h2>Featured Medical Specialists</h2>
-          <p>Book consultations with senior medical consultants.</p>
+          <h2>{{ langService.t('topDoctorsTitle') }}</h2>
+          <p>{{ langService.t('topDoctorsSub') }}</p>
         </div>
+        <a routerLink="/organizations" class="link-more">{{ langService.t('viewAllDoctors') }}</a>
       </div>
 
       @if (isLoadingDoctors()) {
@@ -198,25 +201,25 @@
   <!-- HOW VEXA WORKS -->
   <section class="section container">
     <div class="text-center section-title-block">
-      <h2>How VEXA Works</h2>
-      <p>Seamless healthcare discovery and appointment scheduling in 3 steps.</p>
+      <h2>{{ langService.t('howItWorksTitle') }}</h2>
+      <p>{{ langService.t('howItWorksSub') }}</p>
     </div>
 
     <div class="steps-grid">
       <div class="step-card">
-        <div class="step-number">1</div>
-        <h3>Describe Your Need</h3>
-        <p>Use natural language or smart filters to specify your medical specialty, preferred city, or facility type.</p>
+        <div class="step-number">١</div>
+        <h3>{{ langService.t('step1Title') }}</h3>
+        <p>{{ langService.t('step1Desc') }}</p>
       </div>
       <div class="step-card">
-        <div class="step-number">2</div>
-        <h3>Discover Providers</h3>
-        <p>Compare hospitals, specialized clinics, and expert doctors with clear consultation pricing.</p>
+        <div class="step-number">٢</div>
+        <h3>{{ langService.t('step2Title') }}</h3>
+        <p>{{ langService.t('step2Desc') }}</p>
       </div>
       <div class="step-card">
-        <div class="step-number">3</div>
-        <h3>Book Instantly</h3>
-        <p>Select your preferred appointment date and time slot with instant email and SMS booking confirmation.</p>
+        <div class="step-number">٣</div>
+        <h3>{{ langService.t('step3Title') }}</h3>
+        <p>{{ langService.t('step3Desc') }}</p>
       </div>
     </div>
   </section>
@@ -224,9 +227,9 @@
   <!-- FINAL CTA -->
   <section class="container">
     <div class="home-final-cta">
-      <h2>Ready to find your healthcare provider?</h2>
-      <p>Discover top hospitals, clinics, and doctors near you.</p>
-      <a routerLink="/organizations" class="btn btn-primary btn-lg">Browse Healthcare Organizations</a>
+      <h2>{{ langService.currentLang() === 'ar' ? 'جاهز لحجز موعدك في أفضل رعاية طبية؟' : 'Ready to find your healthcare provider?' }}</h2>
+      <p>{{ langService.currentLang() === 'ar' ? 'استكشف كبرى المستشفيات والعيادات ونخبة الأطباء الآن.' : 'Discover top hospitals, clinics, and doctors near you.' }}</p>
+      <a routerLink="/organizations" class="btn btn-primary btn-lg">{{ langService.t('viewAllOrgs') }}</a>
     </div>
   </section>
 </div>

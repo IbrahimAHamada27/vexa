@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { LanguageService } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -14,7 +15,7 @@ import { ThemeService } from '../../core/services/theme.service';
           <div class="brand-box">
             <div class="brand-icon">❖</div>
             <div>
-              <span class="sidebar-logo">VEXA</span>
+              <span class="sidebar-logo">{{ langService.t('brandName') }}</span>
               <span class="badge badge-cyan">Hospital OS</span>
             </div>
           </div>
@@ -23,50 +24,58 @@ import { ThemeService } from '../../core/services/theme.service';
 
         <nav class="sidebar-nav">
           <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobile()">
-            <span class="icon">📊</span> Executive Dashboard
+            <span class="icon">📊</span> {{ langService.currentLang() === 'ar' ? 'لوحة المتابعة الإستراتيجية' : 'Executive Dashboard' }}
           </a>
           <a routerLink="/admin/organization" routerLinkActive="active" (click)="closeMobile()">
-            <span class="icon">🏥</span> Organization Profile
+            <span class="icon">🏥</span> {{ langService.currentLang() === 'ar' ? 'ملف المنشأة والمستشفى' : 'Organization Profile' }}
           </a>
           <a routerLink="/admin/departments" routerLinkActive="active" (click)="closeMobile()">
-            <span class="icon">📁</span> Clinical Departments
+            <span class="icon">📁</span> {{ langService.currentLang() === 'ar' ? 'الأقسام الإكلينيكية' : 'Clinical Departments' }}
           </a>
           <a routerLink="/admin/doctors" routerLinkActive="active" (click)="closeMobile()">
-            <span class="icon">👨‍⚕️</span> Staff Consultants
+            <span class="icon">👨‍⚕️</span> {{ langService.currentLang() === 'ar' ? 'الأطقم الطبية والاستشاريون' : 'Staff Consultants' }}
           </a>
           <a routerLink="/admin/services" routerLinkActive="active" (click)="closeMobile()">
-            <span class="icon">💉</span> Medical Services
+            <span class="icon">💉</span> {{ langService.currentLang() === 'ar' ? 'الخدمات الطبية والكشوفات' : 'Medical Services' }}
           </a>
           <a routerLink="/admin/appointments" routerLinkActive="active" (click)="closeMobile()">
-            <span class="icon">📅</span> Appointments OS
+            <span class="icon">📅</span> {{ langService.currentLang() === 'ar' ? 'جدول الحجوزات والمواعيد' : 'Appointments OS' }}
           </a>
           <a routerLink="/" class="back-link">
-            <span class="icon">←</span> Public Healthcare Portal
+            <span class="icon">←</span> {{ langService.currentLang() === 'ar' ? 'البوابة الطبية العامة' : 'Public Healthcare Portal' }}
           </a>
         </nav>
 
         <div class="sidebar-user">
           <div class="user-meta">
-            <span class="user-role">ORGANIZATION MANAGER</span>
-            <span class="user-name">🏥 Hospital Admin</span>
+            <span class="user-role">{{ langService.currentLang() === 'ar' ? 'مدير المنشأة الطبية' : 'ORGANIZATION MANAGER' }}</span>
+            <span class="user-name">🏥 {{ langService.currentLang() === 'ar' ? 'إدارة المستشفى' : 'Hospital Admin' }}</span>
           </div>
-          <button type="button" class="btn-logout" (click)="logout()">Sign Out</button>
+          <button type="button" class="btn-logout" (click)="logout()">{{ langService.t('navSignOut') }}</button>
         </div>
       </aside>
 
       <div class="admin-body">
         <header class="admin-top-bar">
-          <button type="button" class="mobile-toggle" (click)="isMobileOpen.set(true)">☰ Menu</button>
+          <button type="button" class="mobile-toggle" (click)="isMobileOpen.set(true)">☰</button>
           <div class="header-title">
-            <h2>Hospital Administration Command Center</h2>
-            <span class="header-sub">VEXA Private Hospital Network OS</span>
+            <h2>{{ langService.t('adminPortalTitle') }}</h2>
+            <span class="header-sub">{{ langService.t('adminPortalSub') }}</span>
           </div>
           <div class="header-actions">
-            <button type="button" class="theme-toggle-btn" (click)="themeService.toggleTheme()" [title]="'Switch to ' + (themeService.currentTheme() === 'light' ? 'Dark' : 'Light') + ' Mode'">
-              @if (themeService.currentTheme() === 'light') {
-                <span>🌙 Dark</span>
+            <button type="button" class="control-btn" (click)="langService.toggleLanguage()" [title]="langService.currentLang() === 'ar' ? 'Switch to English' : 'التحويل للغة العربية'">
+              @if (langService.currentLang() === 'ar') {
+                <span>🇬🇧 EN</span>
               } @else {
-                <span>☀️ Light</span>
+                <span>🌐 عربي</span>
+              }
+            </button>
+
+            <button type="button" class="control-btn" (click)="themeService.toggleTheme()" [title]="'Switch to ' + (themeService.currentTheme() === 'light' ? 'Dark' : 'Light') + ' Mode'">
+              @if (themeService.currentTheme() === 'light') {
+                <span>🌙 {{ langService.currentLang() === 'ar' ? 'داكن' : 'Dark' }}</span>
+              } @else {
+                <span>☀️ {{ langService.currentLang() === 'ar' ? 'فاتح' : 'Light' }}</span>
               }
             </button>
             <span class="badge badge-emerald">● Enterprise Node Active</span>
@@ -261,7 +270,7 @@ import { ThemeService } from '../../core/services/theme.service';
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
     }
 
     .mobile-toggle {
@@ -310,6 +319,7 @@ import { ThemeService } from '../../core/services/theme.service';
 export class AdminLayoutComponent {
   readonly authService = inject(AuthService);
   readonly themeService = inject(ThemeService);
+  readonly langService = inject(LanguageService);
   readonly isMobileOpen = signal(false);
 
   closeMobile(): void {
