@@ -121,8 +121,11 @@ export class OrganizationDetailComponent implements OnInit {
     // Load Doctors
     this.doctorService.getDoctors(orgId).subscribe({
       next: (res) => {
-        if (res.success && res.data?.items?.length) {
-          this.doctors.set(res.data.items);
+        const data = res.data;
+        if (Array.isArray(data) && data.length) {
+          this.doctors.set(data);
+        } else if (data && 'items' in data && Array.isArray(data.items) && data.items.length) {
+          this.doctors.set(data.items);
         } else {
           this.doctors.set(this.getFallbackDoctors(orgId));
         }

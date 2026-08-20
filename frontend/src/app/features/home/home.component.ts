@@ -24,22 +24,20 @@ export class HomeComponent implements OnInit {
   private readonly doctorService = inject(DoctorService);
   private readonly aiService = inject(AiService);
 
-  // Search State
+  // Reactive Form
+  searchForm: FormGroup = this.fb.group({
+    query: ['', [Validators.required, Validators.minLength(3)]]
+  });
+
+  // AI Recommendation State Signals
   isSearching = signal(false);
   searchError = signal<string | null>(null);
   aiResults = signal<AiRecommendationResponse | null>(null);
 
-  // Reactive Form
-  searchForm: FormGroup = this.fb.group({
-    query: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]]
-  });
-
-  // Organizations State
+  // Data Loading Signals
   isLoadingOrgs = signal(true);
-  organizations = signal<Organization[]>([]);
-
-  // Doctors State
   isLoadingDoctors = signal(true);
+  organizations = signal<Organization[]>([]);
   doctors = signal<Doctor[]>([]);
 
   ngOnInit(): void {
@@ -47,53 +45,55 @@ export class HomeComponent implements OnInit {
     this.loadDoctors();
   }
 
-  // --- Smart Search Submission ---
   onSearch(): void {
-    if (this.searchForm.invalid || this.isSearching()) return;
+    if (this.searchForm.invalid || this.isSearching()) {
+      return;
+    }
 
-    const queryText = this.searchForm.value.query.trim();
-    if (!queryText) return;
-
+    const query = this.searchForm.value.query.trim();
     this.isSearching.set(true);
     this.searchError.set(null);
-    this.aiResults.set(null);
 
-    this.aiService.getDoctorRecommendations({ query: queryText, symptoms: queryText }).subscribe({
+    this.aiService.recommend(query).subscribe({
       next: (res: ApiResponse<AiRecommendationResponse>) => {
         this.isSearching.set(false);
         if (res.success && res.data) {
           this.aiResults.set(res.data);
         } else {
-          this.searchError.set(res.message || 'We couldn\'t find matching healthcare providers. Try describing a different specialty or location.');
+          this.searchError.set('Unable to process AI recommendation. Showing standard search fallback.');
+          this.aiResults.set(null);
         }
       },
       error: () => {
         this.isSearching.set(false);
-        this.searchError.set('Smart Discovery is temporarily unavailable. You can still browse providers manually.');
+        this.searchError.set('Healthcare provider discovery service is temporarily unavailable. Browse organizations below.');
+        this.aiResults.set(null);
       }
     });
   }
 
-  fillSearch(exampleText: string): void {
-    this.searchForm.patchValue({ query: exampleText });
+  fillSearch(prompt: string): void {
+    this.searchForm.patchValue({ query: prompt });
     this.onSearch();
   }
 
   clearSearch(): void {
-    this.searchForm.reset();
     this.aiResults.set(null);
     this.searchError.set(null);
+    this.searchForm.reset();
   }
 
-  // --- Load Featured Data ---
   private loadOrganizations(): void {
     this.isLoadingOrgs.set(true);
 
     this.orgService.getOrganizations().subscribe({
-      next: (res: ApiResponse<PaginatedData<Organization>>) => {
+      next: (res: ApiResponse<Organization[] | PaginatedData<Organization>>) => {
         this.isLoadingOrgs.set(false);
-        if (res.success && res.data?.items?.length) {
-          this.organizations.set(res.data.items.slice(0, 3));
+        const data = res.data;
+        if (Array.isArray(data) && data.length) {
+          this.organizations.set(data.slice(0, 3));
+        } else if (data && 'items' in data && Array.isArray(data.items) && data.items.length) {
+          this.organizations.set(data.items.slice(0, 3));
         } else {
           this.organizations.set(this.getFallbackOrganizations());
         }
@@ -109,10 +109,13 @@ export class HomeComponent implements OnInit {
     this.isLoadingDoctors.set(true);
 
     this.doctorService.getDoctors().subscribe({
-      next: (res: ApiResponse<PaginatedData<Doctor>>) => {
+      next: (res: ApiResponse<Doctor[] | PaginatedData<Doctor>>) => {
         this.isLoadingDoctors.set(false);
-        if (res.success && res.data?.items?.length) {
-          this.doctors.set(res.data.items.slice(0, 3));
+        const data = res.data;
+        if (Array.isArray(data) && data.length) {
+          this.doctors.set(data.slice(0, 3));
+        } else if (data && 'items' in data && Array.isArray(data.items) && data.items.length) {
+          this.doctors.set(data.items.slice(0, 3));
         } else {
           this.doctors.set(this.getFallbackDoctors());
         }
@@ -131,13 +134,15 @@ export class HomeComponent implements OnInit {
         id: 'org-1',
         name: 'El Shorouk International Hospital',
         type: 'hospital',
-        description: 'Comprehensive multi-specialty tertiary care hospital with 24/7 Emergency & ICU facilities.',
+        description: 'Comprehensive multi-specialty tertiary hospital featuring 24/7 Emergency, Cardiology, Pediatrics & ICU facilities.',
         city: 'El Shorouk',
         address: 'Central District, Block 4',
         phone: '+20 2 2680 0000',
         email: 'info@shorouk-hospital.com',
         rating: 4.9,
         reviewCount: 142,
+        departmentsCount: 12,
+        doctorsCount: 45,
         isVerified: true,
         createdAt: '2026-01-01'
       },
@@ -145,13 +150,15 @@ export class HomeComponent implements OnInit {
         id: 'org-2',
         name: 'Cairo Heart & Vascular Center',
         type: 'medical_center',
-        description: 'Leading cardiovascular center specializing in non-invasive cardiology and vascular surgery.',
+        description: 'Premier cardiovascular medical center specializing in non-invasive cardiology, angiography, and vascular surgery.',
         city: 'Cairo',
         address: '5th Settlement, 90th Street',
         phone: '+20 2 2790 1111',
         email: 'contact@cairoheart.org',
         rating: 4.8,
         reviewCount: 98,
+        departmentsCount: 4,
+        doctorsCount: 18,
         isVerified: true,
         createdAt: '2026-01-05'
       },
@@ -159,13 +166,15 @@ export class HomeComponent implements OnInit {
         id: 'org-3',
         name: 'Nile Skin & Laser Clinic',
         type: 'clinic',
-        description: 'Advanced dermatology, cosmetology, and laser care center with board-certified consultants.',
+        description: 'Advanced dermatology, cosmetic skin procedures, and laser care center staffed by senior consultants.',
         city: 'New Cairo',
         address: 'Medical Park 1, Office 204',
         phone: '+20 2 2810 2222',
         email: 'appointments@nileskin.com',
         rating: 4.7,
         reviewCount: 76,
+        departmentsCount: 2,
+        doctorsCount: 8,
         isVerified: true,
         createdAt: '2026-01-10'
       }
@@ -176,11 +185,11 @@ export class HomeComponent implements OnInit {
     return [
       {
         id: 'doc-1',
-        organizationId: 'org-2',
+        organizationId: 'org-1',
         departmentId: 'dept-1',
         name: 'Sarah Mansour',
         title: 'Dr.',
-        specialty: 'Cardiology & Cardiovascular',
+        specialty: 'Cardiology & Cardiovascular Medicine',
         bio: 'Senior Consultant Cardiologist specializing in echocardiography and preventive cardiac health.',
         experienceYears: 14,
         languages: ['English', 'Arabic'],
@@ -194,31 +203,31 @@ export class HomeComponent implements OnInit {
         id: 'doc-2',
         organizationId: 'org-3',
         departmentId: 'dept-2',
-        name: 'Ahmed Hassan',
+        name: 'Ahmed El-Sayed',
         title: 'Dr.',
-        specialty: 'Dermatology & Cosmetic Care',
-        bio: 'Consultant Dermatologist with expertise in clinical dermatology, laser therapy, and skin surgery.',
-        experienceYears: 10,
-        languages: ['English', 'Arabic', 'French'],
+        specialty: 'Dermatology & Laser Surgery',
+        bio: 'Consultant Dermatologist with expertise in aesthetic laser therapy and clinical dermatology.',
+        experienceYears: 11,
+        languages: ['English', 'Arabic'],
         rating: 4.8,
         reviewCount: 84,
-        consultationFee: 350,
+        consultationFee: 400,
         currency: 'EGP',
         isAvailableForBooking: true
       },
       {
         id: 'doc-3',
-        organizationId: 'org-1',
+        organizationId: 'org-4',
         departmentId: 'dept-3',
-        name: 'Layla Mahmoud',
+        name: 'Mona Hassan',
         title: 'Dr.',
-        specialty: 'Pediatrics & Child Health',
-        bio: 'Consultant Pediatrician dedicated to pediatric care, neonatal health, and growth monitoring.',
-        experienceYears: 12,
-        languages: ['English', 'Arabic'],
+        specialty: 'Pediatrics & Neonatal Care',
+        bio: 'Pediatric specialist focusing on infant nutrition, growth tracking, and adolescent medicine.',
+        experienceYears: 9,
+        languages: ['English', 'Arabic', 'French'],
         rating: 4.9,
-        reviewCount: 95,
-        consultationFee: 400,
+        reviewCount: 130,
+        consultationFee: 350,
         currency: 'EGP',
         isAvailableForBooking: true
       }

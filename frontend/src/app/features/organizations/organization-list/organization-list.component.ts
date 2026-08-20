@@ -105,10 +105,13 @@ export class OrganizationListComponent implements OnInit {
     this.errorMsg.set(null);
 
     this.orgService.getOrganizations().subscribe({
-      next: (res: ApiResponse<PaginatedData<Organization>>) => {
+      next: (res: ApiResponse<Organization[] | PaginatedData<Organization>>) => {
         this.isLoading.set(false);
-        if (res.success && res.data?.items?.length) {
-          this.organizations.set(res.data.items);
+        const data = res.data;
+        if (Array.isArray(data) && data.length) {
+          this.organizations.set(data);
+        } else if (data && 'items' in data && Array.isArray(data.items) && data.items.length) {
+          this.organizations.set(data.items);
         } else {
           this.organizations.set(this.getFallbackOrganizations());
         }

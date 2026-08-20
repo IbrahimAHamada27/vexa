@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { listDoctors, getDoctorById } from '../controllers/doctors.controller.js';
+import { listDoctors, getDoctorById, getDoctorAvailability } from '../controllers/doctors.controller.js';
 import { validate } from '../middleware/validate.js';
 import { doctorQuerySchema, idParamSchema } from '../validators/schemas.js';
 
@@ -62,4 +62,31 @@ doctorsRouter.get(
   '/:id',
   validate(idParamSchema, 'params'),
   getDoctorById
+);
+
+/**
+ * @swagger
+ * /api/v1/doctors/{id}/availability:
+ *   get:
+ *     summary: Get doctor availability slots
+ *     tags: [Doctors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Doctor ID
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *         description: Optional date filter (YYYY-MM-DD)
+ *     responses:
+ *       200:
+ *         description: Doctor availability slots
+ */
+doctorsRouter.get(
+  '/:id/availability',
+  getDoctorAvailability
 );

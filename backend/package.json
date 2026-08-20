@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "VEXA Healthcare Platform - MVP Backend",
   "main": "dist/server.js",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
@@ -17,7 +18,32 @@
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
-  "keywords": ["healthcare", "medical", "appointments", "gemini", "ai"],
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.4",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.7",
+    "prisma": "^6.3.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "keywords": [
+    "healthcare",
+    "medical",
+    "appointments",
+    "gemini",
+    "ai"
+  ],
   "author": "VEXA Team",
   "license": "ISC"
 }

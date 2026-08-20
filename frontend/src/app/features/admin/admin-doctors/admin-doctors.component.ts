@@ -343,9 +343,12 @@ export class AdminDoctorsComponent implements OnInit {
   loadDoctors(): void {
     this.isLoading.set(true);
     this.doctorService.getDoctors().subscribe({
-      next: (res: ApiResponse<PaginatedData<Doctor>>) => {
-        if (res.data?.items?.length) {
-          this.doctors.set(res.data.items);
+      next: (res) => {
+        const data = res.data;
+        if (Array.isArray(data) && data.length) {
+          this.doctors.set(data);
+        } else if (data && 'items' in data && Array.isArray(data.items) && data.items.length) {
+          this.doctors.set(data.items);
         } else {
           this.doctors.set(this.getFallbackDoctors());
         }

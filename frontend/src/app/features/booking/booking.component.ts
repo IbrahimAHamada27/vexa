@@ -94,9 +94,12 @@ export class BookingComponent implements OnInit {
     this.isLoadingData.set(true);
 
     this.orgService.getOrganizations().subscribe({
-      next: (res: ApiResponse<PaginatedData<Organization>>) => {
-        if (res.success && res.data?.items?.length) {
-          this.organizations.set(res.data.items);
+      next: (res) => {
+        const data = res.data;
+        if (Array.isArray(data) && data.length) {
+          this.organizations.set(data);
+        } else if (data && 'items' in data && Array.isArray(data.items) && data.items.length) {
+          this.organizations.set(data.items);
         } else {
           this.organizations.set(this.getFallbackOrganizations());
         }
@@ -111,10 +114,13 @@ export class BookingComponent implements OnInit {
 
   private loadDoctorsList(): void {
     this.doctorService.getDoctors().subscribe({
-      next: (res: ApiResponse<PaginatedData<Doctor>>) => {
+      next: (res) => {
         this.isLoadingData.set(false);
-        if (res.success && res.data?.items?.length) {
-          this.doctors.set(res.data.items);
+        const data = res.data;
+        if (Array.isArray(data) && data.length) {
+          this.doctors.set(data);
+        } else if (data && 'items' in data && Array.isArray(data.items) && data.items.length) {
+          this.doctors.set(data.items);
         } else {
           this.doctors.set(this.getFallbackDoctors());
         }

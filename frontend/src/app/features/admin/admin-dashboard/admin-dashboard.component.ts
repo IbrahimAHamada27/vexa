@@ -436,8 +436,15 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     this.doctorService.getDoctors().subscribe({
-      next: (res: ApiResponse<PaginatedData<Doctor>>) => {
-        this.doctorsCount.set(res.data?.items?.length ?? null);
+      next: (res) => {
+        const data = res.data;
+        if (Array.isArray(data)) {
+          this.doctorsCount.set(data.length);
+        } else if (data && 'items' in data && Array.isArray(data.items)) {
+          this.doctorsCount.set(data.items.length);
+        } else {
+          this.doctorsCount.set(null);
+        }
       },
       error: () => this.doctorsCount.set(null)
     });

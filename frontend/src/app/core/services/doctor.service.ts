@@ -13,7 +13,7 @@ export class DoctorService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.doctors}`;
 
-  getDoctors(organizationId?: string, specialty?: string): Observable<ApiResponse<PaginatedData<Doctor>>> {
+  getDoctors(organizationId?: string, specialty?: string): Observable<ApiResponse<Doctor[] | PaginatedData<Doctor>>> {
     let params = new HttpParams();
     if (organizationId) {
       params = params.set('organizationId', organizationId);
@@ -21,7 +21,7 @@ export class DoctorService {
     if (specialty) {
       params = params.set('specialty', specialty);
     }
-    return this.http.get<ApiResponse<PaginatedData<Doctor>>>(this.baseUrl, { params });
+    return this.http.get<ApiResponse<Doctor[] | PaginatedData<Doctor>>>(this.baseUrl, { params });
   }
 
   getDoctorById(id: string): Observable<ApiResponse<Doctor>> {

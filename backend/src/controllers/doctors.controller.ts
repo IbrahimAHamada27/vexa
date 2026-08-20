@@ -102,3 +102,32 @@ export async function getDoctorById(
     next(error);
   }
 }
+
+/**
+ * GET /api/v1/doctors/:id/availability
+ * Get doctor availability slots directly by doctor ID
+ */
+export async function getDoctorAvailability(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+    const { date } = req.query as { date?: string };
+
+    const where: Prisma.AvailabilitySlotWhereInput = { doctorId: id };
+    if (date) {
+      where.date = date;
+    }
+
+    const slots = await prisma.availabilitySlot.findMany({
+      where,
+      orderBy: [{ date: 'asc' }, { time: 'asc' }],
+    });
+
+    sendSuccess(res, slots, `Found ${slots.length} availability slot(s)`);
+  } catch (error) {
+    next(error);
+  }
+}

@@ -32,4 +32,11 @@ const options: swaggerJsdoc.Options = {
   apis: ['./src/routes/*.ts', './src/routes/*.js'],
 };
 
-export const swaggerSpec = swaggerJsdoc(options);
+let spec: object;
+try {
+  spec = swaggerJsdoc(options);
+} catch {
+  spec = options.definition as object;
+}
+
+export const swaggerSpec = spec;

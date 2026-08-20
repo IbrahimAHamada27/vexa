@@ -12,7 +12,7 @@ export class OrganizationService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.organizations}`;
 
-  getOrganizations(city?: string, query?: string): Observable<ApiResponse<PaginatedData<Organization>>> {
+  getOrganizations(city?: string, query?: string): Observable<ApiResponse<Organization[] | PaginatedData<Organization>>> {
     let params = new HttpParams();
     if (city) {
       params = params.set('city', city);
@@ -20,7 +20,7 @@ export class OrganizationService {
     if (query) {
       params = params.set('query', query);
     }
-    return this.http.get<ApiResponse<PaginatedData<Organization>>>(this.baseUrl, { params });
+    return this.http.get<ApiResponse<Organization[] | PaginatedData<Organization>>>(this.baseUrl, { params });
   }
 
   getOrganizationById(id: string): Observable<ApiResponse<Organization>> {
