@@ -1,0 +1,96 @@
+<div class="login-page container">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/">Home</a>
+    <span class="separator">/</span>
+    <span class="current">Sign In</span>
+  </nav>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="brand-logo">VEXA</div>
+      <h2>Portal Login</h2>
+      <p>Select your portal and sign in to manage healthcare operations or doctor schedules.</p>
+    </div>
+
+    <!-- QUICK DEMO LOGIN SHORTCUTS -->
+    <div class="demo-shortcuts">
+      <span class="shortcuts-title">⚡ Quick Hackathon Demo Logins:</span>
+      <div class="shortcuts-grid">
+        <button type="button" class="btn-shortcut admin" (click)="quickDemoAdmin()">
+          🏥 Login as Hospital Admin
+        </button>
+        <button type="button" class="btn-shortcut doctor" (click)="quickDemoDoctor()">
+          👨‍⚕️ Login as Dr. Sarah (Doctor)
+        </button>
+      </div>
+    </div>
+
+    <!-- ROLE SELECTOR TABS -->
+    <div class="role-selector">
+      <button
+        type="button"
+        class="role-tab"
+        [class.active]="selectedRole() === 'admin'"
+        (click)="selectRole('admin')"
+      >
+        🏥 Hospital Administration
+      </button>
+      <button
+        type="button"
+        class="role-tab"
+        [class.active]="selectedRole() === 'doctor'"
+        (click)="selectRole('doctor')"
+      >
+        👨‍⚕️ Doctor Portal
+      </button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      @if (loginError()) {
+        <div class="error-alert">{{ loginError() }}</div>
+      }
+
+      <div class="form-group">
+        <label for="email">Username / Email *</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="e.g. admin@vexa.com"
+          class="form-control"
+        />
+        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          <span class="field-error">Please enter a valid username or email.</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="••••••••"
+          class="form-control"
+        />
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <span class="field-error">Password is required (min 4 characters).</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="loginForm.invalid || isLoading()"
+      >
+        {{ isLoading() ? 'Authenticating...' : 'Sign In to ' + (selectedRole() === 'doctor' ? 'Doctor Portal' : 'Admin Portal') }} &rarr;
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <a routerLink="/" class="back-link">&larr; Back to Healthcare Discovery</a>
+    </div>
+  </div>
+</div>

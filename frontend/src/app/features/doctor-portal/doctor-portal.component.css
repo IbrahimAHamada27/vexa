@@ -1,0 +1,249 @@
+.doctor-portal {
+  padding-top: 2rem;
+  padding-bottom: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Header */
+.portal-header {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+}
+
+.doctor-profile-box {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.doctor-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.header-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.role-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+  background-color: rgba(15, 159, 125, 0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.status-dot {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+.doctor-info h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 0.2rem 0;
+}
+
+.specialty-text {
+  font-size: 0.95rem;
+  color: var(--color-secondary);
+  font-weight: 600;
+  margin: 0 0 0.2rem 0;
+}
+
+.org-text {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.portal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-logout {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #ef4444;
+}
+
+.btn-logout:hover {
+  background-color: #fee2e2;
+}
+
+/* Section Cards */
+.section-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0 0 0.25rem 0;
+}
+
+.section-header p {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.filter-select {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+/* Table */
+.table-card {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.data-table th, .data-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.data-table th {
+  background-color: var(--color-background);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.contact-line { display: block; font-size: 0.85rem; font-weight: 500; }
+.email-line { display: block; font-size: 0.75rem; color: var(--color-muted); }
+.time-sub { font-size: 0.8rem; color: var(--color-muted); margin: 0; }
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.status-badge.confirmed { background-color: rgba(16, 185, 129, 0.1); color: var(--color-success); }
+.status-badge.pending { background-color: rgba(245, 158, 11, 0.1); color: #d97706; }
+.status-badge.cancelled { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.text-right { text-align: right; }
+.actions-cell { display: flex; gap: 0.5rem; justify-content: flex-end; }
+
+/* Slots Grid */
+.slots-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .slots-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .slots-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.slot-card {
+  background-color: var(--color-background);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.slot-card.booked {
+  border-color: var(--color-border);
+  opacity: 0.75;
+}
+
+.slot-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.slot-date { font-size: 0.8rem; font-weight: 600; }
+.slot-time { font-size: 0.9rem; font-weight: 700; color: var(--color-primary); }
+
+.loading-box, .empty-box {
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--color-muted);
+  background-color: var(--color-background);
+  border-radius: 12px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-primary { background-color: var(--color-primary); color: #fff; }
+.btn-outline { background-color: transparent; border-color: var(--color-border); color: var(--color-text); }
+.btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
+.btn-success { background-color: var(--color-success); color: #fff; }
+.btn-outline-danger { background-color: transparent; border-color: #ef4444; color: #ef4444; }

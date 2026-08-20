@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -22,8 +23,18 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Home</a>
             <a routerLink="/organizations" routerLinkActive="active" (click)="closeMobileMenu()">Organizations</a>
             <a routerLink="/booking" routerLinkActive="active" (click)="closeMobileMenu()">Booking</a>
-            <a routerLink="/admin" class="nav-admin-link" (click)="closeMobileMenu()">Admin Portal</a>
-            <a routerLink="/organizations" class="btn-primary-sm" (click)="closeMobileMenu()">Find Healthcare</a>
+
+            @if (authService.isDoctor()) {
+              <a routerLink="/doctor-portal" class="nav-admin-link" (click)="closeMobileMenu()">👨‍⚕️ Doctor Portal</a>
+            } @else {
+              <a routerLink="/admin" class="nav-admin-link" (click)="closeMobileMenu()">🏥 Admin Portal</a>
+            }
+
+            @if (authService.isLoggedIn()) {
+              <button type="button" class="btn-logout-sm" (click)="logout()">Sign Out</button>
+            } @else {
+              <a routerLink="/login" class="btn-primary-sm" (click)="closeMobileMenu()">Sign In</a>
+            }
           </nav>
         </div>
       </header>
@@ -46,8 +57,9 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
               <a routerLink="/booking">Booking</a>
             </div>
             <div class="footer-col">
-              <h4>Portal</h4>
-              <a routerLink="/admin">Admin Dashboard</a>
+              <h4>Portals</h4>
+              <a routerLink="/login" [queryParams]="{ targetRole: 'admin' }">Hospital Admin</a>
+              <a routerLink="/login" [queryParams]="{ targetRole: 'doctor' }">Doctor Portal</a>
             </div>
           </div>
         </div>
@@ -129,7 +141,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
     .main-nav {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.25rem;
       align-items: center;
     }
 
@@ -167,6 +179,17 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       background-color: var(--color-primary-hover);
     }
 
+    .btn-logout-sm {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #ef4444;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     @media (max-width: 768px) {
       .mobile-toggle {
         display: block;
@@ -191,7 +214,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
         display: flex;
       }
 
-      .btn-primary-sm {
+      .btn-primary-sm, .btn-logout-sm {
         text-align: center;
       }
     }
@@ -283,6 +306,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   `]
 })
 export class PublicLayoutComponent {
+  readonly authService = inject(AuthService);
   readonly isMobileMenuOpen = signal(false);
 
   toggleMobileMenu(): void {
@@ -291,5 +315,10 @@ export class PublicLayoutComponent {
 
   closeMobileMenu(): void {
     this.isMobileMenuOpen.set(false);
+  }
+
+  logout(): void {
+    this.closeMobileMenu();
+    this.authService.logout();
   }
 }

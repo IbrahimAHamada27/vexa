@@ -1,0 +1,115 @@
+<div class="doctor-portal container">
+  <!-- Top Bar / Header -->
+  <header class="portal-header">
+    <div class="doctor-profile-box">
+      <div class="doctor-avatar">👨‍⚕️</div>
+      <div class="doctor-info">
+        <div class="header-badges">
+          <span class="role-badge">Doctor Portal</span>
+          <span class="status-dot">● Active Schedule</span>
+        </div>
+        <h1>{{ doctor()?.title }} {{ doctor()?.name }}</h1>
+        <p class="specialty-text">{{ doctor()?.specialty }}</p>
+        <p class="org-text">🏥 El Shorouk International Hospital &bull; Consultation Fee: {{ doctor()?.consultationFee }} {{ doctor()?.currency }}</p>
+      </div>
+    </div>
+    <div class="portal-actions">
+      <a routerLink="/" class="btn btn-outline">Public Site</a>
+      <button type="button" class="btn btn-logout" (click)="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- SCHEDULED APPOINTMENTS TABLE -->
+  <section class="section-card">
+    <div class="section-header">
+      <div>
+        <h2>Patient Appointments</h2>
+        <p>Review incoming patient bookings assigned to your clinic schedule.</p>
+      </div>
+      <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" class="filter-select">
+        <option value="">All Statuses</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="pending">Pending</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-box">Loading scheduled appointments...</div>
+    } @else if (filteredAppointments().length === 0) {
+      <div class="empty-box">No appointments found matching filter.</div>
+    } @else {
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Patient Name</th>
+              <th>Contact Details</th>
+              <th>Date & Time Slot</th>
+              <th>Status</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of filteredAppointments(); track app.id) {
+              <tr>
+                <td>
+                  <strong>{{ app.patient?.firstName || 'Patient' }} {{ app.patient?.lastName || '' }}</strong>
+                </td>
+                <td>
+                  <span class="contact-line">📞 {{ app.patient?.phone || 'N/A' }}</span>
+                  <span class="email-line">{{ app.patient?.email || '' }}</span>
+                </td>
+                <td>
+                  <strong>📅 {{ app.appointmentDate }}</strong>
+                  <p class="time-sub">⏰ {{ app.startTime }} - {{ app.endTime }}</p>
+                </td>
+                <td>
+                  <span class="status-badge" [class]="app.status">{{ app.status }}</span>
+                </td>
+                <td class="text-right actions-cell">
+                  @if (app.status === 'pending') {
+                    <button type="button" class="btn-sm btn-success" (click)="updateAppointmentStatus(app.id, 'confirmed')">Confirm</button>
+                  }
+                  @if (app.status !== 'cancelled') {
+                    <button type="button" class="btn-sm btn-outline-danger" (click)="updateAppointmentStatus(app.id, 'cancelled')">Cancel</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <!-- AVAILABILITY SLOTS MANAGEMENT -->
+  <section class="section-card">
+    <div class="section-header">
+      <div>
+        <h2>Availability Schedule Slots</h2>
+        <p>Manage open time slots for patient booking.</p>
+      </div>
+    </div>
+
+    <div class="slots-grid">
+      @for (slot of slots(); track slot.id) {
+        <div class="slot-card" [class.booked]="slot.isBooked">
+          <div class="slot-details">
+            <span class="slot-date">📅 {{ slot.date }}</span>
+            <span class="slot-time">⏰ {{ slot.startTime }} - {{ slot.endTime }}</span>
+          </div>
+          <button
+            type="button"
+            class="btn-sm"
+            [class.btn-outline]="!slot.isBooked"
+            [class.btn-success]="slot.isBooked"
+            (click)="toggleSlotAvailability(slot.id)"
+          >
+            {{ slot.isBooked ? 'Reserved' : 'Active Slot' }}
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+</div>

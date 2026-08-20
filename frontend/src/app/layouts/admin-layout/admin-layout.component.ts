@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -39,12 +40,17 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
             <span class="icon">←</span> Back to Public Site
           </a>
         </nav>
+
+        <div class="sidebar-user">
+          <span class="user-name">🏥 Hospital Admin</span>
+          <button type="button" class="btn-logout" (click)="logout()">Sign Out</button>
+        </div>
       </aside>
 
       <div class="admin-body">
         <header class="admin-top-bar">
           <button type="button" class="mobile-toggle" (click)="isMobileOpen.set(true)">☰ Menu</button>
-          <h2>Organization Portal</h2>
+          <h2>Hospital Admin Portal</h2>
           <div class="org-context">
             <span class="live-status">● Live Demo Mode</span>
           </div>
@@ -114,6 +120,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
+      flex: 1;
     }
 
     .sidebar-nav a {
@@ -148,6 +155,37 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
     .back-link:hover {
       color: #ffffff !important;
+    }
+
+    .sidebar-user {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .user-name {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      color: #ef4444;
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-logout:hover {
+      background-color: #fef2f2;
     }
 
     .admin-body {
@@ -220,9 +258,14 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   `]
 })
 export class AdminLayoutComponent {
+  readonly authService = inject(AuthService);
   readonly isMobileOpen = signal(false);
 
   closeMobile(): void {
     this.isMobileOpen.set(false);
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }
