@@ -3,11 +3,12 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { LanguageService } from '../../core/services/language.service';
+import { AiChatWidgetComponent } from '../../shared/components/ai-chat-widget/ai-chat-widget.component';
 
 @Component({
   selector: 'app-public-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, AiChatWidgetComponent],
   template: `
     <div class="layout-container">
       <header class="app-header">
@@ -65,6 +66,9 @@ import { LanguageService } from '../../core/services/language.service';
       <main class="main-content">
         <router-outlet />
       </main>
+
+      <!-- FLOATING AI CLINICAL ASSISTANT CHAT WIDGET -->
+      <app-ai-chat-widget />
 
       <footer class="app-footer">
         <div class="container footer-inner">
