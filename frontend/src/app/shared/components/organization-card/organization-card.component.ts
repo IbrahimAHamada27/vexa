@@ -16,7 +16,7 @@ import { LanguageService } from '../../../core/services/language.service';
         <div class="header-content">
           <div class="type-badge">{{ formatType(organization().type) }}</div>
           <h3 class="org-name">
-            {{ organization().name }}
+            {{ langService.localizeText(organization().name) }}
             @if (organization().isVerified) {
               <span class="verified-icon" title="Verified Hospital Node">✓</span>
             }
@@ -30,8 +30,8 @@ import { LanguageService } from '../../../core/services/language.service';
       </div>
 
       <div class="card-body">
-        <p class="org-location">📍 {{ organization().city }} · {{ organization().address }}</p>
-        <p class="org-desc">{{ organization().description }}</p>
+        <p class="org-location">📍 {{ langService.localizeText(organization().city) }} · {{ langService.localizeText(organization().address) }}</p>
+        <p class="org-desc">{{ langService.localizeText(organization().description) }}</p>
       </div>
 
       <div class="card-footer">

@@ -14,8 +14,8 @@ import { LanguageService } from '../../../core/services/language.service';
           <span>{{ getInitials(doctor().name) }}</span>
         </div>
         <div class="doctor-meta">
-          <span class="specialty-badge">{{ doctor().specialty }}</span>
-          <h3 class="doctor-name">{{ doctor().title || '' }} {{ doctor().name }}</h3>
+          <span class="specialty-badge">{{ langService.localizeText(doctor().specialty) }}</span>
+          <h3 class="doctor-name">{{ langService.localizeText(doctor().name) }}</h3>
           <p class="doctor-exp">{{ doctor().experienceYears || 15 }} {{ langService.t('experienceYears') }}</p>
         </div>
       </div>
@@ -185,8 +185,8 @@ export class DoctorCardComponent {
 
   formatLanguages(languages?: string[] | string): string {
     if (!languages) return this.langService.currentLang() === 'ar' ? 'العربية، English' : 'English, Arabic';
-    if (Array.isArray(languages)) return languages.join(', ');
-    if (typeof languages === 'string') return languages;
+    if (Array.isArray(languages)) return languages.map(l => this.langService.localizeText(l)).join(', ');
+    if (typeof languages === 'string') return this.langService.localizeText(languages);
     return this.langService.currentLang() === 'ar' ? 'العربية، English' : 'English, Arabic';
   }
 

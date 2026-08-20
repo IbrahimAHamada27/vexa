@@ -240,6 +240,103 @@ export class LanguageService {
     }
   };
 
+  // Translation Mappings for Dynamic DB Data
+  private readonly entityTranslations: Record<string, { ar: string; en: string }> = {
+    // Organizations
+    'مستشفى الشروق الدولي التخصصي': { ar: 'مستشفى الشروق الدولي التخصصي', en: 'Shorouk International Specialized Hospital' },
+    'مركز فيكسا الطبي المتقدم بالتجمع': { ar: 'مركز فيكسا الطبي المتقدم بالتجمع', en: 'VEXA Advanced Medical Center' },
+    'مركز فيكسا الطبي المتقدم': { ar: 'مركز فيكسا الطبي المتقدم', en: 'VEXA Advanced Medical Center' },
+    'مستشفى السلام الدولي بالمعادي': { ar: 'مستشفى السلام الدولي بالمعادي', en: 'Al Salam International Hospital (Maadi)' },
+    'مستشفى السلام الدولي': { ar: 'مستشفى السلام الدولي', en: 'Al Salam International Hospital' },
+    'مستشفى دار الفؤاد 6 أكتوبر': { ar: 'مستشفى دار الفؤاد 6 أكتوبر', en: 'Dar Al Fouad Hospital (6th October)' },
+    'مستشفى الصفوة التخصصي بالإسكندرية': { ar: 'مستشفى الصفوة التخصصي بالإسكندرية', en: 'Al Safwa Specialized Hospital (Alexandria)' },
+    'مجمع عيادات النيل التخصصية بالدقي': { ar: 'مجمع عيادات النيل التخصصية بالدقي', en: 'Nile Specialized Clinics (Dokki)' },
+
+    // Descriptions
+    'صرح طبي استثماري متكامل بمدينة الشروق يضم وحدات القسطرة القلبية، الطوارئ على مدار 24 ساعة، وجراحات المناظير المتقدمة.': {
+      ar: 'صرح طبي استثماري متكامل بمدينة الشروق يضم وحدات القسطرة القلبية، الطوارئ على مدار 24 ساعة، وجراحات المناظير المتقدمة.',
+      en: 'A premier multi-specialty hospital in El Shorouk featuring 24/7 cardiac catheterization units and advanced laparoscopic surgery.'
+    },
+    'مركز طبي فاخر بقلب التجمع الخامس يوفر أحدث تقنيات التشخيص، الأشعة المقطعية، وعيادات كبار الاستشاريين أساتذة الجامعات.': {
+      ar: 'مركز طبي فاخر بقلب التجمع الخامس يوفر أحدث تقنيات التشخيص، الأشعة المقطعية، وعيادات كبار الاستشاريين أساتذة الجامعات.',
+      en: 'A state-of-the-art medical center in New Cairo providing diagnostic imaging, CT scans, and senior university professor clinics.'
+    },
+    'من أعرق المستشفيات الخاصة في مصر الحاصلة على الاعتماد الدولي JCI، متخصصة في زراعة الأعضاء وجراحات القلب والمخ والأعصاب.': {
+      ar: 'من أعرق المستشفيات الخاصة في مصر الحاصلة على الاعتماد الدولي JCI، متخصصة في زراعة الأعضاء وجراحات القلب والمخ والأعصاب.',
+      en: 'JCI-accredited landmark hospital in Maadi specializing in organ transplant, open-heart, and neurosurgery.'
+    },
+    'مركز تميز إقليمي لجراحات القلب والأورام والعظام، مجهز بأحدث الرعايات المركزة وأجنحة الإقامة الفاخرة.': {
+      ar: 'مركز تميز إقليمي لجراحات القلب والأورام والعظام، مجهز بأحدث الرعايات المركزة وأجنحة الإقامة الفاخرة.',
+      en: 'Regional center of excellence in 6th of October for cardiology, oncology, and orthopedic surgeries.'
+    },
+    'مستشفى استثماري رائد بالعروس الإسكندرية يقدم خدمات الجراحة العامة، مناظير الجهاز الهضمي، وعيادات طب الأطفال والنساء.': {
+      ar: 'مستشفى استثماري رائد بالعروس الإسكندرية يقدم خدمات الجراحة العامة، مناظير الجهاز الهضمي، وعيادات طب الأطفال والنساء.',
+      en: 'Leading private hospital in Alexandria offering general surgery, endoscopy, pediatrics, and OB/GYN clinics.'
+    },
+
+    // Cities & Addresses
+    'الشروق': { ar: 'مدينة الشروق', en: 'El Shorouk City' },
+    'القاهرة الجديده': { ar: 'التجمع الخامس - القاهرة الجديدة', en: 'New Cairo (5th Settlement)' },
+    'القاهرة': { ar: 'القاهرة', en: 'Cairo' },
+    'الجيزة': { ar: 'الجيزة (6 أكتوبر / الدقي)', en: 'Giza (6th October / Dokki)' },
+    'الإسكندرية': { ar: 'الإسكندرية', en: 'Alexandria' },
+
+    'حي الأشجار، الحي السابع - مدينة الشروق': { ar: 'حي الأشجار، الحي السابع - مدينة الشروق', en: 'Trees District, 7th Neighborhood - El Shorouk City' },
+    'حي الأشجار - مدينة الشروق': { ar: 'حي الأشجار - مدينة الشروق', en: 'Trees District - El Shorouk City' },
+    'شارع التسعين الجنوبي، مجمع العيادات الفاخرة - التجمع الخامس': { ar: 'شارع التسعين الجنوبي، مجمع العيادات الفاخرة - التجمع الخامس', en: 'South 90th St, Medical Complex - New Cairo' },
+    'التجمع الخامس - شارع التسعين': { ar: 'التجمع الخامس - شارع التسعين', en: 'South 90th St - New Cairo' },
+    'كورنيش المعادي، برج الأطباء - القاهرة': { ar: 'كورنيش المعادي، برج الأطباء - القاهرة', en: 'Maadi Corniche, Medical Tower - Cairo' },
+    'المعادي - الكورنيش': { ar: 'المعادي - الكورنيش', en: 'Maadi Corniche - Cairo' },
+    'امتداد محور 26 يوليو، مدينة 6 أكتوبر': { ar: 'امتداد محور 26 يوليو، مدينة 6 أكتوبر', en: '26th of July Axis - 6th October City' },
+    'طريق الجيش، لوران - الإسكندرية': { ar: 'طريق الجيش، لوران - الإسكندرية', en: 'Army Road, Loran - Alexandria' },
+    'شارع مصدق، الدقي - الجيزة': { ar: 'شارع مصدق، الدقي - الجيزة', en: 'Mossadak St, Dokki - Giza' },
+
+    // Doctors
+    'أ.د. أحمد عبد الرحمن الحسين': { ar: 'أ.د. أحمد عبد الرحمن الحسين', en: 'Prof. Dr. Ahmed Abdelrahman' },
+    'د. مريم الشناوي': { ar: 'د. مريم الشناوي', en: 'Dr. Maryam El Shennawy' },
+    'د. خالد مصطفى السويفي': { ar: 'د. خالد مصطفى السويفي', en: 'Dr. Khaled M. El Sweify' },
+    'د. خالد مصطفى': { ar: 'د. خالد مصطفى', en: 'Dr. Khaled M. El Sweify' },
+    'أ.د. عمر نبيل الدسوقي': { ar: 'أ.د. عمر نبيل الدسوقي', en: 'Prof. Dr. Omar N. El Desouky' },
+    'أ.د. ياسمين فاروق عبد العزيز': { ar: 'أ.د. ياسمين فاروق عبد العزيز', en: 'Prof. Dr. Yasmine F. Abdelaziz' },
+    'د. طارق سامي الشريف': { ar: 'د. طارق سامي الشريف', en: 'Dr. Tarek S. El Sherif' },
+    'أ.د. حسام الدين شريف': { ar: 'أ.د. حسام الدين شريف', en: 'Prof. Dr. Hossam El Din Sherif' },
+    'د. رانيا المهدي': { ar: 'د. رانيا المهدي', en: 'Dr. Rania El Mahdy' },
+    'أ.د. شريف العريان': { ar: 'أ.د. شريف العريان', en: 'Prof. Dr. Sherif El Arian' },
+    'د. نورهان عبد السلام': { ar: 'د. نورهان عبد السلام', en: 'Dr. Nourhan Abdel Salam' },
+    'د. كريم عبد اللطيف': { ar: 'د. كريم عبد اللطيف', en: 'Dr. Kareem Abdel Latif' },
+
+    // Doctor Specialties
+    'استشاري أمراض القلب والأوعية الدموية والقسطرة': { ar: 'استشاري أمراض القلب والأوعية الدموية والقسطرة', en: 'Consultant Cardiologist & Interventional Catheterization' },
+    'استشاري أمراض الجلدية والتجميل والليزر': { ar: 'استشاري أمراض الجلدية والتجميل والليزر', en: 'Consultant Dermatologist & Aesthetic Laser Specialist' },
+    'استشاري طب وجراحة الأطفال والحديثي الولادة': { ar: 'استشاري طب وجراحة الأطفال والحديثي الولادة', en: 'Consultant Pediatrician & Neonatologist' },
+    'استشاري جراحة العظام والمناظير وتغيير المفاصل': { ar: 'استشاري جراحة العظام والمناظير وتغيير المفاصل', en: 'Consultant Orthopedic & Arthroplasty Surgeon' },
+    'استشاري أمراض القلب وقسطرة الشرايين التداخلية': { ar: 'استشاري أمراض القلب وقسطرة الشرايين التداخلية', en: 'Consultant Interventional Cardiologist' },
+    'استشاري جراحة المخ والأعصاب والعمود الفقري': { ar: 'استشاري جراحة المخ والأعصاب والعمود الفقري', en: 'Consultant Neurosurgeon & Spine Specialist' },
+    'أستاذ وجراح القلب المفتوح والأوعية الدموية': { ar: 'أستاذ وجراح القلب المفتوح والأوعية الدموية', en: 'Professor of Open Heart & Vascular Surgery' },
+    'استشاري أمراض الجهاز الهضمي والمناظير والكبد': { ar: 'استشاري أمراض الجهاز الهضمي والمناظير والكبد', en: 'Consultant Gastroenterologist & Hepatologist' },
+    'استشاري علاج الأورام وجراحات الأورام المتقدمة': { ar: 'استشاري علاج الأورام وجراحات الأورام المتقدمة', en: 'Consultant Oncologist & Surgical Oncology' },
+    'استشاري النساء والتوليد والحقن المجهري': { ar: 'استشاري النساء والتوليد والحقن المجهري', en: 'Consultant Obstetrician & Gynecologist (IVF)' },
+    'استشاري طب وجراحة العيون واليزك تصحيح الابصار': { ar: 'استشاري طب وجراحة العيون واليزك تصحيح الابصار', en: 'Consultant Ophthalmologist & LASIK Surgeon' },
+
+    // Doctor Bios
+    'أستاذ أمراض القلب بكلية الطب، زميل الكلية الأمريكية للقلب، خبرة أكثر من ٢٢ عاماً في قسطرة الشرايين التاجية.': {
+      ar: 'أستاذ أمراض القلب بكلية الطب، زميل الكلية الأمريكية للقلب، خبرة أكثر من ٢٢ عاماً في قسطرة الشرايين التاجية.',
+      en: 'Professor of Cardiology, Fellow of American College of Cardiology FACC, 22+ years experience in coronary angioplasty.'
+    },
+    'أستاذ أمراض القلب بكلية الطب، زميل الكلية الأمريكية للقلب FACC، خبرة أكثر من 22 عاماً في قسطرة الشرايين التاجية وتوسيع الصمامات.': {
+      ar: 'أستاذ أمراض القلب بكلية الطب، زميل الكلية الأمريكية للقلب FACC، خبرة أكثر من 22 عاماً في قسطرة الشرايين التاجية وتوسيع الصمامات.',
+      en: 'Professor of Cardiology, Fellow of American College of Cardiology FACC, 22+ years experience in coronary angioplasty.'
+    },
+    'خبرة طويلة في علاج الأمراض الجلدية المستعصية وتقنيات النضرة والعلاج بالليزر.': {
+      ar: 'خبرة طويلة في علاج الأمراض الجلدية المستعصية وتقنيات النضرة والعلاج بالليزر.',
+      en: 'Senior consultant in dermatology, aesthetic laser, psoriasis, and non-surgical cosmetic procedures.'
+    },
+    'مدرس طب الأطفال، متخصص في متابعة النمو والتغذية وأمراض الصدر للأطفال.': {
+      ar: 'مدرس طب الأطفال، متخصص في متابعة النمو والتغذية وأمراض الصدر للأطفال.',
+      en: 'Consultant Pediatrician specialized in child nutrition, growth tracking, and pediatric chest care.'
+    }
+  };
+
   constructor() {
     effect(() => {
       const lang = this.currentLang();
@@ -261,6 +358,37 @@ export class LanguageService {
   t(key: string): string {
     const lang = this.currentLang();
     return this.translations[lang]?.[key] || this.translations['en']?.[key] || key;
+  }
+
+  /** Dynamically translates any DB string (Hospital Name, Doctor Name, Specialty, Bio, City) into active language */
+  localizeText(input?: string | null): string {
+    if (!input) return '';
+    const lang = this.currentLang();
+    const entry = this.entityTranslations[input.trim()];
+    if (entry) {
+      return entry[lang] || input;
+    }
+
+    // Fallback regex translators if exact entry not in map
+    if (lang === 'en') {
+      if (input.includes('مستشفى الشروق')) return 'Shorouk International Specialized Hospital';
+      if (input.includes('مركز فيكسا')) return 'VEXA Advanced Medical Center';
+      if (input.includes('مستشفى السلام')) return 'Al Salam International Hospital';
+      if (input.includes('دار الفؤاد')) return 'Dar Al Fouad Hospital (6th October)';
+      if (input.includes('الصفوة')) return 'Al Safwa Specialized Hospital';
+      if (input.includes('النيل')) return 'Nile Specialized Clinics';
+      if (input.includes('الشروق')) return 'El Shorouk City';
+      if (input.includes('القاهرة الجديده') || input.includes('التجمع')) return 'New Cairo';
+      if (input.includes('القاهرة')) return 'Cairo';
+      if (input.includes('الجيزة')) return 'Giza';
+      if (input.includes('الإسكندرية')) return 'Alexandria';
+      if (input.includes('جلدية')) return 'Dermatology & Laser Specialist';
+      if (input.includes('قلب')) return 'Consultant Cardiologist';
+      if (input.includes('أطفال')) return 'Consultant Pediatrician';
+      if (input.includes('عظام')) return 'Consultant Orthopedic Surgeon';
+      if (input.includes('مخ وأعصاب')) return 'Consultant Neurosurgeon';
+    }
+    return input;
   }
 
   private getInitialLang(): LanguageCode {
