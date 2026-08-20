@@ -65,7 +65,7 @@ export async function getDoctorById(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params['id'] as string;
 
     const doctor = await prisma.doctor.findUnique({
       where: { id },
@@ -113,12 +113,12 @@ export async function getDoctorAvailability(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
-    const { date } = req.query as { date?: string };
+    const id = req.params['id'] as string;
+    const dateParam = typeof req.query['date'] === 'string' ? req.query['date'] : undefined;
 
     const where: Prisma.AvailabilitySlotWhereInput = { doctorId: id };
-    if (date) {
-      where.date = date;
+    if (dateParam) {
+      where.date = dateParam;
     }
 
     const slots = await prisma.availabilitySlot.findMany({

@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodSchema, ZodError } from 'zod';
-import { sendError } from '../utils/response.js';
 
 /**
  * Middleware factory that validates request data against a Zod schema.
@@ -15,7 +14,7 @@ export function validate(
     try {
       const parsed = schema.parse(req[source]);
       // Replace with parsed (coerced/transformed) values
-      (req as Record<string, unknown>)[source] = parsed;
+      (req as unknown as Record<string, unknown>)[source] = parsed;
       next();
     } catch (error) {
       if (error instanceof ZodError) {

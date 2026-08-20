@@ -63,7 +63,7 @@ export async function getOrganizationById(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params['id'] as string;
 
     const organization = await prisma.organization.findUnique({
       where: { id },
