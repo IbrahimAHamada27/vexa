@@ -1,0 +1,86 @@
+<div class="admin-depts-page">
+  <header class="page-header">
+    <div>
+      <h1>{{ langService.currentLang() === 'ar' ? 'إدارة الأقسام الطبية والإكلينيكية' : 'Clinical Departments Management' }}</h1>
+      <p class="subtitle">{{ langService.currentLang() === 'ar' ? 'إدارة أقسام العيادات الخارجية، غرف الرعاية المركزة، ووحدات الجراحة والمناظير.' : 'Organize specialized medical departments, ICU units, and surgical suites.' }}</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="openAddModal()">➕ {{ langService.currentLang() === 'ar' ? 'إضافة قسم إكلينيكي' : 'Add Department' }}</button>
+  </header>
+
+  @if (isLoading()) {
+    <div class="state-card">{{ langService.currentLang() === 'ar' ? 'جاري تحميل الأقسام الطبية...' : 'Loading departments...' }}</div>
+  } @else if (departments().length === 0) {
+    <div class="state-card">
+      <p>{{ langService.currentLang() === 'ar' ? 'لم يتم إضافة أقسام طبية بعد.' : 'No departments have been added yet.' }}</p>
+      <button type="button" class="btn btn-primary" (click)="openAddModal()">{{ langService.currentLang() === 'ar' ? 'إضافة قسم جديد' : 'Add Department' }}</button>
+    </div>
+  } @else {
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ langService.currentLang() === 'ar' ? 'اسم القسم الإكلينيكي' : 'Department Name' }}</th>
+            <th>{{ langService.currentLang() === 'ar' ? 'رئيس القسم والمشرف' : 'Department Chair' }}</th>
+            <th>{{ langService.currentLang() === 'ar' ? 'الوصف والتجهيزات' : 'Description & Scope' }}</th>
+            <th class="text-right">{{ langService.currentLang() === 'ar' ? 'الإجراءات' : 'Actions' }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dept of departments(); track dept.id) {
+            <tr>
+              <td>
+                <strong>🏥 {{ langService.localizeText(dept.name) }}</strong>
+              </td>
+              <td>
+                <span class="chair-tag">👨‍⚕️ {{ getChairDoctor(dept.name) }}</span>
+              </td>
+              <td>{{ langService.localizeText(dept.description) }}</td>
+              <td class="text-right actions-cell">
+                <button type="button" class="btn-sm btn-outline" (click)="editDepartment(dept)">✏️ {{ langService.currentLang() === 'ar' ? 'تعديل' : 'Edit' }}</button>
+                <button type="button" class="btn-sm btn-danger" (click)="confirmDelete(dept)">🗑️</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- MODAL FORM -->
+  @if (showModal()) {
+    <div class="modal-backdrop">
+      <div class="modal-card">
+        <h3>{{ editingId() ? (langService.currentLang() === 'ar' ? 'تعديل بيانات القسم' : 'Edit Department') : (langService.currentLang() === 'ar' ? 'إضافة قسم إكلينيكي جديد' : 'Add New Department') }}</h3>
+        <form [formGroup]="deptForm" (ngSubmit)="saveDepartment()">
+          <div class="form-group">
+            <label for="name">{{ langService.currentLang() === 'ar' ? 'اسم القسم *' : 'Department Name *' }}</label>
+            <input id="name" type="text" formControlName="name" placeholder="مثال: قسم جراحة العظام والمناظير" />
+          </div>
+          <div class="form-group">
+            <label for="desc">{{ langService.currentLang() === 'ar' ? 'الوصف والتجهيزات *' : 'Description *' }}</label>
+            <textarea id="desc" rows="4" formControlName="description" placeholder="ملخص التجهيزات الطبية والخدمات المقدمة..."></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="closeModal()">{{ langService.currentLang() === 'ar' ? 'إلغاء' : 'Cancel' }}</button>
+            <button type="submit" class="btn btn-primary" [disabled]="deptForm.invalid">{{ langService.currentLang() === 'ar' ? 'حفظ القسم' : 'Save Department' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- DELETE CONFIRMATION -->
+  @if (deletingDept()) {
+    <div class="modal-backdrop">
+      <div class="modal-card">
+        <h3>{{ langService.currentLang() === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete' }}</h3>
+        <p>{{ langService.currentLang() === 'ar' ? 'هل أنت تأكد من رغبتك في حذف قسم' : 'Are you sure you want to delete' }} <strong>{{ deletingDept()?.name }}</strong>؟</p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" (click)="deletingDept.set(null)">{{ langService.currentLang() === 'ar' ? 'تراجع' : 'Cancel' }}</button>
+          <button type="button" class="btn btn-danger" (click)="deleteDepartment()">{{ langService.currentLang() === 'ar' ? 'حذف القسم' : 'Delete' }}</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,196 @@
+<div class="admin-doctors-page">
+  <header class="page-header">
+    <div>
+      <h1>{{ langService.currentLang() === 'ar' ? 'إدارة الأطقم الطبية ورؤساء الأقسام' : 'Medical Staff & Department Chairs Management' }}</h1>
+      <p class="subtitle">{{ langService.currentLang() === 'ar' ? 'إدارة ملفات الاستشاريين، مدراء الأقسام الإكلينيكية، السيرة الذاتية الكشفية، والتسريحات الحية.' : 'Manage clinical consultants, department heads, bios, consultation fees, and live credentials.' }}</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="openAddModal()">➕ {{ langService.currentLang() === 'ar' ? 'إضافة طبيب / رئيس قسم' : 'Add Consultant / Chair' }}</button>
+  </header>
+
+  <!-- FILTER & SEARCH BAR -->
+  <div class="filter-panel">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [placeholder]="langService.currentLang() === 'ar' ? 'ابحث باسم الطبيب، التخصص، أو رتبة رئيس القسم...' : 'Search by doctor name, specialty, or department chair title...'"
+        [ngModel]="filterQuery()"
+        (ngModelChange)="filterQuery.set($event)"
+        class="filter-input"
+      />
+      @if (filterQuery()) {
+        <button type="button" class="btn-clear" (click)="filterQuery.set('')">&times;</button>
+      }
+    </div>
+
+    <div class="stats-counter">
+      <span>{{ langService.currentLang() === 'ar' ? 'إجمالي الاستشاريين المسجلين:' : 'Total Active Consultants:' }} <strong>{{ filteredDoctors().length }}</strong></span>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="state-card">{{ langService.currentLang() === 'ar' ? 'جاري تحميل دليل الأطباء ورؤساء الأقسام...' : 'Loading medical staff directory...' }}</div>
+  } @else if (filteredDoctors().length === 0) {
+    <div class="state-card">
+      <p>{{ langService.currentLang() === 'ar' ? 'لم يتم العثور على أطباء مطابقين لعملية البحث.' : 'No doctors found matching your filter criteria.' }}</p>
+      <button type="button" class="btn btn-primary" (click)="openAddModal()">{{ langService.currentLang() === 'ar' ? 'إضافة طبيب جديد' : 'Add Doctor' }}</button>
+    </div>
+  } @else {
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ langService.currentLang() === 'ar' ? 'اسم الطبيب والاستشاري' : 'Doctor Name & Credentials' }}</th>
+            <th>{{ langService.currentLang() === 'ar' ? 'المسمى الإداري والتخصص' : 'Department & Specialty' }}</th>
+            <th>{{ langService.currentLang() === 'ar' ? 'سنوات الخبرة' : 'Experience' }}</th>
+            <th>{{ langService.currentLang() === 'ar' ? 'قيمة الكشف' : 'Consultation Fee' }}</th>
+            <th class="text-right">{{ langService.currentLang() === 'ar' ? 'الإجراءات والنبذة' : 'Actions & Bio' }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doc of filteredDoctors(); track doc.id) {
+            <tr>
+              <td>
+                <div class="doc-cell">
+                  <div class="avatar-circle">👨‍⚕️</div>
+                  <div>
+                    <strong class="doc-name-txt">{{ langService.localizeText(doc.name) }}</strong>
+                    @if (doc.bio && (doc.bio.includes('رئيس') || doc.bio.includes('مدير') || doc.bio.includes('Head') || doc.bio.includes('Chair'))) {
+                      <span class="chair-badge">👑 {{ langService.currentLang() === 'ar' ? 'رئيس قسم إكلينيكي' : 'Department Chair' }}</span>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="specialty-badge">{{ langService.localizeText(doc.specialty) }}</span>
+              </td>
+              <td>
+                <strong>{{ doc.experienceYears || 15 }} {{ langService.currentLang() === 'ar' ? 'عاماً' : 'Years' }}</strong>
+              </td>
+              <td>
+                <strong class="fee-txt">{{ doc.consultationFee }} {{ doc.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }}</strong>
+              </td>
+              <td class="text-right actions-cell">
+                <button type="button" class="btn-sm btn-info" (click)="viewBioModal.set(doc)">👁️ {{ langService.currentLang() === 'ar' ? 'عرض النبذة' : 'View Bio' }}</button>
+                <button type="button" class="btn-sm btn-outline" (click)="editDoctor(doc)">✏️ {{ langService.currentLang() === 'ar' ? 'تعديل' : 'Edit' }}</button>
+                <button type="button" class="btn-sm btn-danger" (click)="confirmDelete(doc)">🗑️</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- VIEW DETAILED BIO MODAL -->
+  @if (viewBioModal()) {
+    <div class="modal-backdrop" (click)="viewBioModal.set(null)">
+      <div class="modal-card bio-modal" (click)="$event.stopPropagation()">
+        <div class="bio-modal-header">
+          <div class="bio-avatar">👨‍⚕️</div>
+          <div>
+            <h3>{{ langService.localizeText(viewBioModal()!.name) }}</h3>
+            <span class="specialty-badge">{{ langService.localizeText(viewBioModal()!.specialty) }}</span>
+          </div>
+          <button type="button" class="btn-close" (click)="viewBioModal.set(null)">&times;</button>
+        </div>
+
+        <div class="bio-modal-body">
+          <div class="bio-stat-row">
+            <div class="stat-pill">
+              <span class="lbl">{{ langService.currentLang() === 'ar' ? 'الخبرة الإكلينيكية' : 'Clinical Experience' }}</span>
+              <strong class="val">{{ viewBioModal()!.experienceYears }} {{ langService.currentLang() === 'ar' ? 'عاماً' : 'Years' }}</strong>
+            </div>
+            <div class="stat-pill">
+              <span class="lbl">{{ langService.currentLang() === 'ar' ? 'قيمة الكشفية' : 'Consultation Fee' }}</span>
+              <strong class="val highlight">{{ viewBioModal()!.consultationFee }} {{ viewBioModal()!.currency || (langService.currentLang() === 'ar' ? 'ج.م' : 'EGP') }}</strong>
+            </div>
+            <div class="stat-pill">
+              <span class="lbl">{{ langService.currentLang() === 'ar' ? 'التقييم العام' : 'Patient Rating' }}</span>
+              <strong class="val yellow">★ {{ viewBioModal()!.rating || 4.9 }} / 5</strong>
+            </div>
+          </div>
+
+          <div class="bio-section">
+            <h4>{{ langService.currentLang() === 'ar' ? '📜 النبذة والمؤهلات العلمية والسيرة الذاتية' : '📜 Biography & Medical Qualifications' }}</h4>
+            <p class="full-bio-txt">{{ langService.localizeText(viewBioModal()!.bio) }}</p>
+          </div>
+
+          <div class="bio-section">
+            <h4>{{ langService.currentLang() === 'ar' ? '🌐 اللغات والاعتمادات الدولية' : '🌐 Languages & Accreditation' }}</h4>
+            <p>{{ langService.currentLang() === 'ar' ? 'العربية (اللغة الأم)، الإنجليزية (مستوى متقدم)، عضو الجمعية الأوروبية والكلية الأمريكية.' : 'Arabic (Native), English (Fluent), Member of European Society & ACC.' }}</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-primary" (click)="viewBioModal.set(null)">{{ langService.currentLang() === 'ar' ? 'إغلاق النبذة' : 'Close Profile' }}</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL FORM (ADD / EDIT) -->
+  @if (showModal()) {
+    <div class="modal-backdrop">
+      <div class="modal-card">
+        <h3>{{ editingId() ? (langService.currentLang() === 'ar' ? 'تعديل بيانات الاستشاري' : 'Edit Doctor Profile') : (langService.currentLang() === 'ar' ? 'إضافة استشاري / رئيس قسم جديد' : 'Add New Doctor') }}</h3>
+        <form [formGroup]="doctorForm" (ngSubmit)="saveDoctor()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="title">{{ langService.currentLang() === 'ar' ? 'اللقب الطبي' : 'Title' }} *</label>
+              <select id="title" formControlName="title">
+                <option value="أ.د.">أ.د. / Prof. Dr.</option>
+                <option value="د.">د. / Dr.</option>
+                <option value="استشاري">استشاري / Consultant</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="name">{{ langService.currentLang() === 'ar' ? 'الاسم بالكامل' : 'Full Name' }} *</label>
+              <input id="name" type="text" formControlName="name" placeholder="مثال: د. مريم الشناوي" />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="specialty">{{ langService.currentLang() === 'ar' ? 'التخصص والرتبة الإدارية' : 'Specialty & Chair Role' }} *</label>
+              <input id="specialty" type="text" formControlName="specialty" placeholder="مثال: رئيس قسم أمراض القلب والقسطرة" />
+            </div>
+
+            <div class="form-group">
+              <label for="exp">{{ langService.currentLang() === 'ar' ? 'سنوات الخبرة' : 'Experience (Years)' }} *</label>
+              <input id="exp" type="number" formControlName="experienceYears" placeholder="15" />
+            </div>
+
+            <div class="form-group">
+              <label for="fee">{{ langService.currentLang() === 'ar' ? 'قيمة الكشف (ج.م)' : 'Consultation Fee (EGP)' }} *</label>
+              <input id="fee" type="number" formControlName="consultationFee" placeholder="450" />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="bio">{{ langService.currentLang() === 'ar' ? 'النبذة والسيرة الذاتية التفصيلية' : 'Full Biography' }} *</label>
+              <textarea id="bio" rows="4" formControlName="bio" placeholder="ملخص الخبرات والشهادات الأكاديمية والدرجات العلمية..."></textarea>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="closeModal()">{{ langService.currentLang() === 'ar' ? 'إلغاء' : 'Cancel' }}</button>
+            <button type="submit" class="btn btn-primary" [disabled]="doctorForm.invalid">{{ langService.currentLang() === 'ar' ? 'حفظ البيانات' : 'Save Doctor Profile' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- DELETE CONFIRMATION -->
+  @if (deletingDoc()) {
+    <div class="modal-backdrop">
+      <div class="modal-card">
+        <h3>{{ langService.currentLang() === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete' }}</h3>
+        <p>{{ langService.currentLang() === 'ar' ? 'هل أنت تأكد من رغبتك في حذف ملف' : 'Are you sure you want to delete' }} <strong>{{ deletingDoc()?.name }}</strong>؟</p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" (click)="deletingDoc.set(null)">{{ langService.currentLang() === 'ar' ? 'تراجع' : 'Cancel' }}</button>
+          <button type="button" class="btn btn-danger" (click)="deleteDoctor()">{{ langService.currentLang() === 'ar' ? 'حذف الحساب' : 'Delete' }}</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
